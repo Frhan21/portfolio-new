@@ -39,7 +39,7 @@ const Home = () => {
             <span className="px-4 py-2 rounded-full  text-sm font-bold">
               View my portfolio
             </span>
-            <span className="bg-[#EFEEEA] p-2 rounded-full hover:scale-95 transition-transform duration-200">
+            <span className="bg-[#EFEEEA] p-2 rounded-full hover:scale-95 transition-transform duration-200 ">
               <ArrowRight size={24} className="text-slate-700" />
             </span>
           </div>
