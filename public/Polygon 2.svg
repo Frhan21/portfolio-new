@@ -1,0 +1,22 @@
+<svg width="27" height="30" viewBox="0 0 27 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="27" height="30" fill="#1E1E1E"/>
+<g id="Desktop - 1" clip-path="url(#clip0_0_1)">
+<rect width="1440" height="5703" transform="translate(-686 -754)" fill="#EFEEEA"/>
+<g id="Hero (Hi-Fi Destkop)">
+<g id="Hero">
+<g id="Frame 105">
+<g id="button_submit">
+<rect x="-256.62" y="-17.6411" width="304" height="65.2821" rx="32.641" fill="#FE7743"/>
+<rect id="Rectangle 7" x="11.8159" y="12.5641" width="4.38462" height="4.38462" rx="2.19231" fill="#EFEEEA"/>
+<path id="Polygon 2" d="M1.34148 16.0221C0.367117 15.4596 0.367118 14.0532 1.34148 13.4906L24.3492 0.207109C25.5519 -0.487239 26.954 0.72942 26.4361 2.01792L21.5349 14.2113C21.3943 14.5611 21.3943 14.9517 21.5349 15.3015L26.4361 27.4948C26.954 28.7833 25.5519 30 24.3492 29.3056L1.34148 16.0221Z" fill="#273F4F"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_0_1">
+<rect width="1440" height="5703" fill="white" transform="translate(-686 -754)"/>
+</clipPath>
+</defs>
+</svg>
