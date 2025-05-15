@@ -2,7 +2,7 @@ import React from "react";
 
 const Contact = () => {
   return (
-    <section className="w-full flex flex-col md:flex-row items-start justify-center gap-10 px-4 mt-16 mx-auto max-w-7xl my-10">
+    <section className="w-full flex flex-col md:flex-row items-start justify-center gap-10 px-4 mt-16 mx-auto max-w-7xl my-10" id="contact">
       {/* Left Section - Text Intro */}
       <div className="md:w-1/2">
         <header className="flex flex-col items-start">

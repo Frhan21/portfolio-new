@@ -1,10 +1,14 @@
+"use client";
+
+import { useTypeWriter } from "@/app/hooks/use-typing";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import React from "react";
 
 const Home = () => {
+  const { typeWriterText, cursorVisible } = useTypeWriter();
   return (
-    <div className="w-full h-screen px-6 md:px-16 py-8 mx-auto flex flex-col justify-center items-center gap-6 max-w-7xl">
+    <div className="w-full h-screen px-6 md:px-16 py-8 mx-auto flex flex-col justify-center items-center gap-6 max-w-7xl" id="home">
       <header className="space-y-6 text-center relative">
         <h1 className="text-[16px] md:text-[20px] relative inline-block">
           <span className="border-[2.5px] border-black px-6 md:px-12 py-2 font-bold text-black inline-block">
@@ -17,10 +21,12 @@ const Home = () => {
           <div className="w-3 h-3 md:w-4 md:h-4 bg-orange-400 border-[2.5px] border-black absolute -bottom-2 -left-2" />
         </h1>
 
-        <h2 className="text-[32px] md:text-[64px] font-extrabold leading-tight">
-          Web Developer
-          <span className="text-[#FE7743]"> and </span>
-          Social Media Designer
+        <h2 className="text-[32px] md:text-[48px] font-extrabold leading-tight h-16 md:h-fit">
+          I'am{" "}
+          <span className="text-black dark:text-white whitespace-pre-line">
+            {typeWriterText}
+          </span>{" "}
+          {cursorVisible && <span className="animate-blink">|</span>}
         </h2>
 
         <p className="tracking-wide text-[14px] md:text-[16px] text-gray-700 px-2 md:px-0">

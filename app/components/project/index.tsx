@@ -4,7 +4,7 @@ import CardComponent from "../card";
 
 const Project = () => {
   return (
-    <div className="flex flex-col items-center justify-center w-full h-fit mt-20 px-4">
+    <div className="flex flex-col items-center justify-center w-full h-fit mt-20 px-4" id="portfolio">
       <div className="flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mx-auto">
         <div className="flex flex-col items-start gap-2 text-center md:text-left">
           <div className="flex items-center justify-center gap-2">
@@ -20,8 +20,7 @@ const Project = () => {
         </Button>
       </div>
       {/* Card Section */}
-      <div className="flex flex-wrap justify-center my-16 gap-10 md:gap-20 mx-auto">
-        <CardComponent />
+      <div className="flex flex-wrap justify-center my-16 gap-10 md:gap-15 mx-auto">
         <CardComponent />
       </div>
     </div>

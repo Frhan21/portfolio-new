@@ -28,7 +28,7 @@ const About = () => {
   return (
     <div className="w-full flex flex-col items-center justify-center">
       {/* === About Section === */}
-      <section className="bg-black w-full min-h-[520px] overflow-hidden px-4 sm:px-6">
+      <section className="bg-black w-full min-h-[520px] overflow-hidden px-4 sm:px-6" id="about">
         <div className="flex flex-col-reverse md:flex-row items-center justify-center gap-8 md:gap-12 py-12 md:py-20">
           {/* Text Content */}
           <div className="flex flex-col items-start md:items-start text-left gap-4 max-w-xl">
@@ -58,7 +58,7 @@ const About = () => {
       </section>
 
       {/* === Service Section === */}
-      <section className="w-full px-6 py-12">
+      <section className="w-full px-6 py-12" id="service">
         <div className="flex flex-col items-start md:items-start gap-2 max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
             <div className="w-6 h-2 bg-orange-500" />
