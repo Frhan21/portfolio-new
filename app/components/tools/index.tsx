@@ -40,7 +40,7 @@ const Tools = () => {
         </div>
 
         {/* Title */}
-        <div className="text-6xl/20 md:text-4xl/20 text-center font-bold text-black max-w-[90%] md:max-w-[720px]">
+        <div className="text-6xl/20 md:text-7xl/20 text-center font-bold text-black max-w-[90%] md:max-w-[720px]">
           Exploring <span className="text-orange-500"> Tools </span> Behind My{" "}
           <span className="text-orange-500"> Works</span>
         </div>
