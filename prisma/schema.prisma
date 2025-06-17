@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
 }
 
 datasource db {
@@ -14,36 +13,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Category {
+  id           String        @id @default(uuid())
+  title        String
+  timestamp    DateTime      @default(now())
+  projects     Project[]
+  certificates Certificate[]
+}
 
 model User {
-  id String @id @default(cuid())
-  name String? 
-  email String @unique 
-  password String
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
   createdAt DateTime @default(now())
-  projects Project[]
+  updatedAt DateTime @default(now()) @updatedAt
 }
-
 
 model Project {
-  id String @id @default(cuid())
-  user_id String 
-  category_id String
-  title String 
-  tools String[]
-  github String 
-  demo String 
-  image String 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) 
-  author User @relation(fields: [user_id], references: [id])
-  category Category @relation(fields: [category_id], references: [id])
+  id         String   @id @default(uuid())
+  title      String
+  tags       String[]
+  image      String
+  demo       String?
+  github     String?
+  categoryId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+  category   Category @relation(fields: [categoryId], references: [id])
 }
 
-model Category {
-  id String @id @default(cuid())
-  name String
-  createdAt DateTime @default(now()) 
-  updatedAt DateTime? 
-  projects Project[]
+model Certificate {
+  id          String   @id @default(uuid())
+  title       String
+  image       String
+  categoryId  String
+  issuer      String
+  issuer_date DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  category    Category @relation(fields: [categoryId], references: [id])
 }

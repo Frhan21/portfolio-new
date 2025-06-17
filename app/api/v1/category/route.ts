@@ -1,0 +1,55 @@
+// import { PrismaClient } from "@prisma/client/extension";
+import prisma from "@/libs/prisma";
+import { categorySchema } from "@/libs/validation";
+import { NextResponse } from "next/server";
+
+// const prisma = new PrismaClient();
+
+export async function GET() {
+  try {
+    const categories = await prisma.category.findMany();
+    if (!categories || categories.length === 0) {
+      return NextResponse.json({
+        message: "No categories found",
+        categories: [],
+      });
+    }
+    return NextResponse.json({
+      message: "Categories fetched successfully",
+      categories: categories,
+    });
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch categories" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+
+    const validation = categorySchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(validation.error.errors, { status: 400 });
+    }
+
+    const newCategory = await prisma.category.create({
+      data: validation.data,
+    });
+
+    return NextResponse.json({
+      message: "Category created successfully",
+      category: newCategory,
+    });
+  } catch (error) {
+    console.error("Error creating category:", error);
+    return NextResponse.json(
+      { error: "Failed to create category" },
+      { status: 500 }
+    );
+  }
+}
