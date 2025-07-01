@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "../globals.css";
 
 export const metadata: Metadata = {
-  title: "Dashboard | Portfolio",
+  title: "Login | Portfolio",
   description: "Website ini adalah portfolio pribadi saya",
 };
 
@@ -12,8 +12,8 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className={`antialiased bg-[#EFEEEA]`}>
+    <section className={`antialiased `}>
       {children}
-    </div>
+    </section>
   );
 }

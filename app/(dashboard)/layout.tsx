@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "../globals.css";
 
 export const metadata: Metadata = {
-  title: "M Farhan Ramadhan | Portfolio",
+  title: "Dashboard | Portfolio",
   description: "Website ini adalah portfolio pribadi saya",
 };
 
-export default function RootLayout({
+export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`antialiased`}>{children}</body>
-    </html>
+    <section className={`antialiased `}>
+      {children}
+    </section>
   );
 }

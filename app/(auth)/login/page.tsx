@@ -1,9 +1,8 @@
-import React from 'react'
+import React from "react";
+import FormSign from "../component/form/page";
 
 const Page = () => {
-  return (
-    <div>Page</div>
-  )
-}
+  return <FormSign />;
+};
 
 export default Page;

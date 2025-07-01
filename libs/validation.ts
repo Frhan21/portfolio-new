@@ -47,7 +47,6 @@ export const userSchema = z.object({
   name: z.string().min(2, "Nama harus diisi"),
   email: z.string().email("Email tidak valid"),
   password: z.string().min(6, "Password harus minimal 6 karakter"),
-  timestamps: z.date().default(new Date()),
 });
 
 export const certficateSchema = z.object({

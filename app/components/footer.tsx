@@ -19,9 +19,9 @@ const Footer = () => {
             {/* About Section */}
             <div className="flex flex-col gap-4 mt-6 md:mt-10">
               <div className="flex flex-col">
-                <span className="font-bold text-xl md:text-3xl">
+                <Link href={'/dashboard'} className="font-bold text-xl md:text-3xl">
                   M Farhan Ramadhan
-                </span>
+                </Link>
                 <span className="text-gray-600 tracking-widest mt-2 text-sm md:text-base">
                   Lorem ipsum dolor sit amet consectetur adipisicing elit.
                 </span>
