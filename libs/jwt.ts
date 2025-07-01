@@ -1,4 +1,4 @@
-import { JwtPayload } from "@/app/(dashboard)/types/Decode";
+import { JwtPayload } from "@/app/dashboard/types/Decode";
 import jwt from "jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
 

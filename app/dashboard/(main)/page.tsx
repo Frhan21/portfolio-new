@@ -14,6 +14,8 @@ const Page = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [theme, setTheme] = useState<Theme>(lightTheme);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
   const router = useRouter();
 
   // Fetching user
@@ -37,9 +39,11 @@ const Page = () => {
         const res = await fetch(`/api/v1/user/${decoded.userId}`);
         const { data } = await res.json();
         setUser(data);
+        setLoading(true);
         // console.log(data);
       } catch (error: any) {
         setError(error.message);
+        setLoading(true);
         router.push("/login");
       }
     };
@@ -52,6 +56,14 @@ const Page = () => {
       prevTheme === lightTheme ? darkTheme : lightTheme
     );
   };
+
+  if (!loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
   return (
     <div
       style={{ backgroundColor: theme.background, color: theme.textPrimary }}

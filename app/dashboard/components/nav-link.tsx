@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { FC, ReactNode } from 'react';
 import { Theme } from '../types/Theme';
 
@@ -6,20 +7,22 @@ interface NavLinkProps {
   children: ReactNode;
   active?: boolean;
   theme: Theme;
+  href: string;
 }
 
-const NavLink: FC<NavLinkProps> = ({ icon, children, active, theme }) => (
-  <a
-    href="#"
+const NavLink: FC<NavLinkProps> = ({ icon, children, active, theme, href }) => (
+  <Link
+    href={href}
+    style={active ? { backgroundColor: theme.primary } : {}}
     className={`flex items-center p-3 my-1 rounded-lg transition-colors duration-300 ${
       active
-        ? `bg-[${theme.primary}] text-white`
+        ? `text-white`
         : `text-white/80 hover:bg-white/10`
     }`}
   >
     {icon}
     <span className="ml-4 font-medium">{children}</span>
-  </a>
+  </Link>
 );
 
 export default NavLink; 
