@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "../globals.css";
+import DashboardProvider from "./provider/DashboardProvider";
 
 export const metadata: Metadata = {
   title: "Dashboard | Portfolio",
@@ -12,8 +12,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <section className={`antialiased `}>
-      {children}
-    </section>
+      <section>
+        {/* DashboardProvider akan mengelola semua state dinamis (tema, sidebar)
+          dan merender layout dasar dashboard.
+        */}
+        <DashboardProvider>{children}</DashboardProvider>
+      </section>
   );
 }
