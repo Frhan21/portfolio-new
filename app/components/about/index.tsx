@@ -51,12 +51,14 @@ const About = () => {
               logika dan kreativitas untuk menciptakan produk digital yang
               bermakna.
             </p>
-            <Link
-              href="/"
+            <a
+              href="https://drive.google.com/file/d/1A__8iXxnW_5rtd9_hWD7FExRYt87wDtZ/view?usp=drive_link"
+              target="_blank"
+              rel="noopener"
               className="mt-4 px-6 py-3 bg-slate-700 hover:bg-orange-500 text-white rounded-full flex items-center justify-center gap-2 transition-colors duration-300 text-sm md:text-base"
             >
               Download my CV
-            </Link>
+            </a>
           </div>
 
           {/* SVG Image */}
