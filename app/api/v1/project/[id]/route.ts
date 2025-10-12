@@ -114,3 +114,43 @@ export async function PUT(
     });
   }
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const project = await prisma.project.delete({
+      where: { id: params.id },
+    });
+
+    if (!project) {
+      return NextResponse.json(
+        { message: "Project not found" },
+        { status: 404 }
+      );
+    }
+
+    if (project.publicId) {
+      try {
+        await cloudinary.uploader.destroy(project.publicId);
+      } catch (cldError) {
+        console.error("Error deleting image from Cloudinary:", cldError);
+      }
+    }
+
+    await prisma.project.delete({
+      where: { id: params.id },
+    });
+
+    return NextResponse.json({
+      message: "Project deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    return NextResponse.json({
+      message: "Failed to delete project",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}

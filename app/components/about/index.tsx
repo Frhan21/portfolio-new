@@ -1,10 +1,12 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { Computer, Figma } from "lucide-react";
 import { SiAdobephotoshop } from "react-icons/si";
+
+import { motion } from "motion/react";
+import { fadeIn, fadeLeft, fadeRight, fadeUp } from "../motions";
 
 // ServiceCard Component
 const ServiceCard = ({
@@ -16,7 +18,13 @@ const ServiceCard = ({
   title: string;
   description: string;
 }) => (
-  <div className="w-full max-w-sm">
+  <motion.div
+    className="w-full max-w-sm"
+    variants={fadeUp}
+    whileInView={"visible"}
+    initial="hidden"
+    viewport={{ once: true, amount: 0.3 }}
+  >
     <div className="bg-white rounded-[32px] border-2 border-orange-500 shadow-lg px-6 py-10 flex flex-col items-start gap-4">
       <div className="bg-orange-500 rounded-full w-16 h-16 flex items-center justify-center">
         {icon}
@@ -24,7 +32,7 @@ const ServiceCard = ({
       <h3 className="text-2xl font-bold">{title}</h3>
       <p className="text-gray-600">{description}</p>
     </div>
-  </div>
+  </motion.div>
 );
 
 const About = () => {
@@ -37,7 +45,13 @@ const About = () => {
       >
         <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12 max-w-7xl mx-auto w-full py-12">
           {/* Text Content */}
-          <div className="flex flex-col items-start text-left gap-4 max-w-xl w-full md:ml-12 ml-0">
+          <motion.div
+            className="flex flex-col items-start text-left gap-4 max-w-xl w-full md:ml-12 ml-0"
+            variants={fadeLeft}
+            initial="hidden"
+            whileInView={'visible'}
+            viewport={{ once: true, amount: 0.3 }}
+          >
             <div className="flex items-center gap-2">
               <div className="w-6 h-1 bg-orange-500" />
               <span className="text-white text-xl">About</span>
@@ -51,18 +65,26 @@ const About = () => {
               logika dan kreativitas untuk menciptakan produk digital yang
               bermakna.
             </p>
-            <a
+            <motion.a
+              variants={fadeLeft}
+              transition={{ delay: 0.2 }}
               href="https://drive.google.com/file/d/1A__8iXxnW_5rtd9_hWD7FExRYt87wDtZ/view?usp=drive_link"
               target="_blank"
               rel="noopener"
               className="mt-4 px-6 py-3 bg-slate-700 hover:bg-orange-500 text-white rounded-full flex items-center justify-center gap-2 transition-colors duration-300 text-sm md:text-base"
             >
               Download my CV
-            </a>
-          </div>
+            </motion.a>
+          </motion.div>
 
           {/* SVG Image */}
-          <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg flex justify-center z-0">
+          <motion.div
+            className="relative w-full max-w-sm md:max-w-md lg:max-w-lg flex justify-center z-0"
+            variants={fadeRight}
+            initial="hidden"
+            whileInView={'visible'}
+            viewport={{ once: true, amount: 0.3 }}
+          >
             <div className="w-full aspect-square bg-orange-500 rounded-full relative z-0" />
             <Image
               src="/WhatsApp Image 2025-05-13 at 00.56.38_f30390e6 1.svg"
@@ -72,13 +94,19 @@ const About = () => {
               className="absolute top-1/2 left-[48%] -translate-x-1/2 -translate-y-1/2  w-full h-full object-contain z-10"
               priority
             />
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* === Service Section === */}
       <section id="service" className="w-full px-6 py-20">
-        <div className="max-w-7xl mx-auto flex flex-col items-start gap-6">
+        <motion.div
+          className="max-w-7xl mx-auto flex flex-col items-start gap-6"
+          variants={fadeIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+        >
           <div className="flex items-center gap-2">
             <div className="w-6 h-2 bg-orange-500" />
             <h3 className="text-black text-2xl md:text-[32px] font-bold">
@@ -106,7 +134,7 @@ const About = () => {
               description="Menciptakan visual branding dan desain kreatif yang komunikatif."
             />
           </div>
-        </div>
+        </motion.div>
       </section>
     </div>
   );

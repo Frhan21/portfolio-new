@@ -3,9 +3,26 @@ import prisma from "@/libs/prisma";
 import { projectSchema } from "@/libs/validation";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const projects = await prisma.project.findMany();
+    const { searchParams } = new URL(req.url);
+    const limitQuery = searchParams.get('limit'); 
+    const limit: number | undefined = limitQuery ? parseInt(limitQuery, 10) : undefined; 
+     
+    if (limitQuery && isNaN(Number(limitQuery))) {
+      return NextResponse.json({error: "Invalid limit paramter"})
+    }
+
+
+    const projects = await prisma.project.findMany({
+      take: limit, 
+      orderBy: {
+        createdAt: "desc"
+      },
+      include: {
+        category: true
+      }
+    });
     if (!projects || projects.length === 0) {
       return NextResponse.json({
         message: "No projects found",
@@ -72,10 +89,11 @@ export async function POST(req: NextRequest) {
     const dataUrl = `data:${image.type};base64,${base64}`;
 
     const response = await cloudinary.uploader.upload(dataUrl, {
-        folder: "nextjs-upload", 
-    })
+      folder: "nextjs-upload",
+    });
 
-    const imageUrl = response.secure_url; 
+    const imageUrl = response.secure_url;
+    const publicId = response.public_id; 
 
     console.log("Got Data URL");
 
@@ -83,6 +101,7 @@ export async function POST(req: NextRequest) {
       data: {
         title,
         image: imageUrl,
+        publicId, 
         demo: demo || null,
         github: github || null,
         tags: validatedTags,

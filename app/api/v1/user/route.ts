@@ -3,7 +3,11 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
     if (!users || users.length === 0) {
       return NextResponse.json({
         message: "No users found",

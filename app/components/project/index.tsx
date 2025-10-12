@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import React from "react";
 import CardComponent from "../card";
+import Link from "next/link";
 
 const Project = () => {
   return (
@@ -15,8 +16,10 @@ const Project = () => {
             My Latest <span className="text-orange-500">Project</span>
           </span>
         </div>
-        <Button className="mt-4 md:mt-0 px-5 py-3 md:py-6 rounded-full bg-orange-500 text-white hover:bg-orange-600 cursor-pointer">
-          See all projects
+        <Button className="mt-4 md:mt-0 px-5 py-3 md:py-6 rounded-full bg-orange-500 text-white hover:bg-orange-600 cursor-pointer" asChild>
+          <Link href="/projects">
+            See all projects
+          </Link>
         </Button>
       </div>
       {/* Card Section */}
