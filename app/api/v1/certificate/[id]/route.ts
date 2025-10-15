@@ -4,10 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = context.params;
+    const { id } = await params
     if (!id) {
       return NextResponse.json({
         message: "Certificate with ID is not found",
@@ -36,10 +36,10 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const formData = await req.formData();
     const data = Object.fromEntries(formData);
 

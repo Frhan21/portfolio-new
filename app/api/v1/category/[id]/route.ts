@@ -5,12 +5,13 @@ const prisma = new PrismaClient();
 
 export async function PUT(
   req: NextRequest,
-  context : { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const body = await req.json();
+  const { id } = await params;
   try {
     const updatedCategory = await prisma.category.update({
-      where: { id: context.params.id },
+      where: { id },
       data: body,
     });
 
@@ -29,12 +30,13 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     await prisma.category.delete({
       where: {
-        id: context.params.id,
+        id,
       },
     });
 
