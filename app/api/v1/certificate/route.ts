@@ -73,10 +73,13 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    const publicId = response.public_id
+
     const res = await prisma.certificate.create({
       data: {
         title,
         image: imageUrl,
+        publicId,
         categoryId,
         issuer,
         issuer_date,
