@@ -1,16 +1,16 @@
 import { PrismaClient } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
 export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context : { params: { id: string } }
 ) {
   const body = await req.json();
   try {
     const updatedCategory = await prisma.category.update({
-      where: { id: params.id },
+      where: { id: context.params.id },
       data: body,
     });
 
@@ -28,13 +28,13 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _: NextResponse,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: { id: string } }
 ) {
   try {
     await prisma.category.delete({
       where: {
-        id: params.id,
+        id: context.params.id,
       },
     });
 
