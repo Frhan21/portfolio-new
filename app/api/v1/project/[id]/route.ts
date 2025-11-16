@@ -3,12 +3,13 @@ import prisma from "@/libs/prisma";
 import { projectUpdateSchema } from "@/libs/validation";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
+export async function GET(req: NextRequest, context: RouteContext) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
     if (!id) {
       return NextResponse.json(
         { message: "Project ID is required" },
@@ -41,12 +42,9 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest, context: RouteContext) {
   try {
-    const { id } = context.params;
+    const { id } = await context.params;
     const formData = await req.formData();
 
     const data = {
@@ -115,13 +113,11 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, context: RouteContext) {
   try {
+    const { id } = await context.params;
     const project = await prisma.project.delete({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!project) {
@@ -140,7 +136,7 @@ export async function DELETE(
     }
 
     await prisma.project.delete({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     return NextResponse.json({

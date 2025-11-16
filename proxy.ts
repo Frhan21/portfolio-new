@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export function middleware (req: NextRequest) {
+export default function proxy(req: NextRequest) {
     const token = req.cookies.get('token')?.value
     const isAuthenticated = token
 
