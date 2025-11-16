@@ -3,15 +3,16 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
+export async function PUT(req: NextRequest, context: RouteContext) {
   const body = await req.json();
-  const { id } = await params;
+  const { id } = await context.params;
   try {
     const updatedCategory = await prisma.category.update({
-      where: { id },
+      where: { id: id },
       data: body,
     });
 
@@ -28,15 +29,12 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params
+export async function DELETE(req: NextRequest, context: RouteContext) {
+  const { id } = await context.params;
   try {
     await prisma.category.delete({
       where: {
-        id,
+        id: id,
       },
     });
 
