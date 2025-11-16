@@ -71,6 +71,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
     const imageFile = formData.get("image") as File;
 
     let imagePath;
+    let publicId; 
 
     if (formData.get("image") as File) {
       const arrayBuffer = await imageFile.arrayBuffer();
@@ -86,6 +87,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       });
 
       imagePath = response.secure_url;
+      publicId = response.public_id;
     }
 
     const updatedProject = await prisma.project.update({
@@ -95,6 +97,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
         demo,
         github,
         categoryId,
+        publicId,
         tags,
         image: imagePath, // Assuming you handle the file upload separately
       },

@@ -42,6 +42,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
     const data = Object.fromEntries(formData);
 
     let imagePath;
+    let publicId; 
 
     if (formData.get("image") as File) {
       const image = formData.get("image") as File;
@@ -58,6 +59,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       });
 
       imagePath = response.secure_url;
+      publicId = response.public_id;
     }
 
     const { title, categoryId, issuer, issuer_date } = data;
@@ -69,6 +71,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
         categoryId: typeof categoryId === "string" ? categoryId : "",
         issuer: issuer as string,
         issuer_date: issuer_date as string,
+        publicId, 
         image: imagePath,
       },
     });
