@@ -1,11 +1,8 @@
-"use client";
+'use client';
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Certificate } from "@/model/Certificate";
-import { Calendar, LinkIcon } from "lucide-react";
-import { useState } from "react";
-import { certificates as dummyCertificates } from "../../dummy";
-import { paginate } from "../../utils/paginate";
+import { Card, CardContent } from '@/components/ui/card';
+import { Certificate } from '@/model/Certificate';
+import { Calendar, LinkIcon } from 'lucide-react';
 
 interface CertificateProps {
   certificates: Certificate[];
@@ -14,8 +11,6 @@ interface CertificateProps {
 const PAGE_SIZE = 5;
 
 const CertificateCard = ({ certificates }: CertificateProps) => {
-
-  
   if (!certificates.length) {
     return (
       <section className="flex flex-col items-center justify-center text-center w-full py-16">
@@ -29,7 +24,10 @@ const CertificateCard = ({ certificates }: CertificateProps) => {
   return (
     <div className="grid w-full gap-6 sm:grid-cols-2 xl:grid-cols-3">
       {certificates.map((cat, i) => (
-        <Card className="rounded-[28px] border border-orange-100 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-lg max-w-lg">
+        <Card
+          className="rounded-[28px] border border-orange-100 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-lg max-w-lg"
+          key={i}
+        >
           <div className="px-3">
             <img
               src={cat.image}
