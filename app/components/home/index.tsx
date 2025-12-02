@@ -2,7 +2,6 @@
 
 import { useTypeWriter } from "@/app/hooks/use-typing";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { fadeDown, fadeIn, fadeLeft, fadeRight, fadeUp } from "../motions";
@@ -37,10 +36,10 @@ const Home = () => {
       </motion.div>
       <div className="space-y-8">
         <motion.div
-          className="relative mx-auto inline-flex items-center justify-center border-2 border-slate-900 bg-accent px-8 py-3 text-sm font-bold uppercase tracking-wide text-slate-900 bg-background"
+          className="relative mx-auto inline-flex items-center justify-center border-2 border-slate-900  px-8 py-3 text-sm font-bold uppercase tracking-wide text-slate-900 bg-background"
           variants={fadeDown}
         >
-          Hello There, I'm M Farhan Ramadhan
+          Hello There, Iam M Farhan Ramadhan
           {/* Decorative Boxes */}
           <div className="w-5 h-5 md:w-4 md:h-4 bg-orange-400 border-[2.5px] border-black absolute -top-2 -right-2" />
           <div className="w-5 h-5 md:w-4 md:h-4 bg-orange-400 border-[2.5px] border-black absolute -bottom-2 -right-2" />
@@ -54,7 +53,7 @@ const Home = () => {
         variants={fadeUp}
         transition={{ delay: 0.2 }}
       >
-        I'am{" "}
+        I&apos;m{" "}
         <span className="whitespace-pre-line text-black dark:text-white">
           {typeWriterText}
         </span>{" "}
