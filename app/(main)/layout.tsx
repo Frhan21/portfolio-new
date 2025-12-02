@@ -14,7 +14,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <main className={`antialiased bg-[#EFEEEA]`}>
+      <main className={`antialiased bg-background`}>
         <Navbar />
         <main>{children}</main>
         <Footer />

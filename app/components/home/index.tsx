@@ -37,7 +37,7 @@ const Home = () => {
       </motion.div>
       <div className="space-y-8">
         <motion.div
-          className="relative mx-auto inline-flex items-center justify-center border-2 border-slate-900 bg-white px-8 py-3 text-sm font-bold uppercase tracking-wide text-slate-900"
+          className="relative mx-auto inline-flex items-center justify-center border-2 border-slate-900 bg-accent px-8 py-3 text-sm font-bold uppercase tracking-wide text-slate-900 bg-background"
           variants={fadeDown}
         >
           Hello There, I'm M Farhan Ramadhan
@@ -62,7 +62,7 @@ const Home = () => {
       </motion.h1>
 
       <motion.p
-        className="max-w-7xl text-base leading-relaxed text-slate-500 md:text-lg"
+        className="max-w-7xl w-96 md:w-full text-base leading-relaxed text-slate-500 md:text-lg"
         variants={fadeUp}
         transition={{ delay: 0.35 }}
       >

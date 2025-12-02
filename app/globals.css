@@ -26,7 +26,7 @@ body {
 }
 
 :root {
-  --background: rgb(245, 245, 243);
+  --background: rgb(239 238 234);
   --foreground: rgb(26, 26, 26);
   --card: rgb(255, 255, 255);
   --card-foreground: rgb(26, 26, 26);
