@@ -1,9 +1,12 @@
+import { Category } from "./Category";
+
 export interface Project {
-    id: number; 
-    title: string; 
-    github?: string; 
-    demo?: string;
-    image?: string; 
-    categoryId: string; 
-    tags: string[];
+  id: string;
+  title: string;
+  tags: string[];
+  image: string;
+  demo?: string;
+  github?: string;
+  categoryId: string;
+  category: Category;
 }

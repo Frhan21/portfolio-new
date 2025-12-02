@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, Terminal, X } from "lucide-react";
 import { Link as ScrollLink } from "react-scroll";
+import Link from "next/link";
 
 const navLinks = [
   { to: "home", label: "Home" },
@@ -24,7 +25,7 @@ export default function Navbar() {
     <ScrollLink
       to={to}
       smooth={true}
-      duration={500}
+      duration={100}
       offset={-80} // offset biar gak ketutup navbar
       spy={true}
       onClick={() => setIsMenuOpen(false)}
@@ -43,8 +44,12 @@ export default function Navbar() {
       <nav className="w-full max-w-5xl mx-auto px-4 py-3 bg-black dark:bg-gray-800 rounded-full shadow-md transition-all duration-300">
         <div className="flex items-center justify-between">
           {/* Brand */}
-          <span className="font-medium text-white px-4">M Farhan Ramadhan</span>
-
+          <Link href={"/"} className="flex mx-4 items-center">
+            <div className="w-8 h-8 bg-accent rounded-md flex items-center justify-center">
+              <Terminal size={24} />
+            </div>
+            <span className="font-bold text-white px-4 text-xl">Nerd Dev</span>
+          </Link>
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             {navLinks.map(({ to, label, isButton }) =>
