@@ -1,0 +1,54 @@
+name: production ci cd
+
+# Trigger: Jalan saat ada Push atau Pull Request
+# ke branch 'develop' ATAU 'production'
+on:
+  push:
+    branches: ["develop", "production"]
+  pull_request:
+    branches: ["develop", "production"]
+
+jobs:
+  quality-check:
+    name: Build & Lint Check
+    runs-on: ubuntu-latest
+
+    # Mendaftarkan Environment Variables dari GitHub Secrets
+    # Agar proses build & prisma generate tidak error
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRED: ${{ secrets.JWT_EXPIRED }}
+
+    steps:
+      # 1. Ambil kodingan terbaru
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Siapkan Node.js versi 20
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3. Install dependencies (npm ci lebih cepat & stabil untuk CI)
+      - name: Install Dependencies
+        run: npm ci
+
+      # 4. Generate Prisma Client (Wajib ada DATABASE_URL)
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      # 5. Cek Kualitas Kode (Linting)
+      # Langkah ini akan GAGAL jika ada error syntax/aturan code
+      - name: Run ESLint
+        run: npm run lint
+
+      # 6. Test Build Project
+      # Langkah ini memastikan project BISA di-build sebelum Vercel bekerja
+      - name: Test Build
+        run: npm run build
