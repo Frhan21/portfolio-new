@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { AtSign, Lock, User } from "lucide-react";
-import { Button, Input } from "../component/form-control";
-import AuthLayout from "../component/layout/auth-layout";
-import Link from "next/link";
-import { useState } from "react";
-import { userSchema } from "@/libs/validation";
-import { useRouter } from "next/navigation";
-import { setCookie } from "cookies-next";
+import { AtSign, Lock, User } from 'lucide-react';
+import { Button, Input } from '../component/form-control';
+import AuthLayout from '../component/layout/auth-layout';
+import Link from 'next/link';
+import { useState } from 'react';
+import { userSchema } from '@/lib/validation';
+import { useRouter } from 'next/navigation';
+import { setCookie } from 'cookies-next';
 
 const RegisterPage = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   // Ubah state error menjadi objek untuk error per-field
   const [errors, setErrors] = useState<Record<string, string>>({});
   // State terpisah untuk error level form (misal: dari API)
@@ -31,7 +31,7 @@ const RegisterPage = () => {
       // 1. Validasi di sisi client terlebih dahulu
       if (password !== confirmPassword) {
         // Set error spesifik untuk field confirmPassword
-        setErrors({ confirmPassword: "Passwords do not match." });
+        setErrors({ confirmPassword: 'Passwords do not match.' });
         return;
       }
       const validation = userSchema.safeParse({ name, email, password });
@@ -46,40 +46,43 @@ const RegisterPage = () => {
       }
 
       // 2. Kirim request ke API
-      const response = await fetch("/api/v1/auth/register", {
-        method: "POST",
+      const response = await fetch('/api/v1/auth/register', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(validation.data),
       });
 
       // 3. Periksa apakah respons dari API berhasil (status 2xx)
-      if (!response.ok) { // Ini adalah respons dari API registrasi
+      if (!response.ok) {
+        // Ini adalah respons dari API registrasi
         // Jika tidak, ambil pesan error dari body respons API
         const errorData = await response.json();
         setFormError(
-          errorData.message || "Registration failed. Please try again."
+          errorData.message || 'Registration failed. Please try again.'
         );
         return;
       }
 
       // 4. Jika registrasi berhasil, coba untuk login secara otomatis
-      const loginResponse = await fetch("/api/v1/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const loginResponse = await fetch('/api/v1/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await loginResponse.json()
+      const data = await loginResponse.json();
 
-      setCookie('token', data.token)
+      setCookie('token', data.token);
 
       // 5. Jika login berhasil, arahkan langsung ke dashboard
-      router.push("/dashboard");
-    } catch (error: any) {
+      router.push('/dashboard');
+    } catch (error) {
       // Blok ini hanya untuk error jaringan (misal: server tidak bisa dihubungi)
-      setFormError("A network error occurred. Please try again later.");
+      if (error instanceof Error) {
+        setFormError('A network error occurred. Please try again later.');
+      }
     } finally {
       // Selalu hentikan loading, baik berhasil maupun gagal
       setIsLoading(false);
@@ -143,13 +146,13 @@ const RegisterPage = () => {
           />
 
           <div className="mt-8">
-            <Button type="submit" disabled={isLoading} >
-              {isLoading ? "Processing..." : "Sign Up"}
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? 'Processing...' : 'Sign Up'}
             </Button>
           </div>
         </form>
         <p className="text-center text-sm text-[#6B7280] dark:text-[#9ca3af] mt-6 transition-colors duration-300 hover:text-primary">
-          Already have an account?{" "}
+          Already have an account?{' '}
           <Link
             href="/login"
             className="font-semibold text-[#FE7743] hover:underline"

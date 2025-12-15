@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { User } from "../types/User";
-import Header from "../components/header";
-import { useRouter } from "next/navigation";
-import { getCookie } from "cookies-next";
-import { decodetoken } from "@/libs/jwt";
-import { useDashboard } from "../context/DashboardContext"; // <-- Import custom hook
-import LoadingSpinner from "../components/LoadingSpinner";
+import { useEffect, useState } from 'react';
+import { User } from '../types/User';
+import Header from '../components/header';
+import { useRouter } from 'next/navigation';
+import { getCookie } from 'cookies-next';
+import { decodetoken } from '@/lib/jwt';
+import { useDashboard } from '../context/DashboardContext'; // <-- Import custom hook
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function HomeGroupLayout({
   children,
@@ -16,37 +16,37 @@ export default function HomeGroupLayout({
 }) {
   // Ambil state dan fungsi dari context, bukan lagi dari state lokal
   const { theme, toggleTheme, setIsSidebarOpen } = useDashboard();
-  
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const verifyUser = async () => {
-      const tokenValue = getCookie("token");
-      const token = typeof tokenValue === "string" ? tokenValue : "";
+      const tokenValue = getCookie('token');
+      const token = typeof tokenValue === 'string' ? tokenValue : '';
 
       if (!token) {
-        router.push("/login");
+        router.push('/login');
         return;
       }
 
       const decoded = decodetoken(token);
       if (!decoded || !decoded.userId) {
-        router.push("/login");
+        router.push('/login');
         return;
       }
 
       try {
         const res = await fetch(`/api/v1/user/${decoded.userId}`);
         if (!res.ok) {
-            throw new Error('User not found or failed to fetch');
+          throw new Error('User not found or failed to fetch');
         }
         const { data } = await res.json();
         setUser(data);
       } catch (error) {
-        console.error("Failed to fetch user:", error);
-        router.push("/login");
+        console.error('Failed to fetch user:', error);
+        router.push('/login');
       } finally {
         setLoading(false);
       }
@@ -67,7 +67,7 @@ export default function HomeGroupLayout({
   }
 
   if (!user) {
-    return null; 
+    return null;
   }
 
   return (
@@ -77,8 +77,8 @@ export default function HomeGroupLayout({
         setIsOpen={setIsSidebarOpen}
         theme={theme}
         toogleTheme={toggleTheme}
-        name={user.name ?? ""}
-        email={user.email ?? ""}
+        name={user.name ?? ''}
+        email={user.email ?? ''}
       />
       <div className="p-6">{children}</div>
     </div>

@@ -1,31 +1,27 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { ArrowUpRight, Github } from "lucide-react";
-import Link from "next/link";
-import { Project } from "../types/Model";
-import { motion } from "motion/react";
-import { fadeUp } from "../motions";
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { Project } from '../types/Model';
+import { motion } from 'motion/react';
+import { fadeUp } from '../motions';
 
 interface CardComponentProps {
   projects: Project[];
 }
 
 const GRADIENTS = [
-  "from-orange-400 via-orange-400 to-orange-500",
-  "from-sky-400 via-sky-400 to-blue-500",
-  "from-indigo-500 via-violet-500 to-purple-600",
-  "from-emerald-400 via-teal-400 to-green-500",
+  'from-orange-400 via-orange-400 to-orange-500',
+  'from-sky-400 via-sky-400 to-blue-500',
+  'from-indigo-500 via-violet-500 to-purple-600',
+  'from-emerald-400 via-teal-400 to-green-500',
 ];
 
 const CardComponent = ({ projects }: CardComponentProps) => {
   if (!projects.length) {
     return (
       <section className="flex flex-col items-center justify-center text-center w-full py-16">
-        <p className="text-gray-600">
-          Belum ada proyek yang bisa ditampilkan.
-        </p>
+        <p className="text-gray-600">Belum ada proyek yang bisa ditampilkan.</p>
       </section>
     );
   }
@@ -34,10 +30,10 @@ const CardComponent = ({ projects }: CardComponentProps) => {
     <div className="grid w-full gap-6 sm:grid-cols-2 xl:grid-cols-3">
       {projects.map((project, index) => {
         const gradient = GRADIENTS[index % GRADIENTS.length];
-        const badge = project.category?.title ?? "Project";
+        const badge = project.category?.title ?? 'Project';
         const description =
           project.description ??
-          "Deskripsi proyek belum tersedia, namun segera akan diperbarui.";
+          'Deskripsi proyek belum tersedia, namun segera akan diperbarui.';
 
         return (
           <motion.article
@@ -48,14 +44,14 @@ const CardComponent = ({ projects }: CardComponentProps) => {
             className="flex flex-col overflow-hidden rounded-[32px] border border-slate-100 bg-white shadow-lg shadow-orange-100/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
           >
             <div
-              className={`relative flex min-h-[220px] flex-col justify-between rounded-[32px] rounded-b-none bg-gradient-to-br ${gradient} text-white`}
+              className={`relative flex min-h-[220px] flex-col justify-between rounded-[32px] rounded-b-none text-white`}
             >
               {project.image && (
                 <div className="absolute inset-0">
                   <img
                     src={project.image}
                     alt={project.title}
-                    className="h-full w-full object-cover opacity-80 mix-blend-soft-light"
+                    className="h-full w-full object-cover opacity-80"
                   />
                 </div>
               )}
@@ -63,11 +59,6 @@ const CardComponent = ({ projects }: CardComponentProps) => {
                 <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide backdrop-blur">
                   {badge}
                 </span>
-              </div>
-              <div className="relative px-6 pb-8 pt-4">
-                <p className="text-2xl font-semibold leading-tight">
-                  {project.title}
-                </p>
               </div>
             </div>
 
@@ -86,7 +77,7 @@ const CardComponent = ({ projects }: CardComponentProps) => {
               {!!project.tags?.length && (
                 <div className="mt-4 flex flex-wrap gap-2">
                   {project.tags.map((tag) => {
-                    const cleanedTag = tag.replace(/[\[\]"]/g, "").trim();
+                    const cleanedTag = tag.replace(/[\[\]"]/g, '').trim();
                     return (
                       <span
                         key={`${project.id}-${cleanedTag}`}

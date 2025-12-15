@@ -1,6 +1,6 @@
-import prisma from "@/libs/prisma";
-import bcrypt from "bcryptjs";
-import { NextRequest, NextResponse } from "next/server";
+import prisma from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
     if (!name || !email || !password) {
       return NextResponse.json(
-        { error: "Please enter all fields" },
+        { error: 'Please enter all fields' },
         { status: 400 }
       );
     }
@@ -17,13 +17,12 @@ export async function POST(req: NextRequest) {
       where: { email },
     });
 
-    if(existingUser) {
-        return NextResponse.json(
-        { error: "User already exists" },
+    if (existingUser) {
+      return NextResponse.json(
+        { error: 'User already exists' },
         { status: 400 }
       );
     }
-
 
     const hashPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
@@ -35,12 +34,12 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({
-      message: "User created successfully",
+      message: 'User created successfully',
       data: user,
     });
   } catch (error) {
     return NextResponse.json(
-      { error: "Something went wrong" + error },
+      { error: 'Something went wrong' + error },
       { status: 404 }
     );
   }

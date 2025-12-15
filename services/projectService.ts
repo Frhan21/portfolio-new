@@ -1,4 +1,4 @@
-import { Project } from "@/app/components/types/Model";
+import { Project } from '@/app/components/types/Model';
 
 interface ProjectResponse {
   projects: Project[];
@@ -12,44 +12,62 @@ interface ProjectQueryParams {
   limit?: number;
 }
 
-export interface ProjectPaginationResult {
-  projects: Project[];
-  total: number;
-  page: number;
-  totalPages: number;
-}
-
-const API_BASE_PATH = "/api/v1/project";
-
+const API_BASE_PATH = '/api/v1/project';
 
 // get Project
 export const getProjects = async ({
-  page = 1,
-  limit = 5,
-}: ProjectQueryParams = {}): Promise<ProjectPaginationResult> => {
-  const url = `${API_BASE_PATH}?page=${page}&limit=${limit}`;
+  limit,
+}: ProjectQueryParams = {}): Promise<ProjectResponse> => {
+  const searchParams = new URLSearchParams();
+  if (typeof limit === 'number' && !Number.isNaN(limit)) {
+    searchParams.set('limit', limit.toString());
+  }
+
+  const url =
+    searchParams.toString().length > 0
+      ? `${API_BASE_PATH}?${searchParams.toString()}`
+      : API_BASE_PATH;
+
   const response = await fetch(url, {
-    method: "GET",
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
-    cache: "no-store",
+    cache: 'no-store',
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch projects");
+    throw new Error('Failed to fetch projects');
   }
 
   const data: ProjectResponse = await response.json();
-  const projects = data.projects ?? [];
-  const total = data.total ?? projects.length;
-  const totalPages = data.totalPages ?? Math.max(1, Math.ceil(total / limit));
-  const normalizedPage = data.page ?? page;
-
   return {
-    projects,
-    total,
-    page: normalizedPage,
-    totalPages,
+    projects: data.projects ?? [],
+    total: data.total,
+    page: data.page,
+    totalPages: data.totalPages,
+  };
+};
+
+// Get Project by Id
+export const getProjectsbyId = async (id: string) => {
+  const url = `${API_BASE_PATH}/${id}`;
+
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch project by ID');
+  }
+
+  const data: Project = await res.json();
+  return {
+    status: res.status,
+    project: data,
   };
 };

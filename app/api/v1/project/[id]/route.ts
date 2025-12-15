@@ -1,7 +1,7 @@
-import cloudinary from "@/libs/cloudinary";
-import prisma from "@/libs/prisma";
-import { projectUpdateSchema } from "@/libs/validation";
-import { NextRequest, NextResponse } from "next/server";
+import cloudinary from '@/lib/cloudinary';
+import prisma from '@/lib/prisma';
+import { projectUpdateSchema } from '@/lib/validation';
+import { NextRequest, NextResponse } from 'next/server';
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
     const { id } = await context.params;
     if (!id) {
       return NextResponse.json(
-        { message: "Project ID is required" },
+        { message: 'Project ID is required' },
         { status: 400 }
       );
     }
@@ -24,20 +24,20 @@ export async function GET(req: NextRequest, context: RouteContext) {
 
     if (!res) {
       return NextResponse.json(
-        { message: "Project not found" },
+        { message: 'Project not found' },
         { status: 404 }
       );
     }
 
     return NextResponse.json({
-      message: "Project fetched successfully",
+      message: 'Project fetched successfully',
       data: res,
     });
   } catch (error) {
-    console.error("Error fetching project:", error);
+    console.error('Error fetching project:', error);
     return NextResponse.json({
-      message: "Failed to fetch project",
-      error: error instanceof Error ? error.message : "Unknown error",
+      message: 'Failed to fetch project',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }
@@ -45,73 +45,124 @@ export async function GET(req: NextRequest, context: RouteContext) {
 export async function PUT(req: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
+    if (!id) {
+      return NextResponse.json(
+        { message: 'Project ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const existingProject = await prisma.project.findUnique({
+      where: { id },
+    });
+
+    if (!existingProject) {
+      return NextResponse.json(
+        { message: 'Project not found' },
+        { status: 404 }
+      );
+    }
+
     const formData = await req.formData();
+    const updates: Record<string, unknown> = {};
 
-    const data = {
-      title: formData.get("title") as string,
-      image: formData.get("image") || undefined,
-      demo: formData.get("demo") as string,
-      github: formData.get("github") as string,
-      tags:
-        typeof formData.get("tags") === "string"
-          ? (formData.get("tags") as string).split(",")
-          : [],
-      categoryId: formData.get("categoryId") as string,
-    };
+    const rawTitle = formData.get('title');
+    if (typeof rawTitle === 'string') {
+      updates.title = rawTitle;
+    }
 
-    const validate = projectUpdateSchema.safeParse(data);
+    const rawDemo = formData.get('demo');
+    if (typeof rawDemo === 'string') {
+      updates.demo = rawDemo;
+    }
+
+    const rawGithub = formData.get('github');
+    if (typeof rawGithub === 'string') {
+      updates.github = rawGithub;
+    }
+
+    const rawTags = formData.get('tags');
+    if (typeof rawTags === 'string') {
+      const parsedTags = rawTags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+      updates.tags = parsedTags;
+    }
+
+    const rawCategoryId = formData.get('categoryId');
+    if (typeof rawCategoryId === 'string') {
+      updates.categoryId = rawCategoryId;
+    }
+
+    const rawImage = formData.get('image');
+    if (rawImage instanceof File && rawImage.size > 0) {
+      updates.image = rawImage as File;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return NextResponse.json(
+        { message: 'No data provided to update' },
+        { status: 400 }
+      );
+    }
+
+    const partialSchema = projectUpdateSchema.partial();
+    const validate = partialSchema.safeParse(updates);
     if (!validate.success) {
       return NextResponse.json({
-        message: "Validation failed",
+        message: 'Validation failed',
         errors: validate.error.flatten().fieldErrors,
       });
     }
 
-    const { title, demo, github, tags, categoryId } = validate.data;
-    const imageFile = formData.get("image") as File;
+    const { image, ...rest } = validate.data;
+    const updateData: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(rest)) {
+      if (value !== undefined) {
+        updateData[key] = value;
+      }
+    }
 
-    let imagePath;
-    let publicId; 
-
-    if (formData.get("image") as File) {
-      const arrayBuffer = await imageFile.arrayBuffer();
+    if (image) {
+      const arrayBuffer = await image.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      console.log("Got Buffer");
+      console.log('Got Buffer');
 
-      const base64 = buffer.toString("base64");
-      const dataUrl = `data:${imageFile.type};base64,${base64}`;
+      const base64 = buffer.toString('base64');
+      const dataUrl = `data:${image.type};base64,${base64}`;
+
+      if (existingProject.publicId) {
+        try {
+          await cloudinary.uploader.destroy(existingProject.publicId);
+        } catch (cldError) {
+          console.error('Error removing existing image:', cldError);
+        }
+      }
 
       const response = await cloudinary.uploader.upload(dataUrl, {
-        folder: "nextjs-upload",
+        folder: 'nextjs-upload',
       });
 
-      imagePath = response.secure_url;
-      publicId = response.public_id;
+      updateData.image = response.secure_url;
+      updateData.publicId = response.public_id;
     }
 
     const updatedProject = await prisma.project.update({
       where: { id },
-      data: {
-        title,
-        demo,
-        github,
-        categoryId,
-        publicId,
-        tags,
-        image: imagePath, // Assuming you handle the file upload separately
-      },
+      data: updateData,
     });
 
     return NextResponse.json({
-      message: "Project updated successfully",
+      message: 'Project updated successfully',
       data: updatedProject,
     });
   } catch (error) {
-    console.error("Error updating project:", error);
+    console.error('Error updating project:', error);
     return NextResponse.json({
-      message: "Failed to update project",
-      error: error instanceof Error ? error.message : "Unknown error",
+      message: 'Failed to update project',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }
@@ -125,7 +176,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
 
     if (!project) {
       return NextResponse.json(
-        { message: "Project not found" },
+        { message: 'Project not found' },
         { status: 404 }
       );
     }
@@ -134,7 +185,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
       try {
         await cloudinary.uploader.destroy(project.publicId);
       } catch (cldError) {
-        console.error("Error deleting image from Cloudinary:", cldError);
+        console.error('Error deleting image from Cloudinary:', cldError);
       }
     }
 
@@ -143,13 +194,13 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
     });
 
     return NextResponse.json({
-      message: "Project deleted successfully",
+      message: 'Project deleted successfully',
     });
   } catch (error) {
-    console.error("Error deleting project:", error);
+    console.error('Error deleting project:', error);
     return NextResponse.json({
-      message: "Failed to delete project",
-      error: error instanceof Error ? error.message : "Unknown error",
+      message: 'Failed to delete project',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }

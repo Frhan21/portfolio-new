@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import LoadingSpinner from "@/app/dashboard/components/LoadingSpinner";
-import { getProjects } from "@/services/projectService";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import CardComponent from "../card";
-import { Project as ProjectModel } from "../types/Model";
+import { Button } from '@/components/ui/button';
+import LoadingSpinner from '@/app/dashboard/components/LoadingSpinner';
+import { getProjects } from '@/services/projectService';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import CardComponent from '../card';
+import { Project as ProjectModel } from '../types/Model';
 
 const PAGE_SIZE = 3;
 
@@ -22,7 +22,6 @@ const Project = () => {
 
       try {
         const { projects: fetchedProjects } = await getProjects({
-          page: 1,
           limit: PAGE_SIZE,
         });
         setProjects(fetchedProjects);
@@ -30,7 +29,7 @@ const Project = () => {
         const errorMessage =
           err instanceof Error
             ? err.message
-            : "Terjadi kesalahan saat memuat proyek.";
+            : 'Terjadi kesalahan saat memuat proyek.';
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -71,7 +70,7 @@ const Project = () => {
 
   return (
     <div
-      className="flex flex-col items-center justify-center w-full h-fit mt-20 px-4"
+      className="flex flex-col items-center justify-center w-full h-fit mt-20 md:px-12 px-4 mx-auto"
       id="portfolio"
     >
       <div className="flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mx-auto">
@@ -84,10 +83,11 @@ const Project = () => {
             My Latest <span className="text-orange-500">Project</span>
           </span>
         </div>
-        <Button className="mt-4 md:mt-0 px-5 py-3 md:py-6 rounded-full bg-orange-500 text-white hover:bg-orange-600 cursor-pointer" asChild>
-          <Link href="/projects">
-            See all projects
-          </Link>
+        <Button
+          className="mt-4 md:mt-0 px-5 py-3 md:py-6 rounded-full bg-orange-500 text-white hover:bg-orange-600 cursor-pointer"
+          asChild
+        >
+          <Link href="/projects">See all projects</Link>
         </Button>
       </div>
       {/* Card Section */}

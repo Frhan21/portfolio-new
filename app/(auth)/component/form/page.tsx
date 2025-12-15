@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { AtSign, Lock } from "lucide-react";
-import { Button, Input } from "../form-control";
-import AuthLayout from "../layout/auth-layout";
-import Link from "next/link";
-import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
-import { setCookie } from "cookies-next";
+import { AtSign, Lock } from 'lucide-react';
+import { Button, Input } from '../form-control';
+import AuthLayout from '../layout/auth-layout';
+import Link from 'next/link';
+import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { setCookie } from 'cookies-next';
 
 const Page = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -21,16 +21,16 @@ const Page = () => {
     setError(null);
 
     if (!email || !password) {
-      setError("Please fill in all fields");
+      setError('Please fill in all fields');
       setLoading(false);
       return;
     }
 
     try {
-      const res = await fetch("/api/v1/auth/login", {
-        method: "POST",
+      const res = await fetch('/api/v1/auth/login', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email,
@@ -47,11 +47,13 @@ const Page = () => {
         return;
       }
 
-      setCookie("token", data.token)
+      setCookie('token', data.token);
 
-      router.push("/dashboard");
-    } catch (error: any) {
-      setError(error.message || "Something went wrong");
+      router.push('/dashboard');
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message || 'Something went wrong');
+      }
     } finally {
       setLoading(false);
     }
@@ -82,16 +84,16 @@ const Page = () => {
             href="#"
             className="text-sm text-[#FE7743] hover:underline transition-colors duration-300"
           >
-            Forgot Password ?{" "}
+            Forgot Password ?{' '}
           </a>
         </div>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <Button type="submit" disabled={loading}>
-          {loading ? "Signing in..." : "Sign in"}
+          {loading ? 'Signing in...' : 'Sign in'}
         </Button>
       </form>
       <p className="text-center text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-6 transition-colors duration-300">
-        Don't have an account?{" "}
+        {"Don't"} have an account?{' '}
         <Link
           href="/register"
           className="font-semibold text-[#FE7743] hover:underline"

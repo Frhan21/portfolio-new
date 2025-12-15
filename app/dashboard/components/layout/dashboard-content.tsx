@@ -1,8 +1,5 @@
-import { DollarSign, ShoppingCart, TrendingUpDown, Users } from "lucide-react";
-import React, { FC } from "react";
-import { Theme } from "../../types/Theme";
-import StatCard from "../card/stat-card";
-import BarChart from "../charts/bar-charts";
+import { FC } from 'react';
+import { Theme } from '../../types/Theme';
 
 interface DashboarContentProps {
   theme: Theme;

@@ -1,7 +1,7 @@
-import { generateToken } from "@/libs/jwt";
-import prisma from "@/libs/prisma";
-import bcrypt from "bcryptjs";
-import { NextRequest, NextResponse } from "next/server";
+import { generateToken } from '@/lib/jwt';
+import prisma from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
     if (!email || !password) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: 'Email and password are required' },
         { status: 400 }
       );
     }
@@ -20,20 +20,20 @@ export async function POST(req: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        { error: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
     const token = generateToken({ userId: user.id, email: user.email });
     return NextResponse.json({
-      message: "Login berhasil",
+      message: 'Login berhasil',
       user: {
         id: user.id,
         name: user.name,
@@ -42,9 +42,9 @@ export async function POST(req: NextRequest) {
       token,
     });
   } catch (error) {
-    console.error("Error Login : " + error);
+    console.error('Error Login : ' + error);
     return NextResponse.json({
-      error: "Login error" + error,
+      error: 'Login error' + error,
       status: 500,
     });
   }

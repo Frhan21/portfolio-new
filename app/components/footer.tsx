@@ -1,7 +1,7 @@
-import Link from "next/link";
-import React from "react";
-import { FaGithub, FaLinkedin } from "react-icons/fa";
-import { RiInstagramFill } from "react-icons/ri";
+import Link from 'next/link';
+import React from 'react';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import { RiInstagramFill } from 'react-icons/ri';
 
 const Footer = () => {
   return (
@@ -10,7 +10,8 @@ const Footer = () => {
         <div className="flex flex-col items-start gap-6">
           {/* Header Section */}
           <span className="text-white text-3xl md:text-[52px] font-bold text-center md:text-left">
-            Let's Get <span className="text-orange-500 italic">Connect</span>
+            {"Let's"} Get{' '}
+            <span className="text-orange-500 italic">Connect</span>
           </span>
           <div className="w-full h-1 bg-gray-700/50" />
 
@@ -19,7 +20,10 @@ const Footer = () => {
             {/* About Section */}
             <div className="flex flex-col gap-4 mt-6 md:mt-10">
               <div className="flex flex-col">
-                <Link href={'/dashboard'} className="font-bold text-xl md:text-3xl">
+                <Link
+                  href={'/dashboard'}
+                  className="font-bold text-xl md:text-3xl"
+                >
                   M Farhan Ramadhan
                 </Link>
                 <span className="text-gray-600 tracking-widest mt-2 text-sm md:text-base">
@@ -28,19 +32,19 @@ const Footer = () => {
               </div>
               <div className="flex mt-4 gap-4">
                 <Link
-                  href={"/"}
+                  href={'/'}
                   className="p-2 rounded-full bg-orange-500 text-white text-xl md:text-2xl"
                 >
                   <RiInstagramFill size={24} md-size={32} />
                 </Link>
                 <Link
-                  href={"/"}
+                  href={'/'}
                   className="p-2 rounded-full bg-orange-500 text-white text-xl md:text-2xl"
                 >
                   <FaGithub size={24} md-size={32} />
                 </Link>
                 <Link
-                  href={"/"}
+                  href={'/'}
                   className="p-2 rounded-full bg-orange-500 text-white text-xl md:text-2xl"
                 >
                   <FaLinkedin size={24} md-size={32} />
@@ -53,19 +57,19 @@ const Footer = () => {
               <span className="text-lg md:text-xl font-bold">Navigation</span>
               <ul className="flex flex-col gap-2 text-sm md:text-base tracking-wide">
                 <li>
-                  <Link href={"/"}>Home</Link>
+                  <Link href={'/'}>Home</Link>
                 </li>
                 <li>
-                  <Link href={"/"}>About</Link>
+                  <Link href={'/'}>About</Link>
                 </li>
                 <li>
-                  <Link href={"/"}>Service</Link>
+                  <Link href={'/'}>Service</Link>
                 </li>
                 <li>
-                  <Link href={"/"}>Project</Link>
+                  <Link href={'/'}>Project</Link>
                 </li>
                 <li>
-                  <Link href={"/"}>Contact us</Link>
+                  <Link href={'/'}>Contact us</Link>
                 </li>
               </ul>
             </div>

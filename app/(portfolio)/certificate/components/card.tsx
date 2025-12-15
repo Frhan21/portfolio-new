@@ -2,13 +2,12 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Certificate } from '@/model/Certificate';
+import { formatDate } from '@/lib/date';
 import { Calendar, LinkIcon } from 'lucide-react';
 
 interface CertificateProps {
   certificates: Certificate[];
 }
-
-const PAGE_SIZE = 5;
 
 const CertificateCard = ({ certificates }: CertificateProps) => {
   if (!certificates.length) {
@@ -44,15 +43,15 @@ const CertificateCard = ({ certificates }: CertificateProps) => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Calendar size={16} />
-                  <span>{cat.issuer_date}</span>
+                  <span>{formatDate(cat.issuer_date)}</span>
                 </div>
-                <button
+                {/* <button
                   type="button"
                   className="inline-flex items-center gap-1 text-sm font-semibold text-orange-500 transition hover:text-orange-600"
                 >
                   View Credential
                   <LinkIcon size={14} />
-                </button>
+                </button> */}
               </div>
             </div>
           </CardContent>

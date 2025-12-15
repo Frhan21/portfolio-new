@@ -1,8 +1,11 @@
-import React from "react";
+import React from 'react';
 
 const Contact = () => {
   return (
-    <section className="w-full flex flex-col md:flex-row items-start justify-center gap-10 px-4 mt-16 mx-auto max-w-7xl my-10" id="contact">
+    <section
+      className="w-full flex flex-col md:flex-row items-start justify-center gap-10 px-4 mt-16 mx-auto max-w-7xl my-10"
+      id="contact"
+    >
       {/* Left Section - Text Intro */}
       <div className="md:w-1/2">
         <header className="flex flex-col items-start">
@@ -11,7 +14,7 @@ const Contact = () => {
             <h2 className="text-xl tracking-wide font-bold">Contact me</h2>
           </div>
           <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-            Let's Talk{" "}
+            {"Let's"} Talk{' '}
             <span className="font-normal italic text-orange-500">
               About Project
             </span>

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useTypeWriter } from "@/app/hooks/use-typing";
-import { Button } from "@/components/ui/button";
-import { motion } from "motion/react";
-import { useEffect, useState } from "react";
-import { fadeDown, fadeIn, fadeLeft, fadeRight, fadeUp } from "../motions";
+import { useTypeWriter } from '@/app/hooks/use-typing';
+import { Button } from '@/components/ui/button';
+import { motion } from 'motion/react';
+import { useEffect, useState } from 'react';
+import { fadeDown, fadeIn, fadeLeft, fadeRight, fadeUp } from '../motions';
 
 const Home = () => {
   const { typeWriterText, cursorVisible } = useTypeWriter();
@@ -20,7 +20,7 @@ const Home = () => {
       className="relative mx-auto h-screen flex w-full max-w-6xl flex-col items-center gap-10 py-16 text-center"
       id="home"
       initial="hidden"
-      animate={isLoaded ? "visible" : "hidden"}
+      animate={isLoaded ? 'visible' : 'hidden'}
       viewport={{ once: true, amount: 0.3 }}
       variants={fadeIn}
     >
@@ -39,7 +39,7 @@ const Home = () => {
           className="relative mx-auto inline-flex items-center justify-center border-2 border-slate-900  px-8 py-3 text-sm font-bold uppercase tracking-wide text-slate-900 bg-background"
           variants={fadeDown}
         >
-          Hello There, Iam M Farhan Ramadhan
+          Hello There, {"I'am"} M Farhan Ramadhan
           {/* Decorative Boxes */}
           <div className="w-5 h-5 md:w-4 md:h-4 bg-orange-400 border-[2.5px] border-black absolute -top-2 -right-2" />
           <div className="w-5 h-5 md:w-4 md:h-4 bg-orange-400 border-[2.5px] border-black absolute -bottom-2 -right-2" />
@@ -53,10 +53,10 @@ const Home = () => {
         variants={fadeUp}
         transition={{ delay: 0.2 }}
       >
-        I&apos;m{" "}
+        {"I'm"}{' '}
         <span className="whitespace-pre-line text-black dark:text-white">
           {typeWriterText}
-        </span>{" "}
+        </span>{' '}
         {cursorVisible && <span className="animate-blink">|</span>}
       </motion.h1>
 
