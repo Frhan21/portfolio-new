@@ -22,38 +22,45 @@ const CertificateCard = ({ certificates }: CertificateProps) => {
 
   return (
     <div className="grid w-full gap-6 sm:grid-cols-2 xl:grid-cols-3">
-      {certificates.map((cat, i) => (
+      {certificates.map((certificate) => (
         <Card
-          className="rounded-[28px] border border-orange-100 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-lg max-w-lg"
-          key={i}
+          key={certificate.id}
+          className="group relative overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-lg transition hover:-translate-y-1 hover:shadow-2xl"
         >
-          <div className="px-3">
+          <div className="relative flex items-center justify-center bg-slate-50">
             <img
-              src={cat.image}
-              alt={cat.title}
-              className="h-64 w-full rounded-[20px] object-cover"
+              src={certificate.image}
+              alt={certificate.title}
+              className="h-60 w-full  object-cover transition duration-300 group-hover:scale-105"
             />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-slate-500 shadow">
+              {certificate.category?.title ?? 'Certificate'}
+            </span>
           </div>
-          <CardContent className="mt-2 px-6">
-            <h1 className="text-lg font-bold text-orange-500">{cat.title}</h1>
-            <p className="text-sm text-accent-foreground/40 mt-2">
-              {cat.issuer}
-            </p>
-            <div className="mt-4 border-t border-slate-100 pt-4 text-sm text-slate-500">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Calendar size={16} />
-                  <span>{formatDate(cat.issuer_date)}</span>
-                </div>
-                {/* <button
-                  type="button"
-                  className="inline-flex items-center gap-1 text-sm font-semibold text-orange-500 transition hover:text-orange-600"
-                >
-                  View Credential
-                  <LinkIcon size={14} />
-                </button> */}
+          <CardContent className="space-y-4 px-6 py-6">
+            <div className="space-y-2">
+              <h3 className="text-xl font-semibold text-slate-900">
+                {certificate.title}
+              </h3>
+              <p className="text-sm text-slate-500">
+                Issued by{' '}
+                <span className="font-medium">{certificate.issuer}</span>
+              </p>
+            </div>
+            <div className="rounded-2xl border border-slate-100 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
+              <div className="flex items-center gap-2">
+                <Calendar size={16} className="text-orange-500" />
+                <span>{formatDate(certificate.issuer_date)}</span>
               </div>
             </div>
+            <button
+              type="button"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+            >
+              View Credential
+              <LinkIcon size={16} />
+            </button>
           </CardContent>
         </Card>
       ))}
