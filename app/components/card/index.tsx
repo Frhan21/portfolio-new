@@ -1,9 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { Project } from '../types/Model';
+import type { Project } from '@/model/project';
 import { motion } from 'motion/react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { fadeUp } from '../motions';
 
 interface CardComponentProps {
@@ -28,11 +29,9 @@ const CardComponent = ({ projects }: CardComponentProps) => {
 
   return (
     <div className="grid w-full gap-6 sm:grid-cols-2 xl:grid-cols-3">
-      {projects.map((project, index) => {
-        const gradient = GRADIENTS[index % GRADIENTS.length];
+      {projects.map((project) => {
         const badge = project.category?.title ?? 'Project';
         const description =
-          project.description ??
           'Deskripsi proyek belum tersedia, namun segera akan diperbarui.';
 
         return (
@@ -48,10 +47,11 @@ const CardComponent = ({ projects }: CardComponentProps) => {
             >
               {project.image && (
                 <div className="absolute inset-0">
-                  <img
+                  <Image
                     src={project.image}
                     alt={project.title}
-                    className="h-full w-full object-cover opacity-80"
+                    fill
+                    className="object-cover opacity-80"
                   />
                 </div>
               )}

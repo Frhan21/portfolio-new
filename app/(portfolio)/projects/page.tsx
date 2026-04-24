@@ -1,53 +1,24 @@
 'use client';
 
 import CardComponent from '@/app/components/card';
-import { projects as dummyProjects } from '../dummy';
-import { useEffect, useState } from 'react';
-import Header from '../components/header';
-import { paginate } from '../utils/paginate';
-import Pagination from '../components/pagination';
-import { Project } from '@/model/Project';
-import { getProjects } from '@/services/projectService';
+import { useQueryProject } from '@/app/components/project/hooks/use-query-project';
 import LoadingSpinner from '@/app/dashboard/components/LoadingSpinner';
+import { useState } from 'react';
+import Header from '../components/header';
+import Pagination from '../components/pagination';
 
 const PAGE_SIZE = 5;
 
 const ProjectPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const { projects: fetchedProjects } = await getProjects({
-          limit: PAGE_SIZE,
-        });
-        setProjects(fetchedProjects);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError('An unknown error occurred');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+  const projectQuery = useQueryProject(PAGE_SIZE, currentPage);
 
-    fetchProjects();
-  }, []);
-
-  const {
-    items: paginatedProjects,
-    totalItems,
-    totalPages,
-    endPage,
-    startPage,
-  } = paginate(projects, currentPage, PAGE_SIZE);
+  const totalPages = projectQuery.data?.data.meta.totalPages ?? 0;
+  const totalItems = projectQuery.data?.data.meta.total ?? 0;
+  const paginatedProjects = projectQuery.data?.data.items ?? [];
+  const startPage = Math.max(1, currentPage - 1);
+  const endPage = Math.min(totalPages, currentPage + 1);
 
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages || page === currentPage) return;
@@ -58,7 +29,7 @@ const ProjectPage = () => {
   };
 
   const renderContent = () => {
-    if (loading) {
+    if (projectQuery.isLoading) {
       return (
         <section className="flex min-h-[200px] flex-col items-center justify-center">
           <LoadingSpinner size={64} />

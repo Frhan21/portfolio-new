@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import type { Metadata } from 'next';
+import './globals.css';
+import QueryProvider from './providers/query-provider';
+import { ThemeProvider } from './providers/theme-provider';
 
 export const metadata: Metadata = {
-  title: "M Farhan Ramadhan | Portfolio",
-  description: "Website ini adalah portfolio pribadi saya",
+  title: 'M Farhan Ramadhan | Portfolio',
+  description: 'Website ini adalah portfolio pribadi saya',
   icons: {
-    icon: '/icon.ico'
-  }
+    icon: '/icon.ico',
+  },
 };
 
 export default function RootLayout({
@@ -18,14 +19,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

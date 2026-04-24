@@ -1,23 +1,35 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 
-export default function proxy(req: NextRequest) {
-    const token = req.cookies.get('token')?.value
-    const isAuthenticated = token
+// Pisahkan rute ke dalam array agar mudah dikelola
+const protectedRoutes = ['/dashboard'];
+const publicRoutes = ['/login', '/register', '/'];
 
-    if(req.nextUrl.pathname.startsWith('/dashboard')) {
-        if(!isAuthenticated) {
-            return NextResponse.redirect(new URL('/login', req.url))        
-        }
-    }
+export function proxy(req: NextRequest) {
+  const token = req.cookies.get('token')?.value;
+  const isAuthenticated = !!token;
+  const path = req.nextUrl.pathname;
 
-    if(isAuthenticated && (req.nextUrl.pathname === '/login') || (req.nextUrl.pathname === '/register')) {
-        return NextResponse.redirect(new URL('/dashboard', req.url))
-    }
+  // Cek apakah rute saat ini adalah protected atau public
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    path.startsWith(route)
+  );
+  const isPublicRoute = publicRoutes.includes(path);
 
-    return NextResponse.next()
+  // Jika user belum login & mencoba akses halaman private -> redirect ke /login
+  if (isProtectedRoute && !isAuthenticated) {
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+
+  // Jika user sudah login & mencoba akses halaman public -> redirect ke /dashboard
+  if (isPublicRoute && isAuthenticated) {
+    return NextResponse.redirect(new URL('/dashboard', req.url));
+  }
+
+  // Izinkan akses jika lolos filter
+  return NextResponse.next();
 }
-
 
 export const config = {
-    matcher: ['/dashboard/:path*']
-}
+  // Mengecualikan API routes, Next.js static files, dan assets
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+};

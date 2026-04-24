@@ -1,47 +1,24 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Header from '../components/header';
-// import { certificates as dummyCertificates } from '../dummy';
-import CertificateCard from './components/card';
-import { paginate } from '../utils/paginate';
-import Pagination from '../components/pagination';
-import { Certificate } from '@/model/Certificate';
-import { getCertificates } from '@/services/certificateServices';
 import LoadingSpinner from '@/app/dashboard/components/LoadingSpinner';
+import Pagination from '../components/pagination';
+import CertificateCard from './components/card';
+import { useQueryCertificate } from '@/app/components/certificate/hooks/use-query-certificate';
 
 const PAGE_SIZE = 6;
 
 const CertificatePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [certificates, setCertificates] = useState<Certificate[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCertificates = async () => {
-      setLoading(true);
-      try {
-        const { data: fetchedCertificates } = await getCertificates();
-        setCertificates(fetchedCertificates);
-        setLoading(false);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        }
-      }
-    };
+  const certificateQuery = useQueryCertificate(PAGE_SIZE, currentPage);
 
-    fetchCertificates();
-  }, []);
-
-  const {
-    items: paginatedCertificates,
-    totalItems,
-    totalPages,
-    endPage,
-    startPage,
-  } = paginate(certificates, currentPage, PAGE_SIZE);
+  const totalPages = certificateQuery.data?.data.meta.totalPages ?? 0;
+  const totalItems = certificateQuery.data?.data.meta.total ?? 0;
+  const paginatedCertificates = certificateQuery.data?.data.items ?? [];
+  const startPage = Math.max(1, currentPage - 1);
+  const endPage = Math.min(totalPages, currentPage + 1);
 
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages || page === currentPage) return;
@@ -51,7 +28,7 @@ const CertificatePage = () => {
     }
   };
   const renderContent = () => {
-    if (loading) {
+    if (certificateQuery.isLoading) {
       return (
         <section className="flex min-h-[200px] flex-col items-center justify-center">
           <LoadingSpinner size={64} />

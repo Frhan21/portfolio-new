@@ -1,9 +1,10 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
-import { Certificate } from '@/model/Certificate';
 import { formatDate } from '@/lib/date';
+import { Certificate } from '@/model/certificate';
 import { Calendar, LinkIcon } from 'lucide-react';
+import Image from 'next/image';
 
 interface CertificateProps {
   certificates: Certificate[];
@@ -27,11 +28,13 @@ const CertificateCard = ({ certificates }: CertificateProps) => {
           key={certificate.id}
           className="group relative overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-lg transition hover:-translate-y-1 hover:shadow-2xl"
         >
-          <div className="relative flex items-center justify-center bg-slate-50">
-            <img
+          <div className="relative flex items-center justify-center bg-slate-50 h-60 w-full overflow-hidden">
+            <Image
               src={certificate.image}
               alt={certificate.title}
-              className="h-60 w-full  object-cover transition duration-300 group-hover:scale-105"
+              width={500}
+              height={240}
+              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-slate-500 shadow">

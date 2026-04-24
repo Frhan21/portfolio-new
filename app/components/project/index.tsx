@@ -1,46 +1,16 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import LoadingSpinner from '@/app/dashboard/components/LoadingSpinner';
-import { getProjects } from '@/services/projectService';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
 import CardComponent from '../card';
-import { Project as ProjectModel } from '../types/Model';
-
-const PAGE_SIZE = 3;
+import { useQueryProject } from './hooks/use-query-project';
 
 const Project = () => {
-  const [projects, setProjects] = useState<ProjectModel[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const { projects: fetchedProjects } = await getProjects({
-          limit: PAGE_SIZE,
-        });
-        setProjects(fetchedProjects);
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error
-            ? err.message
-            : 'Terjadi kesalahan saat memuat proyek.';
-        setError(errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, []);
+  const projectQuery = useQueryProject();
 
   const renderContent = () => {
-    if (loading) {
+    if (projectQuery.isLoading) {
       return (
         <section className="flex min-h-[200px] flex-col items-center justify-center">
           <LoadingSpinner size={64} />
@@ -48,16 +18,16 @@ const Project = () => {
       );
     }
 
-    if (error) {
+    if (projectQuery.isError) {
       return (
         <section className="flex min-h-[200px] flex-col items-center justify-center text-center">
           <p className="text-red-500">Terjadi kesalahan:</p>
-          <p className="text-gray-600">{error}</p>
+          <p className="text-gray-600">{projectQuery.error.message}</p>
         </section>
       );
     }
 
-    if (!projects.length) {
+    if (!projectQuery.data || !projectQuery.data.data.items.length) {
       return (
         <section className="flex min-h-[200px] flex-col items-center justify-center text-center">
           <p className="text-gray-600">Data proyek belum tersedia.</p>
@@ -65,7 +35,7 @@ const Project = () => {
       );
     }
 
-    return <CardComponent projects={projects} />;
+    return <CardComponent projects={projectQuery.data.data.items} />;
   };
 
   return (

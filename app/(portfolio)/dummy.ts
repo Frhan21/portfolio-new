@@ -1,6 +1,6 @@
-import { Category } from '@/model/Category';
-import { Certificate } from '@/model/Certificate';
-import { Project } from '@/model/Project';
+import { Category } from '@/model/category';
+import { Certificate } from '@/model/certificate';
+import { Project } from '@/model/project';
 
 export const categories: Category[] = [
   { id: 'web-dev', title: 'Web Development' },

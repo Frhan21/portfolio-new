@@ -1,34 +1,26 @@
-import cloudinary from '@/lib/cloudinary';
-import prisma from '@/lib/prisma';
 import { certficateSchema } from '@/lib/validation';
-import { NextRequest, NextResponse } from 'next/server';
+import {
+  createCertificate,
+  getCertificates,
+} from '@/server/services/certificate-services';
+import { uploadCoverImage } from '@/server/services/upload-image';
+import { NextRequest } from 'next/server';
+import {
+  successResponse,
+  errorResponse,
+  validationErrorResponse,
+} from '@/lib/api-response';
 
 export async function GET() {
   try {
-    const certificate = await prisma.certificate.findMany();
+    const certificate = await getCertificates();
     if (!certificate || certificate.length === 0) {
-      return NextResponse.json(
-        { message: 'No certificates found' },
-        { status: 404 }
-      );
+      return successResponse([], 'No certificates found', 404);
     }
 
-    return NextResponse.json(
-      {
-        message: 'Success',
-        data: certificate,
-      },
-      { status: 200 }
-    );
+    return successResponse(certificate, 'Success', 200);
   } catch (error) {
-    console.error('Error fetching certificate:', error);
-    return NextResponse.json(
-      {
-        message: 'Failed to fetch certificates',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    );
+    return errorResponse('Failed to fetch certificates', error);
   }
 }
 
@@ -45,72 +37,44 @@ export async function POST(req: NextRequest) {
 
     const validate = certficateSchema.safeParse(data);
     if (!validate.success) {
-      return NextResponse.json(
-        { message: 'Validation failed', errors: validate.error.errors },
-        { status: 400 }
-      );
+      return validationErrorResponse(validate.error.errors);
     }
     const { title, categoryId, issuer, issuer_date } = validate.data;
 
     const parsedIssuerDate = new Date(issuer_date);
     if (isNaN(parsedIssuerDate.getTime())) {
-      return NextResponse.json(
-        {
-          message:
-            'Invalid issuer_date format. Use an ISO 8601 string such as 2024-06-15 or 2024-06-15T00:00:00Z.',
-        },
-        { status: 400 }
+      return errorResponse(
+        'Invalid issuer_date format. Use an ISO 8601 string such as 2024-06-15 or 2024-06-15T00:00:00Z.',
+        undefined,
+        400
       );
     }
 
     const image = formData.get('image') as File;
     if (!image) {
-      return NextResponse.json(
-        { message: 'Image file is required' },
-        { status: 400 }
-      );
+      return errorResponse('Image file is required', undefined, 400);
     }
 
-    const arrayBuffer = await image.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const response = await uploadCoverImage(image);
 
-    const base64 = buffer.toString('base64');
-    const dataUrl = `data:${image.type};base64,${base64}`;
-
-    const response = await cloudinary.uploader.upload(dataUrl, {
-      folder: 'nextjs-upload',
-    });
-
-    const imageUrl = response.secure_url;
+    const imageUrl = response.imageUrl;
     if (!imageUrl) {
-      return NextResponse.json(
-        { message: 'Failed to upload image' },
-        { status: 500 }
-      );
+      return errorResponse('Failed to upload image', undefined, 500);
     }
 
-    const publicId = response.public_id;
+    const publicId = response.publicId;
 
-    const res = await prisma.certificate.create({
-      data: {
-        title,
-        image: imageUrl,
-        publicId,
-        categoryId,
-        issuer,
-        issuer_date: parsedIssuerDate,
-      },
+    const res = await createCertificate({
+      title,
+      image: imageUrl,
+      publicId,
+      categoryId,
+      issuer,
+      issuer_date: parsedIssuerDate,
     });
-
-    return NextResponse.json(
-      { message: 'Certificate created successfully', data: res },
-      { status: 201 }
-    );
+    return successResponse(res, 'Certificate created successfully', 201);
   } catch (error) {
     console.error('Error creating data', error);
-    return NextResponse.json(
-      { message: 'Internal Server Error' },
-      { status: 500 }
-    );
+    return errorResponse('Internal Server Error', error, 500);
   }
 }

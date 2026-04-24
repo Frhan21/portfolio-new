@@ -1,6 +1,13 @@
 import cloudinary from '@/lib/cloudinary';
 import prisma from '@/lib/prisma';
 import { projectUpdateSchema } from '@/lib/validation';
+import { Project } from '@/model/project';
+import {
+  deleteProject,
+  getProjectbyId,
+  updateProject,
+} from '@/server/services/project-services';
+import { uploadCoverImage } from '@/server/services/upload-image';
 import { NextRequest, NextResponse } from 'next/server';
 
 type RouteContext = {
@@ -16,11 +23,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
         { status: 400 }
       );
     }
-    const res = await prisma.project.findUnique({
-      where: {
-        id,
-      },
-    });
+    const res = await getProjectbyId(id);
 
     if (!res) {
       return NextResponse.json(
@@ -125,14 +128,6 @@ export async function PUT(req: NextRequest, context: RouteContext) {
     }
 
     if (image) {
-      const arrayBuffer = await image.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-
-      console.log('Got Buffer');
-
-      const base64 = buffer.toString('base64');
-      const dataUrl = `data:${image.type};base64,${base64}`;
-
       if (existingProject.publicId) {
         try {
           await cloudinary.uploader.destroy(existingProject.publicId);
@@ -141,18 +136,16 @@ export async function PUT(req: NextRequest, context: RouteContext) {
         }
       }
 
-      const response = await cloudinary.uploader.upload(dataUrl, {
-        folder: 'nextjs-upload',
-      });
+      const res = await uploadCoverImage(image);
 
-      updateData.image = response.secure_url;
-      updateData.publicId = response.public_id;
+      updateData.image = res.imageUrl;
+      updateData.publicId = res.publicId;
     }
 
-    const updatedProject = await prisma.project.update({
-      where: { id },
-      data: updateData,
-    });
+    const updatedProject = await updateProject(
+      id,
+      updateData as unknown as Project
+    );
 
     return NextResponse.json({
       message: 'Project updated successfully',
@@ -170,9 +163,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
 export async function DELETE(req: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
-    const project = await prisma.project.delete({
-      where: { id: id },
-    });
+    const project = await getProjectbyId(id);
 
     if (!project) {
       return NextResponse.json(
@@ -189,9 +180,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
       }
     }
 
-    await prisma.project.delete({
-      where: { id: id },
-    });
+    await deleteProject(id);
 
     return NextResponse.json({
       message: 'Project deleted successfully',
