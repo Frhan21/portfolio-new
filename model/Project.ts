@@ -1,7 +1,7 @@
 import { TResponseItem, TResponsePaginate } from '@/commons/types/response';
 import { Category } from './category';
 
-export interface Project {
+export type Project = {
   id: string;
   title: string;
   tags: string[];
@@ -11,7 +11,7 @@ export interface Project {
   github?: string;
   categoryId: string;
   category: Category;
-}
+};
 
 export type CreateProjectInput = Omit<Project, 'id' | 'category'>;
 
