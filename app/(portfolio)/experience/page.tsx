@@ -1,6 +1,28 @@
-import { Briefcase } from "lucide-react";
-import Header from "../components/header";
-import { EXPERIENCE } from "../dummy";
+import { Briefcase } from 'lucide-react';
+import Header from '../components/header';
+
+const EXPERIENCE = [
+  {
+    id: 1,
+    role: 'Data and Program Staff',
+    company: 'LPPM Unand',
+    period: 'Nov 2025 - Present',
+    type: 'Contract',
+    description:
+      'Manage social media accounts and provide research support for academic projects.',
+    skills: ['Social Media', 'Research Support'],
+  },
+  {
+    id: 2,
+    role: 'Frontend Developer',
+    company: 'KodingData.',
+    period: 'Sep 2025 - Nov 2025',
+    type: 'Internship',
+    description:
+      'Contributed to development of responsice and user-friendly website using Next.js and Tailwind CSS',
+    skills: ['React', 'Next.js', 'Team Leadership'],
+  },
+];
 
 const ExperiencePage = () => {
   return (
@@ -18,8 +40,8 @@ const ExperiencePage = () => {
                 key={job.id}
                 className={`relative flex flex-col md:flex-row gap-8 ${
                   index % 2 === 0
-                    ? "md:text-right"
-                    : "md:flex-row-reverse md:text-left"
+                    ? 'md:text-right'
+                    : 'md:flex-row-reverse md:text-left'
                 }`}
               >
                 <div className="absolute left-0 md:left-1/2 w-full md:w-auto flex md:justify-center transform md:-translate-x-1/2 -top-1 md:top-0">
@@ -29,7 +51,7 @@ const ExperiencePage = () => {
                 </div>
                 <div
                   className={`flex-1 md:w-1/2 pl-8 md:pl-0 ${
-                    index % 2 === 0 ? "md:pr-12" : "md:pl-12"
+                    index % 2 === 0 ? 'md:pr-12' : 'md:pl-12'
                   }`}
                 >
                   <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative">
@@ -40,7 +62,7 @@ const ExperiencePage = () => {
                     </h3>
                     <div
                       className={`flex items-center gap-2 text-sm text-orange-600 font-medium mb-3 ${
-                        index % 2 === 0 ? "md:justify-end" : ""
+                        index % 2 === 0 ? 'md:justify-end' : ''
                       }`}
                     >
                       <Briefcase size={14} />
@@ -55,7 +77,7 @@ const ExperiencePage = () => {
                     </p>
                     <div
                       className={`flex flex-wrap gap-2 ${
-                        index % 2 === 0 ? "md:justify-end" : ""
+                        index % 2 === 0 ? 'md:justify-end' : ''
                       }`}
                     >
                       {job.skills.map((skill) => (
