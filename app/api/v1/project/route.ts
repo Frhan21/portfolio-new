@@ -4,6 +4,7 @@ import {
   validationErrorResponse,
 } from '@/lib/api-response';
 import { projectSchema } from '@/lib/validation';
+import { revalidateTag } from 'next/cache';
 import { createProject, getProject } from '@/server/services/project-services';
 import { uploadCoverImage } from '@/server/services/upload-image';
 import { NextRequest } from 'next/server';
@@ -74,6 +75,8 @@ export async function POST(req: NextRequest) {
       tags: validatedTags,
       categoryId,
     });
+
+    revalidateTag('projects');
 
     return successResponse(project, 'Project created successfully', 201);
   } catch (error) {

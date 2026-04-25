@@ -2,6 +2,7 @@ import cloudinary from '@/lib/cloudinary';
 import prisma from '@/lib/prisma';
 import { projectUpdateSchema } from '@/lib/validation';
 import { Project } from '@/model/project';
+import { revalidateTag } from 'next/cache';
 import {
   deleteProject,
   getProjectbyId,
@@ -147,6 +148,8 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       updateData as unknown as Project
     );
 
+    revalidateTag('projects');
+
     return NextResponse.json({
       message: 'Project updated successfully',
       data: updatedProject,
@@ -181,6 +184,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
     }
 
     await deleteProject(id);
+    revalidateTag('projects');
 
     return NextResponse.json({
       message: 'Project deleted successfully',

@@ -1,42 +1,10 @@
-'use client';
-
-import LoadingSpinner from '@/app/dashboard/components/LoadingSpinner';
+import { getCachedLatestProjects } from '@/server/services/project-services';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import CardComponent from '../card';
-import { useQueryProject } from './hooks/use-query-project';
 
-const Project = () => {
-  const projectQuery = useQueryProject();
-
-  const renderContent = () => {
-    if (projectQuery.isLoading) {
-      return (
-        <section className="flex min-h-[200px] flex-col items-center justify-center">
-          <LoadingSpinner size={64} />
-        </section>
-      );
-    }
-
-    if (projectQuery.isError) {
-      return (
-        <section className="flex min-h-[200px] flex-col items-center justify-center text-center">
-          <p className="text-red-500">Terjadi kesalahan:</p>
-          <p className="text-gray-600">{projectQuery.error.message}</p>
-        </section>
-      );
-    }
-
-    if (!projectQuery.data || !projectQuery.data.data.items.length) {
-      return (
-        <section className="flex min-h-[200px] flex-col items-center justify-center text-center">
-          <p className="text-gray-600">Data proyek belum tersedia.</p>
-        </section>
-      );
-    }
-
-    return <CardComponent projects={projectQuery.data.data.items} />;
-  };
+const Project = async () => {
+  const projects = await getCachedLatestProjects(3);
 
   return (
     <div
@@ -61,7 +29,15 @@ const Project = () => {
         </Button>
       </div>
       {/* Card Section */}
-      <div className="my-16 w-full">{renderContent()}</div>
+      <div className="my-16 w-full">
+        {!projects.length ? (
+          <section className="flex min-h-[200px] flex-col items-center justify-center text-center">
+            <p className="text-gray-600">Data proyek belum tersedia.</p>
+          </section>
+        ) : (
+          <CardComponent projects={projects} priorityFirstImage />
+        )}
+      </div>
     </div>
   );
 };

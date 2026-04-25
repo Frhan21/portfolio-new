@@ -34,6 +34,7 @@ const CertificateCard = ({ certificates }: CertificateProps) => {
               alt={certificate.title}
               width={500}
               height={240}
+              sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
               className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

@@ -4,6 +4,7 @@ import {
   getCertificates,
 } from '@/server/services/certificate-services';
 import { uploadCoverImage } from '@/server/services/upload-image';
+import { revalidateTag } from 'next/cache';
 import { NextRequest } from 'next/server';
 import {
   successResponse,
@@ -72,6 +73,7 @@ export async function POST(req: NextRequest) {
       issuer,
       issuer_date: parsedIssuerDate,
     });
+    revalidateTag('certificates');
     return successResponse(res, 'Certificate created successfully', 201);
   } catch (error) {
     console.error('Error creating data', error);

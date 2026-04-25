@@ -1,6 +1,7 @@
 import cloudinary from '@/lib/cloudinary';
 import prisma from '@/lib/prisma';
 import { certificateUpdateSchema } from '@/lib/validation';
+import { revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
 type RouteContext = {
@@ -159,6 +160,8 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       where: { id },
       data: updateData,
     });
+
+    revalidateTag('certificates');
 
     return NextResponse.json({
       message: 'Certificate updated successfully',

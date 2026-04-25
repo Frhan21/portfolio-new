@@ -1,11 +1,11 @@
 import { axiosInstance } from '@/lib/axios';
-import axios from 'axios';
 import {
   CreateProjectInput,
   TProjectResponse,
   TProjectResponses,
   UpdateProjectInput,
 } from '@/model/project';
+import axios from 'axios';
 
 const API_BASE_PATH = '/project';
 

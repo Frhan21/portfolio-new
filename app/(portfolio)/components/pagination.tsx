@@ -1,45 +1,57 @@
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface PaginationProps {
   page: number;
   totalPage: number;
-  startPage: number;
-  endPage: number;
+  pageLabel: string;
+  basePath: string;
   totalItems: number;
-  onPageChange: (page: number) => void;
 }
 
 const Pagination = ({
   page,
   totalPage,
-  startPage,
-  endPage,
+  pageLabel,
+  basePath,
   totalItems,
-  onPageChange,
 }: PaginationProps) => {
-  // if (totalPage <= 1) return null;
+  if (totalPage <= 1) return null;
+
   const pages = Array.from({ length: totalPage }, (_, i) => i + 1);
+
+  const createPageHref = (targetPage: number) => {
+    if (targetPage <= 1) {
+      return basePath;
+    }
+
+    return `${basePath}?page=${targetPage}`;
+  };
+
   return (
     <div className="mt-10 flex flex-col items-center gap-4">
       <p className="text-sm text-slate-500">
-        Menampilkan {startPage}-{endPage} dari {totalItems} proyek
+        Menampilkan {pageLabel} dari {totalItems} item
       </p>
 
       <div className="flex flex-wrap items-center justify-center gap-2">
         <Button
+          asChild
           variant="ghost"
           className="rounded-full px-4"
           disabled={page === 1}
-          onClick={() => onPageChange(page - 1)}
         >
-          <ArrowLeft size={72} />
+          <Link href={createPageHref(page - 1)} scroll={false}>
+            <ArrowLeft size={72} />
+          </Link>
         </Button>
 
         {pages.map((p) => (
-          <button
+          <Link
             key={p}
-            onClick={() => onPageChange(p)}
+            href={createPageHref(p)}
+            scroll={false}
             className={`h-10 w-10 rounded-full border text-sm font-semibold transition ${
               p === page
                 ? 'border-orange-500 bg-orange-500 text-white shadow'
@@ -47,16 +59,18 @@ const Pagination = ({
             }`}
           >
             {p}
-          </button>
+          </Link>
         ))}
 
         <Button
+          asChild
           variant="ghost"
           className="rounded-full px-4"
           disabled={page === totalPage}
-          onClick={() => onPageChange(page + 1)}
         >
-          <ArrowRight size={72} />
+          <Link href={createPageHref(page + 1)} scroll={false}>
+            <ArrowRight size={72} />
+          </Link>
         </Button>
       </div>
     </div>
