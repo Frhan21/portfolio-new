@@ -148,7 +148,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       updateData as unknown as Project
     );
 
-    revalidateTag('projects');
+    revalidateTag('projects', 'max');
 
     return NextResponse.json({
       message: 'Project updated successfully',
@@ -184,7 +184,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
     }
 
     await deleteProject(id);
-    revalidateTag('projects');
+    revalidateTag('projects', 'max');
 
     return NextResponse.json({
       message: 'Project deleted successfully',

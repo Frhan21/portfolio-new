@@ -1,6 +1,11 @@
 import cloudinary from '@/lib/cloudinary';
-import prisma from '@/lib/prisma';
 import { certificateUpdateSchema } from '@/lib/validation';
+import { Certificate } from '@/model/certificate';
+import {
+  getCertificatebyId,
+  updateCertificate,
+} from '@/server/services/certificate-services';
+import { uploadCoverImage } from '@/server/services/upload-image';
 import { revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -17,13 +22,9 @@ export async function GET(req: NextRequest, context: RouteContext) {
         status: 404,
       });
     }
-    const res = await prisma.certificate.findUnique({
-      where: {
-        id,
-      },
-    });
+    const cat = await getCertificatebyId(id);
 
-    if (!res) {
+    if (!cat) {
       return NextResponse.json({
         message: 'Certificate not found',
         status: 404,
@@ -32,10 +33,9 @@ export async function GET(req: NextRequest, context: RouteContext) {
 
     return NextResponse.json({
       message: 'Certificate fetched successfully',
-      data: res,
+      data: cat,
     });
   } catch (error) {
-    console.error('Error fetching certificate:', error);
     return NextResponse.json({
       message: 'Error fetching data',
       status: 500,
@@ -53,9 +53,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       );
     }
 
-    const existingCertificate = await prisma.certificate.findUnique({
-      where: { id },
-    });
+    const existingCertificate = await getCertificatebyId(id);
 
     if (!existingCertificate) {
       return NextResponse.json(
@@ -135,10 +133,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
     }
 
     if (image) {
-      const arrayBuffer = await image.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const base64 = buffer.toString('base64');
-      const dataUrl = `data:${image.type};base64,${base64}`;
+      const { imageUrl, publicId } = await uploadCoverImage(image);
 
       if (existingCertificate.publicId) {
         try {
@@ -147,21 +142,16 @@ export async function PUT(req: NextRequest, context: RouteContext) {
           console.error('Error removing existing image:', cldError);
         }
       }
-
-      const response = await cloudinary.uploader.upload(dataUrl, {
-        folder: 'nextjs-upload',
-      });
-
-      updateData.image = response.secure_url;
-      updateData.publicId = response.public_id;
+      updateData.image = imageUrl;
+      updateData.publicId = publicId;
     }
 
-    const res = await prisma.certificate.update({
-      where: { id },
-      data: updateData,
-    });
+    const res = await updateCertificate(
+      id,
+      updateData as unknown as Certificate
+    );
 
-    revalidateTag('certificates');
+    revalidateTag('certificates', 'max');
 
     return NextResponse.json({
       message: 'Certificate updated successfully',

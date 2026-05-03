@@ -4,9 +4,9 @@ import {
   validationErrorResponse,
 } from '@/lib/api-response';
 import { projectSchema } from '@/lib/validation';
-import { revalidateTag } from 'next/cache';
 import { createProject, getProject } from '@/server/services/project-services';
 import { uploadCoverImage } from '@/server/services/upload-image';
+import { revalidateTag } from 'next/cache';
 import { NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -61,10 +61,7 @@ export async function POST(req: NextRequest) {
       categoryId,
     } = validate.data;
 
-    const res = await uploadCoverImage(image);
-
-    const imageUrl = res.imageUrl;
-    const publicId = res.publicId;
+    const { imageUrl, publicId } = await uploadCoverImage(image);
 
     const project = await createProject({
       title,
@@ -76,7 +73,7 @@ export async function POST(req: NextRequest) {
       categoryId,
     });
 
-    revalidateTag('projects');
+    revalidateTag('projects', 'max');
 
     return successResponse(project, 'Project created successfully', 201);
   } catch (error) {

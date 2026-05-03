@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       issuer,
       issuer_date: parsedIssuerDate,
     });
-    revalidateTag('certificates');
+    revalidateTag('certificates', 'max');
     return successResponse(res, 'Certificate created successfully', 201);
   } catch (error) {
     console.error('Error creating data', error);
