@@ -1,72 +1,10 @@
-'use client';
-
+import { getCachedLatestProjects } from '@/server/services/project-services';
 import { Button } from '@/components/ui/button';
-import LoadingSpinner from '@/app/dashboard/components/LoadingSpinner';
-import { getProjects } from '@/services/projectService';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
 import CardComponent from '../card';
-import { Project as ProjectModel } from '../types/Model';
 
-const PAGE_SIZE = 3;
-
-const Project = () => {
-  const [projects, setProjects] = useState<ProjectModel[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const { projects: fetchedProjects } = await getProjects({
-          limit: PAGE_SIZE,
-        });
-        setProjects(fetchedProjects);
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error
-            ? err.message
-            : 'Terjadi kesalahan saat memuat proyek.';
-        setError(errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, []);
-
-  const renderContent = () => {
-    if (loading) {
-      return (
-        <section className="flex min-h-[200px] flex-col items-center justify-center">
-          <LoadingSpinner size={64} />
-        </section>
-      );
-    }
-
-    if (error) {
-      return (
-        <section className="flex min-h-[200px] flex-col items-center justify-center text-center">
-          <p className="text-red-500">Terjadi kesalahan:</p>
-          <p className="text-gray-600">{error}</p>
-        </section>
-      );
-    }
-
-    if (!projects.length) {
-      return (
-        <section className="flex min-h-[200px] flex-col items-center justify-center text-center">
-          <p className="text-gray-600">Data proyek belum tersedia.</p>
-        </section>
-      );
-    }
-
-    return <CardComponent projects={projects} />;
-  };
+const Project = async () => {
+  const projects = await getCachedLatestProjects(3);
 
   return (
     <div
@@ -91,7 +29,15 @@ const Project = () => {
         </Button>
       </div>
       {/* Card Section */}
-      <div className="my-16 w-full">{renderContent()}</div>
+      <div className="my-16 w-full">
+        {!projects.length ? (
+          <section className="flex min-h-[200px] flex-col items-center justify-center text-center">
+            <p className="text-gray-600">Data proyek belum tersedia.</p>
+          </section>
+        ) : (
+          <CardComponent projects={projects} priorityFirstImage />
+        )}
+      </div>
     </div>
   );
 };

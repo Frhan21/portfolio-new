@@ -1,13 +1,16 @@
 // import { PrismaClient } from "@prisma/client/extension";
-import prisma from '@/lib/prisma';
 import { categorySchema } from '@/lib/validation';
+import {
+  createCategory,
+  getCategories,
+} from '@/server/services/category-services';
 import { NextResponse } from 'next/server';
 
 // const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const categories = await prisma.category.findMany();
+    const categories = await getCategories();
     if (!categories || categories.length === 0) {
       return NextResponse.json({
         message: 'No categories found',
@@ -37,9 +40,7 @@ export async function POST(req: Request) {
       return NextResponse.json(validation.error.errors, { status: 400 });
     }
 
-    const newCategory = await prisma.category.create({
-      data: validation.data,
-    });
+    const newCategory = await createCategory(validation.data.title);
 
     return NextResponse.json({
       message: 'Category created successfully',

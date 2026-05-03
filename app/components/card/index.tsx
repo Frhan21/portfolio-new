@@ -1,13 +1,15 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { Project } from '../types/Model';
+import type { Project } from '@/model/project';
 import { motion } from 'motion/react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { fadeUp } from '../motions';
 
 interface CardComponentProps {
   projects: Project[];
+  priorityFirstImage?: boolean;
 }
 
 const GRADIENTS = [
@@ -17,7 +19,10 @@ const GRADIENTS = [
   'from-emerald-400 via-teal-400 to-green-500',
 ];
 
-const CardComponent = ({ projects }: CardComponentProps) => {
+const CardComponent = ({
+  projects,
+  priorityFirstImage = false,
+}: CardComponentProps) => {
   if (!projects.length) {
     return (
       <section className="flex flex-col items-center justify-center text-center w-full py-16">
@@ -29,10 +34,8 @@ const CardComponent = ({ projects }: CardComponentProps) => {
   return (
     <div className="grid w-full gap-6 sm:grid-cols-2 xl:grid-cols-3">
       {projects.map((project, index) => {
-        const gradient = GRADIENTS[index % GRADIENTS.length];
         const badge = project.category?.title ?? 'Project';
         const description =
-          project.description ??
           'Deskripsi proyek belum tersedia, namun segera akan diperbarui.';
 
         return (
@@ -48,10 +51,13 @@ const CardComponent = ({ projects }: CardComponentProps) => {
             >
               {project.image && (
                 <div className="absolute inset-0">
-                  <img
+                  <Image
                     src={project.image}
                     alt={project.title}
-                    className="h-full w-full object-cover opacity-80"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                    priority={priorityFirstImage && index === 0}
+                    className="object-cover opacity-80"
                   />
                 </div>
               )}
