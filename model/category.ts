@@ -3,10 +3,10 @@ import { TResponseItem, TResponsePaginate } from '@/commons/types/response';
 export interface Category {
   id: string;
   title: string;
-  timestamps: Date;
+  timestamp: Date;
 }
 
-export type TCreateCategory = Omit<Category, 'id' | 'timestamps'>;
+export type TCreateCategory = Omit<Category, 'id' | 'timestamp'>;
 
 export type UpdateCategoryInput = Partial<TCreateCategory>;
 

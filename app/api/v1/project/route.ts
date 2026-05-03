@@ -64,11 +64,11 @@ export async function POST(req: NextRequest) {
     const { imageUrl, publicId } = await uploadCoverImage(image);
 
     const project = await createProject({
-      title,
+      title: title,
       image: imageUrl,
       publicId,
-      demo,
-      github,
+      demo: demo ?? null,
+      github: github ?? null,
       tags: validatedTags,
       categoryId,
     });

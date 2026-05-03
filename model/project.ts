@@ -10,10 +10,15 @@ export type Project = {
   demo: string | null;
   github: string | null;
   categoryId: string;
+  createdAt: Date;
+  updatedAt: Date;
   category: Category;
 };
 
-export type CreateProjectInput = Omit<Project, 'id' | 'category'>;
+export type CreateProjectInput = Omit<
+  Project,
+  'id' | 'category' | 'createdAt' | 'updatedAt'
+>;
 
 export type UpdateProjectInput = Partial<CreateProjectInput>;
 
