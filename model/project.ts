@@ -7,8 +7,8 @@ export type Project = {
   tags: string[];
   image: string;
   publicId: string;
-  demo?: string;
-  github?: string;
+  demo: string | null;
+  github: string | null;
   categoryId: string;
   category: Category;
 };
