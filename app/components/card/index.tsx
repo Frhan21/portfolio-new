@@ -3,11 +3,11 @@
 import { Button } from '@/components/ui/button';
 import type { Project } from '@/model/project';
 import { motion } from 'motion/react';
-import Link from 'next/link';
 import Image from 'next/image';
-import { fadeUp } from '../motions';
+import Link from 'next/link';
 import { FaGithub } from 'react-icons/fa';
 import { LuArrowRight } from 'react-icons/lu';
+import { fadeUp } from '../motions';
 
 interface CardComponentProps {
   projects: Project[];
@@ -50,8 +50,7 @@ export default function CardComponent({
             </h3>
 
             <p className="text-slate-300 text-sm line-clamp-2 mb-6">
-              {project.description ||
-                'Project description is not available yet.'}
+              Project description is not available yet.
             </p>
 
             {!!project.tags?.length && (
