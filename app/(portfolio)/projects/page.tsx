@@ -30,12 +30,13 @@ const ProjectPage = async ({ searchParams }: ProjectPageProps) => {
     <div className="mt-5 space-y-8 px-4 md:px-6">
       <Header
         title="My Projects"
-        description="Koleksi terpilih dari pekerjaan pengembangan web dan desain UI yang
-        telah saya selesaikan dengan dedikasi tinggi."
+        description="A curated collection of web development and UI design work that I have completed with high dedication."
       />
       {!paginatedProjects.length ? (
         <section className="flex min-h-[200px] flex-col items-center justify-center text-center">
-          <p className="text-gray-600">Data proyek belum tersedia.</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            Project data is not available yet.
+          </p>
         </section>
       ) : (
         <>

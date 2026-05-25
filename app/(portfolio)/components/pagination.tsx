@@ -31,8 +31,8 @@ const Pagination = ({
 
   return (
     <div className="mt-10 flex flex-col items-center gap-4">
-      <p className="text-sm text-slate-500">
-        Menampilkan {pageLabel} dari {totalItems} item
+      <p className="text-sm text-slate-500 dark:text-slate-400">
+        Showing {pageLabel} of {totalItems} items
       </p>
 
       <div className="flex flex-wrap items-center justify-center gap-2">
@@ -52,10 +52,10 @@ const Pagination = ({
             key={p}
             href={createPageHref(p)}
             scroll={false}
-            className={`h-10 w-10 rounded-full border text-sm font-semibold transition ${
+            className={`h-10 w-10 rounded-full border text-sm font-semibold transition flex items-center justify-center ${
               p === page
                 ? 'border-orange-500 bg-orange-500 text-white shadow'
-                : 'border-slate-200 text-slate-600 hover:border-orange-300 hover:text-orange-500'
+                : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-orange-300 hover:text-orange-500 dark:hover:border-orange-500'
             }`}
           >
             {p}

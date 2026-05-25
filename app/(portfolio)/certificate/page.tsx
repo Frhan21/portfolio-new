@@ -30,11 +30,13 @@ const CertificatePage = async ({ searchParams }: CertificatePageProps) => {
     <div className="mt-5 space-y-8 px-4 md:px-6">
       <Header
         title="License & Certification"
-        description="Bukti kompetensi dan pembelajaran berkelanjutan dalam teknologi modern."
+        description="Proof of competency and continuous learning in modern technologies."
       />
       {!paginatedCertificates.length ? (
         <section className="flex min-h-[200px] flex-col items-center justify-center text-center">
-          <p className="text-gray-600">Data sertifikat belum tersedia.</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            Certificate data is not available yet.
+          </p>
         </section>
       ) : (
         <>

@@ -37,8 +37,8 @@ const NavButton = ({
     href={url}
     className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
       active
-        ? 'bg-slate-900 text-white shadow-md scale-105'
-        : 'text-slate-500 hover:text-slate-900 hover:bg-gray-50'
+        ? 'bg-slate-900 dark:bg-primary text-white shadow-md scale-105'
+        : 'text-slate-500 hover:text-slate-900 hover:bg-gray-50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800'
     }`}
     onClick={onClick}
   >
@@ -58,8 +58,8 @@ const MobileNavBtn = ({
     onClick={onClick}
     className={`block w-full text-left px-4 py-3 rounded-xl font-medium transition-colors ${
       active
-        ? 'bg-orange-50 text-orange-600'
-        : 'text-slate-600 hover:bg-gray-50'
+        ? 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400'
+        : 'text-slate-600 hover:bg-gray-50 dark:text-slate-400 dark:hover:bg-slate-800'
     }`}
   >
     {children}
@@ -81,7 +81,7 @@ const ProjectNav = ({ isScrolled }: ProjectNavProps) => {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
         isScrolled
-          ? 'bg-white/80 backdrop-blur-md shadow-sm border-b border-accent py-3'
+          ? 'bg-white/80 dark:bg-background/80 backdrop-blur-md shadow-sm border-b border-accent dark:border-slate-800 py-3'
           : 'bg-transparent py-5'
       }`}
     >
@@ -94,13 +94,13 @@ const ProjectNav = ({ isScrolled }: ProjectNavProps) => {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-primary/30 group-hover:scale-105 transition-transform">
               <ChevronRight size={20} className="stroke-[3]" />
             </div>
-            <span className="font-bold text-xl tracking-tight text-slate-900 group-hover:text-primary transition-colors">
+            <span className="font-bold text-xl tracking-tight text-slate-900 dark:text-white group-hover:text-primary transition-colors">
               Back to home
             </span>
           </Link>
         </div>
 
-        <div className="hidden md:flex items-center bg-white/50 backdrop-blur-sm p-1.5 rounded-full border border=gray-200/50 shadow-sm">
+        <div className="hidden md:flex items-center bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-1.5 rounded-full border border-gray-200/50 dark:border-slate-800 shadow-sm">
           {PORTFOLIO_MENU.map((menu, i) => (
             <NavButton
               key={i}
@@ -114,9 +114,9 @@ const ProjectNav = ({ isScrolled }: ProjectNavProps) => {
         </div>
 
         {mobileMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-white border-b border-gray-100 p-4 md:hidden shadow-lg animate-in slide-in-from-top-2">
+          <div className="absolute top-full left-0 right-0 bg-white dark:bg-card border-b border-gray-100 dark:border-slate-800 p-4 md:hidden shadow-lg animate-in slide-in-from-top-2">
             <div className="flex flex-col gap-2">
-              <div className="h-px bg-gray-100 my-1" />
+              <div className="h-px bg-gray-100 dark:bg-slate-800 my-1" />
               {PORTFOLIO_MENU.map((menu, i) => (
                 <MobileNavBtn
                   key={i}
@@ -132,7 +132,7 @@ const ProjectNav = ({ isScrolled }: ProjectNavProps) => {
         )}
 
         <button
-          className="md:hidden p-2 text-slate-600 hover:bg-gray-100 rounded-lg"
+          className="md:hidden p-2 text-slate-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}

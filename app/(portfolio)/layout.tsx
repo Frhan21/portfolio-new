@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import ProjectNav from "./components/navbar";
+import { useEffect, useState } from 'react';
+import ProjectNav from './components/navbar';
 
 export default function PortfolioLayout({
   children,
@@ -14,12 +14,12 @@ export default function PortfolioLayout({
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
+    <div className="min-h-screen bg-gray-50 text-gray-800 dark:bg-background dark:text-foreground font-sans transition-colors duration-300">
       <ProjectNav isScrolled={isScrolled} />
       <main className="pt-28 pb-10 px-4 md:px-6">
         <div className="max-w-6xl mx-auto w-full">{children}</div>

@@ -5,7 +5,7 @@ import { ThemeProvider } from './providers/theme-provider';
 
 export const metadata: Metadata = {
   title: 'M Farhan Ramadhan | Portfolio',
-  description: 'Website ini adalah portfolio pribadi saya',
+  description: 'This is my personal portfolio website',
   icons: {
     icon: '/icon.ico',
   },
@@ -18,17 +18,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`antialiased`}>
-        <QueryProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-        </QueryProvider>
+      <body
+        className={`antialiased bg-white text-foreground transition-colors duration-300 ease-in-out dark:bg-background dark:transition-colors dark:duration-300 dark:ease-in-out`}
+        suppressHydrationWarning
+      >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <QueryProvider>{children}</QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
