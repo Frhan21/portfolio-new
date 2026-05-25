@@ -1,11 +1,24 @@
-import { getCategories } from '@/server/services/category-services';
-import { getProject } from '@/server/services/project-services';
-import ProjectList from './project-list';
+'use client';
 
-const Project = async () => {
-  // Fetch all projects and categories
-  const projects = await getProject();
-  const categories = await getCategories();
+import { useQueryCategory } from '@/app/hooks/category-hooks/use-query-category';
+import { useQueryProject } from './hooks/use-query-project';
+import ProjectList from './project-list';
+import ProjectSkeleton from './project-skeleton';
+
+const Project = () => {
+  const project = useQueryProject();
+  const category = useQueryCategory();
+
+  if (project.isLoading || category.isLoading) {
+    return (
+      <div
+        className="flex flex-col items-center justify-center w-full h-fit mt-20 md:px-12 px-4 mx-auto py-24"
+        id="projects"
+      >
+        <ProjectSkeleton cardCount={4} />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -26,7 +39,10 @@ const Project = async () => {
 
       {/* Client Component for Filtering */}
       <div className="w-full max-w-7xl mx-auto">
-        <ProjectList projects={projects} categories={categories} />
+        <ProjectList
+          projects={project.data?.data.items ?? []}
+          categories={category.data?.data.items ?? []}
+        />
       </div>
     </div>
   );

@@ -36,6 +36,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
       data: cat,
     });
   } catch (error) {
+    console.error('Error fetching data', error);
     return NextResponse.json({
       message: 'Error fetching data',
       status: 500,

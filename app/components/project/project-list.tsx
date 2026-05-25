@@ -1,19 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import type { Project } from '@/model/project';
-import CardComponent from '../card';
-import { motion, AnimatePresence } from 'motion/react';
-import { fadeUp } from '../motions';
 import { Button } from '@/components/ui/button';
+import { Category } from '@/model/category';
+import type { Project } from '@/model/project';
+import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
+import { useState } from 'react';
+import CardComponent from '../card';
+import { fadeUp } from '../motions';
 
 export default function ProjectList({
   projects,
   categories,
 }: {
   projects: Project[];
-  categories: { id: string | number; title: string }[];
+  categories: Category[];
 }) {
   const [activeCategory, setActiveCategory] = useState<string>('All');
 

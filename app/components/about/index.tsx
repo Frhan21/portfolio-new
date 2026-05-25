@@ -151,11 +151,12 @@ const About = () => {
             {/* Profile Image */}
             <motion.div
               initial={{ y: 50, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+              whileInView={{ y: 0, opacity: 1 }}
               viewport={{ once: true }}
-              className="z-10 relative w-64 h-[300px] md:w-80 md:h-[380px] lg:w-[400px] lg:h-[480px] flex justify-center items-end"
+              className="z-10 relative w-64 h-[300px] md:w-80 md:h-[380px] lg:w-[400px] lg:h-[480px] flex justify-center items-center ml-16"
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/profile.png"
                 alt="Profile"
@@ -171,9 +172,6 @@ const About = () => {
                 duration: 0.8,
                 delay: 0.6,
                 ease: 'easeOut',
-                repeat: Infinity,
-                repeatType: 'loop',
-                repeatDelay: 0.5,
               }}
               viewport={{ once: true }}
               className="absolute bottom-12 left-0 md:-left-8 lg:left-5 z-20 bg-[#0f172a] rounded-lg border border-slate-700/50 shadow-2xl overflow-hidden w-48 md:w-56"
@@ -207,6 +205,7 @@ const About = () => {
               transition={{ repeat: Infinity, duration: 4 }}
               className="absolute top-[10%] left-[20%] z-10 bg-white p-3 rounded-2xl shadow-lg border border-slate-100"
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg"
                 alt="Figma"
@@ -218,6 +217,7 @@ const About = () => {
               transition={{ repeat: Infinity, duration: 5 }}
               className="absolute top-[20%] right-[10%] z-10 bg-white p-3 rounded-2xl shadow-lg border border-slate-100"
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg"
                 alt="Postman"
@@ -229,6 +229,7 @@ const About = () => {
               transition={{ repeat: Infinity, duration: 6 }}
               className="absolute bottom-[20%] right-[0%] z-10 bg-white p-3 rounded-2xl shadow-lg border border-slate-100"
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg"
                 alt="VSCode"

@@ -34,13 +34,13 @@ export const getCategories = async (
     const response = await axiosInstance.get(url);
     return {
       status_code: response.status,
-      message: response.statusText,
+      message: response.data.message ?? response.statusText,
       data: {
-        items: response.data.data,
+        items: response.data.categories ?? [],
         meta: {
-          total: response.data.total,
-          page: response.data.page,
-          totalPages: response.data.totalPages,
+          total: response.data.total ?? 0,
+          page: response.data.page ?? 1,
+          totalPages: response.data.totalPages ?? 1,
         },
       },
     };

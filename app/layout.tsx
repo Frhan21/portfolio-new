@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Toaster } from 'sonner';
 import './globals.css';
 import QueryProvider from './providers/query-provider';
 import { ThemeProvider } from './providers/theme-provider';
@@ -23,6 +24,14 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Toaster
+            toastOptions={{
+              classNames: {
+                success: 'bg-green-100 text-green-800 border border-green-800',
+                error: 'bg-red-100 text-red-800 border border-red-800',
+              },
+            }}
+          />
           <QueryProvider>{children}</QueryProvider>
         </ThemeProvider>
       </body>

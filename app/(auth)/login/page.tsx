@@ -1,8 +1,8 @@
-import React from "react";
-import FormSign from "../component/form/page";
+import React from 'react';
+import AuthForm from '../component/form/page';
 
 const Page = () => {
-  return <FormSign />;
+  return <AuthForm type="login" />;
 };
 
 export default Page;

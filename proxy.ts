@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Pisahkan rute ke dalam array agar mudah dikelola
 const protectedRoutes = ['/dashboard'];
-const publicRoutes = ['/login', '/register', '/'];
 const authRoutes = ['/login', '/register'];
 
 export function proxy(req: NextRequest) {
@@ -14,7 +13,6 @@ export function proxy(req: NextRequest) {
   const isProtectedRoute = protectedRoutes.some(
     (route) => path === route || path.startsWith(`${route}/`)
   );
-  const isPublicRoute = publicRoutes.includes(path);
   const isAuthRoute = authRoutes.includes(path);
 
   // Jika user belum login & mencoba akses halaman private -> redirect ke /login
@@ -23,14 +21,12 @@ export function proxy(req: NextRequest) {
   }
 
   // Jika user sudah login & mencoba akses halaman public -> redirect ke /dashboard
-  if (isPublicRoute && isAuthenticated) {
-    if (isAuthRoute && isAuthenticated) {
-      return NextResponse.redirect(new URL('/dashboard', req.url));
-    }
-
-    // Izinkan akses jika lolos filter
-    return NextResponse.next();
+  if (isAuthRoute && isAuthenticated) {
+    return NextResponse.redirect(new URL('/dashboard', req.url));
   }
+
+  // Izinkan akses jika lolos filter
+  return NextResponse.next();
 }
 
 export const config = {
