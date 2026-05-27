@@ -7,5 +7,5 @@ export type User = {
   updateAt: string;
 };
 
-export type TUserLoginRequest = Omit<User, 'id' | 'createdAt' | 'updateAt'>;
+export type TUserLoginRequest = Pick<User, 'email' | 'password'>;
 export type TUserRegisterRequest = Omit<User, 'id' | 'createdAt' | 'updateAt'>;

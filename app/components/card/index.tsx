@@ -3,8 +3,10 @@
 import { Button } from '@/components/ui/button';
 import type { Project } from '@/model/project';
 import { motion } from 'motion/react';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
+import { FaGithub } from 'react-icons/fa';
+import { LuArrowRight } from 'react-icons/lu';
 import { fadeUp } from '../motions';
 
 interface CardComponentProps {
@@ -12,122 +14,111 @@ interface CardComponentProps {
   priorityFirstImage?: boolean;
 }
 
-const GRADIENTS = [
-  'from-orange-400 via-orange-400 to-orange-500',
-  'from-sky-400 via-sky-400 to-blue-500',
-  'from-indigo-500 via-violet-500 to-purple-600',
-  'from-emerald-400 via-teal-400 to-green-500',
-];
-
-const CardComponent = ({
+export default function CardComponent({
   projects,
   priorityFirstImage = false,
-}: CardComponentProps) => {
-  if (!projects.length) {
+}: CardComponentProps) {
+  if (!projects || projects.length === 0) {
     return (
-      <section className="flex flex-col items-center justify-center text-center w-full py-16">
-        <p className="text-gray-600">Belum ada proyek yang bisa ditampilkan.</p>
-      </section>
+      <div className="w-full text-center py-20 text-slate-500">
+        No projects available to display.
+      </div>
     );
   }
 
   return (
-    <div className="grid w-full gap-6 sm:grid-cols-2 xl:grid-cols-3">
-      {projects.map((project, index) => {
-        const badge = project.category?.title ?? 'Project';
-        const description =
-          'Deskripsi proyek belum tersedia, namun segera akan diperbarui.';
-
-        return (
-          <motion.article
-            key={project.id}
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-col overflow-hidden rounded-[32px] border border-slate-100 bg-white shadow-lg shadow-orange-100/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
-          >
-            <div
-              className={`relative flex min-h-[220px] flex-col justify-between rounded-[32px] rounded-b-none text-white`}
-            >
-              {project.image && (
-                <div className="absolute inset-0">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                    priority={priorityFirstImage && index === 0}
-                    className="object-cover opacity-80"
-                  />
-                </div>
-              )}
-              <div className="relative flex items-center justify-between px-6 pt-6">
-                <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide backdrop-blur">
-                  {badge}
-                </span>
-              </div>
+    <div className="grid w-full gap-6 md:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      {projects.map((project, index) => (
+        <motion.div
+          key={project.id}
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-50px' }}
+          className="group relative w-full h-[380px] bg-[#1e293b] rounded-[32px] overflow-hidden flex flex-col justify-between shadow-xl"
+        >
+          {/* Text Content (Top Left) */}
+          <div className="p-6 md:p-8 z-20 flex flex-col h-full max-w-[85%]">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-[10px] uppercase tracking-wider font-bold text-slate-300 border border-slate-500/50 rounded-full px-3 py-1">
+                {project.category?.title ?? 'Project'}
+              </span>
             </div>
 
-            <div className="rounded-[32px] rounded-t-none bg-white px-6 pb-6 pt-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-lg font-semibold text-slate-900">
-                    {project.title}
-                  </p>
-                </div>
-              </div>
-              <p className="mt-3 text-sm leading-relaxed text-slate-500">
-                {description}
-              </p>
+            <h3 className="text-2xl font-bold text-white mb-2 leading-tight group-hover:text-[#ea580c] transition-colors">
+              {project.title}
+            </h3>
 
-              {!!project.tags?.length && (
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {project.tags.map((tag) => {
-                    const cleanedTag = tag.replace(/[\[\]"]/g, '').trim();
-                    return (
-                      <span
-                        key={`${project.id}-${cleanedTag}`}
-                        className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600"
-                      >
-                        {cleanedTag}
-                      </span>
-                    );
-                  })}
-                </div>
+            <p className="text-slate-300 text-sm line-clamp-2 mb-6">
+              Project description is not available yet.
+            </p>
+
+            {!!project.tags?.length && (
+              <div className="flex flex-wrap items-center gap-2 mb-6">
+                {project.tags.slice(0, 3).map((tag) => {
+                  const cleanedTag = tag.replace(/[\[\]"]/g, '').trim();
+                  return (
+                    <span
+                      key={`${project.id}-${cleanedTag}`}
+                      className="bg-white text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm"
+                    >
+                      {cleanedTag}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3 mt-auto">
+              {project.demo && (
+                <Button
+                  asChild
+                  variant="outline"
+                  className="rounded-full border-slate-500 bg-transparent text-white hover:bg-slate-700 hover:text-white px-4 py-2 h-auto text-xs flex items-center gap-1 transition-colors"
+                >
+                  <Link href={project.demo} target="_blank">
+                    <LuArrowRight size={14} />
+                    Demo
+                  </Link>
+                </Button>
               )}
 
-              {(project.demo || project.github) && (
-                <div className="mt-6 flex flex-wrap gap-3">
-                  {project.demo && (
-                    <Button
-                      asChild
-                      variant="secondary"
-                      className="rounded-full bg-orange-500/10 text-orange-600 hover:bg-orange-500/20"
-                    >
-                      <Link href={project.demo} target="_blank">
-                        Demo Langsung
-                      </Link>
-                    </Button>
-                  )}
-                  {project.github && (
-                    <Button
-                      asChild
-                      variant="ghost"
-                      className="rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50"
-                    >
-                      <Link href={project.github} target="_blank">
-                        Lihat Kode
-                      </Link>
-                    </Button>
-                  )}
+              {project.github && (
+                <Button
+                  asChild
+                  className="rounded-full bg-[#f97316] hover:bg-[#ea580c] text-white px-4 py-2 h-auto text-xs flex items-center gap-1 shadow-lg shadow-orange-500/20 border-none"
+                >
+                  <Link href={project.github} target="_blank">
+                    <FaGithub size={14} />
+                    Github
+                  </Link>
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Project Image (Bottom Right) */}
+          <div className="absolute -bottom-[15%] -right-[15%] w-[80%] h-[60%] z-10 transition-transform duration-500 group-hover:-translate-y-4 group-hover:-translate-x-4">
+            <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl rotate-[-10deg] border-4 border-slate-800">
+              {project.image ? (
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover object-top"
+                  priority={priorityFirstImage && index === 0}
+                />
+              ) : (
+                <div className="w-full h-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400">
+                  No Image
                 </div>
               )}
             </div>
-          </motion.article>
-        );
-      })}
+          </div>
+        </motion.div>
+      ))}
     </div>
   );
-};
-
-export default CardComponent;
+}

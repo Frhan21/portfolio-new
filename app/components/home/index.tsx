@@ -1,13 +1,20 @@
 'use client';
 
-import { useTypeWriter } from '@/app/hooks/use-typing';
 import { Button } from '@/components/ui/button';
+import { Briefcase, DownloadIcon } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
-import { fadeDown, fadeIn, fadeLeft, fadeRight, fadeUp } from '../motions';
+import {
+  SiGo,
+  SiLaravel,
+  SiNextdotjs,
+  SiNodedotjs,
+  SiReact,
+  SiTypescript,
+} from 'react-icons/si';
+import { fadeIn, fadeUp } from '../motions';
 
 const Home = () => {
-  const { typeWriterText, cursorVisible } = useTypeWriter();
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -17,89 +24,115 @@ const Home = () => {
 
   return (
     <motion.section
-      className="relative mx-auto h-screen flex w-full max-w-6xl flex-col items-center gap-10 py-16 text-center"
+      className="relative mx-auto min-h-[90vh] flex w-full max-w-6xl flex-col items-center justify-center py-20 px-6"
       id="home"
       initial="hidden"
       animate={isLoaded ? 'visible' : 'hidden'}
       viewport={{ once: true, amount: 0.3 }}
       variants={fadeIn}
     >
-      <motion.div
-        variants={fadeDown}
-        className="inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-5 py-2 text-sm font-medium text-orange-600"
-      >
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-orange-500" />
-        </span>
-        Available for Freelance & Remote Work
-      </motion.div>
-      <div className="space-y-8">
+      {/* Floating Icons (Desktop mostly) - Optimized without infinite JS animations */}
+      <div className="absolute inset-0 pointer-events-none hidden md:block">
         <motion.div
-          className="relative mx-auto inline-flex items-center justify-center border-2 border-slate-900  px-8 py-3 text-sm font-bold uppercase tracking-wide text-slate-900 bg-background"
-          variants={fadeDown}
+          animate={{ y: [-10, 10, -10] }}
+          transition={{ repeat: Infinity, duration: 5 }}
+          className="absolute top-[20%] left-[10%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300"
         >
-          Hello There, {"I'am"} M Farhan Ramadhan
-          {/* Decorative Boxes */}
-          <div className="w-5 h-5 md:w-4 md:h-4 bg-orange-400 border-[2.5px] border-black absolute -top-2 -right-2" />
-          <div className="w-5 h-5 md:w-4 md:h-4 bg-orange-400 border-[2.5px] border-black absolute -bottom-2 -right-2" />
-          <div className="w-5 h-5 md:w-4 md:h-4 bg-orange-400 border-[2.5px] border-black absolute -top-2 -left-2" />
-          <div className="w-5 h-5 md:w-4 md:h-4 bg-orange-400 border-[2.5px] border-black absolute -bottom-2 -left-2" />
+          <SiReact className="text-cyan-400 text-4xl" />
         </motion.div>
+
+        <motion.div
+          animate={{ y: [-10, 10, -10] }}
+          transition={{ repeat: Infinity, duration: 6 }}
+          className="absolute top-[15%] right-[15%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300"
+        >
+          <SiLaravel className="text-red-500 text-3xl" />
+        </motion.div>
+
+        <motion.div
+          animate={{ y: [-10, 10, -10] }}
+          transition={{ repeat: Infinity, duration: 10 }}
+          className="absolute top-[45%] left-[5%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300"
+        >
+          <SiNodedotjs className="text-green-600 text-3xl" />
+        </motion.div>
+
+        <motion.div
+          animate={{ y: [-10, 10, -10] }}
+          transition={{ repeat: Infinity, duration: 8 }}
+          className="absolute bottom-[20%] left-[10%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300"
+        >
+          <SiNextdotjs className="text-black dark:text-white text-3xl" />
+        </motion.div>
+
+        <motion.div className="absolute bottom-[35%] right-[10%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300">
+          <SiTypescript className="text-blue-600 text-3xl" />
+        </motion.div>
+
+        <motion.div className="absolute top-[40%] right-[5%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300">
+          <SiGo className="text-cyan-500 text-3xl" />
+        </motion.div>
+
+        {/* Sparkles */}
+        <div className="absolute top-[10%] left-[25%] text-orange-400 text-2xl animate-pulse">
+          ✦
+        </div>
+        <div className="absolute top-[5%] right-[30%] text-slate-700 dark:text-slate-300 text-3xl animate-pulse delay-75">
+          ✦
+        </div>
+        <div className="absolute bottom-[25%] left-[15%] text-orange-400 text-3xl animate-pulse delay-150">
+          ✧
+        </div>
+        <div className="absolute bottom-[20%] right-[15%] text-slate-700 dark:text-slate-300 text-2xl animate-pulse delay-300">
+          ✦
+        </div>
       </div>
 
-      <motion.h1
-        className="text-3xl font-extrabold leading-tight text-slate-900 md:text-5xl"
-        variants={fadeUp}
-        transition={{ delay: 0.2 }}
-      >
-        {"I'm"}{' '}
-        <span className="whitespace-pre-line text-black dark:text-white">
-          {typeWriterText}
-        </span>{' '}
-        {cursorVisible && <span className="animate-blink">|</span>}
-      </motion.h1>
+      {/* Main Content */}
+      <div className="flex flex-col items-center text-center z-10 w-full">
+        <motion.div
+          variants={fadeUp}
+          className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm px-6 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-200 shadow-sm mb-8"
+        >
+          <span className="text-xl">👋</span>
+          Hello, I&apos;m M. Farhan Ramadhan
+        </motion.div>
 
-      <motion.p
-        className="max-w-7xl w-96 md:w-full text-base leading-relaxed text-slate-500 md:text-lg"
-        variants={fadeUp}
-        transition={{ delay: 0.35 }}
-      >
-        I create amazing websites and applications that are future-ready,
-        leveraging the latest technologies with a focus on innovation, sleek
-        design, and impressive digital experiences.
-      </motion.p>
+        <motion.h1
+          className="text-5xl md:text-7xl lg:text-[90px] font-extrabold leading-[1.1] text-slate-900 dark:text-white tracking-tight mb-12 max-w-5xl mx-auto"
+          variants={fadeUp}
+          transition={{ delay: 0.1 }}
+        >
+          Newbie Software <br />
+          Engineer <span className="text-primary">Wannabe</span>
+        </motion.h1>
 
-      <motion.div
-        className="flex flex-col items-center justify-center gap-4 sm:flex-row"
-        variants={fadeUp}
-        transition={{ delay: 0.45 }}
-      >
-        <motion.div variants={fadeLeft}>
+        <motion.div
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-4xl"
+          variants={fadeUp}
+          transition={{ delay: 0.2 }}
+        >
           <Button
-            className="flex items-center gap-3 rounded-full border-2 border-orange-500 bg-[#FE7743] px-10 py-6 text-base font-semibold text-[#EFEEEA] shadow-lg shadow-orange-200 transition hover:bg-[#EFEEEA] hover:text-slate-700"
-            aria-label="View my portfolio"
+            className="w-full sm:w-[300px] flex items-center justify-center gap-2 rounded-full bg-primary px-10 py-6 text-base font-bold text-white shadow-xl shadow-orange-500/25 hover:bg-primary/90 transition-all active:scale-[0.98]"
+            asChild
           >
-            <a href="#portfolio" className="flex items-center gap-3">
-              <span>View my portfolio</span>
+            <a href="#projects">
+              View my Work
+              <Briefcase />
+            </a>
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full sm:w-[300px] flex items-center justify-center gap-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-card px-10 py-6 text-base font-bold text-slate-900 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-[0.98]"
+            asChild
+          >
+            <a href="/cv.pdf" target="_blank" rel="noopener noreferrer">
+              Download CV
+              <DownloadIcon />
             </a>
           </Button>
         </motion.div>
-        <motion.div variants={fadeRight}>
-          <Button
-            className="rounded-full border-2 border-slate-900 bg-[#EFEEEA] px-10 py-6 text-base font-semibold text-slate-900 transition hover:bg-slate-900 hover:text-white"
-            aria-label="Hire me"
-          >
-            <a
-              href="mailto:frhn.r3@gmail.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Hire me
-            </a>
-          </Button>
-        </motion.div>
-      </motion.div>
+      </div>
     </motion.section>
   );
 };

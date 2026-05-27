@@ -1,84 +1,141 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Menu, Terminal, X } from "lucide-react";
-import { Link as ScrollLink } from "react-scroll";
-import Link from "next/link";
+import { useState, useEffect } from 'react';
+import { Menu, Terminal, X, Moon, Sun } from 'lucide-react';
+import { Link as ScrollLink } from 'react-scroll';
+import Link from 'next/link';
+import { useTheme } from 'next-themes';
+import { motion, AnimatePresence } from 'motion/react';
 
 const navLinks = [
-  { to: "home", label: "Home" },
-  { to: "about", label: "About" },
-  { to: "service", label: "Service" },
-  { to: "portfolio", label: "Project" },
-  { to: "contact", label: "Contact me", isButton: true },
+  { to: 'home', label: 'Home' },
+  { to: 'projects', label: 'Projects' },
+  { to: 'tech-stack', label: 'Stack' },
+  { to: 'certificates', label: 'Certificates' },
+  { to: 'faq', label: 'FAQ' },
+  { to: 'contact', label: 'Contact' },
 ];
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  const renderLink = (
-    to: string,
-    label: string,
-    isButton?: boolean,
-    additionalClasses = ""
-  ) => (
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  const renderLink = (to: string, label: string, additionalClasses = '') => (
     <ScrollLink
       to={to}
       smooth={true}
       duration={100}
-      offset={-80} // offset biar gak ketutup navbar
+      offset={-80}
       spy={true}
+      activeClass="text-primary font-bold border-b-2 border-primary"
       onClick={() => setIsMenuOpen(false)}
-      className={`cursor-pointer ${
-        isButton
-          ? "px-4 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 w-fit"
-          : "text-white hover:text-orange-500"
-      } ${additionalClasses}`}
+      className={`cursor-pointer text-sm font-semibold text-slate-700 hover:text-primary dark:text-slate-300 dark:hover:text-primary transition-colors py-1 ${additionalClasses}`}
     >
       {label}
     </ScrollLink>
   );
 
   return (
-    <div className="sticky top-0 z-50 w-full px-4 py-3 bg-transparent">
-      <nav className="w-full max-w-5xl mx-auto px-4 py-3 bg-black dark:bg-gray-800 rounded-full shadow-md transition-all duration-300">
+    <motion.div
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="sticky top-4 z-50 w-full px-4"
+    >
+      <nav className="w-full max-w-6xl mx-auto px-6 py-4 bg-white/80 dark:bg-[#111]/80 backdrop-blur-md border border-slate-200/50 dark:border-white/10 rounded-full shadow-lg shadow-slate-200/20 dark:shadow-black/50 transition-all duration-300">
         <div className="flex items-center justify-between">
           {/* Brand */}
-          <Link href={"/"} className="flex mx-4 items-center">
-            <div className="w-8 h-8 bg-accent rounded-md flex items-center justify-center">
-              <Terminal size={24} />
+          <Link href={'/'} className="flex items-center gap-2 group">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+              <Terminal size={22} />
             </div>
-            <span className="font-bold text-white px-4 text-xl">Nerd Dev</span>
+            <span className="font-extrabold text-slate-900 dark:text-white text-xl">
+              Nerd Dev
+            </span>
           </Link>
+
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
-            {navLinks.map(({ to, label, isButton }) =>
-              renderLink(to, label, isButton)
+          <div className="hidden lg:flex items-center space-x-8">
+            {navLinks.map(({ to, label }) => (
+              <div key={to}>{renderLink(to, label)}</div>
+            ))}
+          </div>
+
+          <div className="hidden lg:flex items-center gap-4">
+            <ScrollLink
+              to="contact"
+              smooth={true}
+              offset={-80}
+              className="cursor-pointer px-6 py-2.5 bg-primary text-white font-bold text-sm rounded-full shadow-md shadow-orange-500/20 hover:bg-primary/90 transition-colors flex items-center gap-2"
+            >
+              Let&apos;s Talk 🚀
+            </ScrollLink>
+
+            {mounted && (
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors border border-slate-200 dark:border-slate-700"
+                aria-label="Toggle Dark Mode"
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
             )}
           </div>
 
           {/* Mobile Menu Toggle */}
-          <div className="md:hidden flex items-center space-x-4 py-3">
+          <div className="lg:hidden flex items-center space-x-4">
+            {mounted && (
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+            )}
             <button
-              className="text-white"
+              className="text-slate-900 dark:text-white"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden absolute left-0 right-0 mt-3 mx-4 bg-black dark:bg-gray-800 p-4 rounded-xl shadow-lg">
-            <div className="flex flex-col space-y-4">
-              {navLinks.map(({ to, label, isButton }) =>
-                renderLink(to, label, isButton)
-              )}
-            </div>
-          </div>
-        )}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="lg:hidden absolute left-0 right-0 top-full mt-2 mx-4 bg-white dark:bg-[#111] p-6 rounded-3xl shadow-xl border border-slate-200 dark:border-white/10 overflow-hidden"
+            >
+              <div className="flex flex-col space-y-5 items-center">
+                {navLinks.map(({ to, label }) => (
+                  <div key={to} className="w-full text-center">
+                    {renderLink(to, label)}
+                  </div>
+                ))}
+                <ScrollLink
+                  to="contact"
+                  smooth={true}
+                  offset={-80}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full text-center px-6 py-3 bg-primary text-white font-bold text-sm rounded-xl mt-2"
+                >
+                  Let&apos;s Talk 🚀
+                </ScrollLink>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
-    </div>
+    </motion.div>
   );
 }

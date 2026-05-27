@@ -1,14 +1,17 @@
-"use client";
+'use client';
 
-import React from "react";
-import Image from "next/image";
-import { Computer, Figma } from "lucide-react";
-import { SiAdobephotoshop } from "react-icons/si";
+import { GithubIcon, Instagram } from 'lucide-react';
+import { motion } from 'motion/react';
+import React from 'react';
+import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
+import {
+  HiOutlineCode,
+  HiOutlineColorSwatch,
+  HiOutlineDatabase,
+  HiOutlineServer,
+} from 'react-icons/hi';
+import { fadeDown, fadeIn, fadeRight, fadeUp } from '../motions';
 
-import { motion } from "motion/react";
-import { fadeIn, fadeLeft, fadeRight, fadeUp } from "../motions";
-
-// ServiceCard Component
 const ServiceCard = ({
   icon,
   title,
@@ -19,18 +22,24 @@ const ServiceCard = ({
   description: string;
 }) => (
   <motion.div
-    className="w-full max-w-sm"
+    className="w-full"
     variants={fadeUp}
-    whileInView={"visible"}
+    whileInView={'visible'}
     initial="hidden"
     viewport={{ once: true, amount: 0.3 }}
   >
-    <div className="bg-white rounded-[32px] border-2 border-orange-500 shadow-lg px-6 py-10 flex flex-col items-start gap-4">
-      <div className="bg-orange-500 rounded-full w-16 h-16 flex items-center justify-center">
+    <div className="bg-white dark:bg-card rounded-[24px] border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:border-primary transition-all duration-300 px-8 py-10 flex flex-col items-start gap-6 h-full">
+      <div className="bg-primary/10 rounded-2xl w-14 h-14 flex items-center justify-center text-primary">
         {icon}
       </div>
-      <h3 className="text-2xl font-bold">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+      <div>
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+          {title}
+        </h3>
+        <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+          {description}
+        </p>
+      </div>
     </div>
   </motion.div>
 );
@@ -39,99 +48,248 @@ const About = () => {
   return (
     <div className="w-full flex flex-col items-center justify-center">
       {/* === About Section === */}
-      <section
-        id="about"
-        className="bg-black w-full min-h-screen flex items-center px-4 sm:px-6"
-      >
-        <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12 max-w-7xl mx-auto w-full py-12">
-          {/* Text Content */}
-          <motion.div
-            className="flex flex-col items-start text-left gap-4 max-w-xl w-full md:ml-12 ml-0"
-            variants={fadeLeft}
-            initial="hidden"
-            whileInView={'visible'}
-            viewport={{ once: true, amount: 0.3 }}
-          >
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-1 bg-orange-500" />
-              <span className="text-white text-xl">About</span>
-            </div>
-            <h2 className="text-white text-4xl md:text-5xl font-bold leading-tight">
-              Who is <span className="text-orange-500">Farhan</span>?
-            </h2>
-            <p className="text-white text-base md:text-lg tracking-wide">
-              Seorang pengembang web dan desainer antarmuka dengan minat pada
-              pengalaman pengguna dan efisiensi sistem. Saya menggabungkan
-              logika dan kreativitas untuk menciptakan produk digital yang
-              bermakna.
-            </p>
-            <motion.a
-              variants={fadeLeft}
-              transition={{ delay: 0.2 }}
-              href="https://drive.google.com/file/d/1A__8iXxnW_5rtd9_hWD7FExRYt87wDtZ/view?usp=drive_link"
-              target="_blank"
-              rel="noopener"
-              className="mt-4 px-6 py-3 bg-slate-700 hover:bg-orange-500 text-white rounded-full flex items-center justify-center gap-2 transition-colors duration-300 text-sm md:text-base"
-            >
-              Download my CV
-            </motion.a>
-          </motion.div>
+      <section id="about" className="w-full flex justify-center py-24 px-6">
+        <motion.div
+          className="bg-[#1e293b] dark:bg-card rounded-[40px] max-w-6xl w-full px-10 py-16 md:px-16 md:py-20 relative flex flex-col md:flex-row items-center justify-between shadow-2xl"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={fadeIn}
+        >
+          {/* Left Content */}
+          <div className="z-20 max-w-xl space-y-6 w-full md:w-1/2">
+            <motion.div variants={fadeDown} className="flex items-center gap-2">
+              <span className="text-primary font-bold tracking-widest text-sm uppercase">
+                ABOUT ME
+              </span>
+            </motion.div>
 
-          {/* SVG Image */}
-          <motion.div
-            className="relative w-full max-w-sm md:max-w-md lg:max-w-lg flex justify-center z-0"
-            variants={fadeRight}
-            initial="hidden"
-            whileInView={'visible'}
-            viewport={{ once: true, amount: 0.3 }}
-          >
-            <div className="w-full aspect-square bg-orange-500 rounded-full relative z-0" />
-            <Image
-              src="/WhatsApp Image 2025-05-13 at 00.56.38_f30390e6 1.svg"
-              alt="About Image"
-              width={320}
-              height={320}
-              className="absolute top-1/2 left-[48%] -translate-x-1/2 -translate-y-1/2  w-full h-full object-contain z-10"
-              priority
-            />
-          </motion.div>
-        </div>
+            <motion.h2
+              variants={fadeRight}
+              className="text-white text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight"
+            >
+              Knowing a little
+              <br />
+              bit about me..
+            </motion.h2>
+
+            <motion.p
+              variants={fadeRight}
+              className="mt-6 text-slate-300 text-sm md:text-sm leading-relaxed text-justify"
+            >
+              <strong className="text-white">Fullstack Developer</strong> with
+              hands-on experience building dashboard systems and web
+              applications using{' '}
+              <strong className="text-white">
+                Next.js, React.js, Go, Laravel, and Express.js
+              </strong>
+              . Experienced in integrating{' '}
+              <strong className="text-white">
+                REST APIs, implementing authentication and RBAC systems
+              </strong>
+              , and developing responsive user interfaces. Strong analytical and
+              problem-solving background from Physics and Instrumentation
+              studies, with interest in building scalable and user-focused
+              digital products.
+            </motion.p>
+
+            <motion.div
+              variants={fadeUp}
+              className="flex items-center gap-6 mt-8 border border-white/20 w-max px-6 py-4 rounded-[20px]"
+            >
+              <span className="text-slate-300 text-sm font-medium">
+                Just calling me,
+              </span>
+              <div className="flex items-center gap-4">
+                <a
+                  href="https://linkedin.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-white hover:text-primary transition-colors"
+                >
+                  <FaLinkedin size={'24'} />
+                </a>
+                <a
+                  href="https://twitter.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-white hover:text-primary transition-colors"
+                >
+                  <FaTwitter size={'24'} />
+                </a>
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-white hover:text-primary transition-colors"
+                >
+                  <Instagram size={'24'} />
+                </a>
+                <a
+                  href="https://github.com/nerddev"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-white hover:text-primary transition-colors"
+                >
+                  <GithubIcon size={'24'} />
+                </a>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Right Content / Graphics */}
+          <div className="w-full md:w-1/2 flex items-end justify-center relative mt-16 md:mt-0 min-h-[400px] lg:min-h-[500px]">
+            {/* Decorative Orange Circle */}
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+              viewport={{ once: true }}
+              className="absolute right-0 bottom-[-50px] md:bottom-0 w-64 h-64 md:w-80 md:h-80 lg:w-[400px] lg:h-[400px] bg-primary rounded-full z-0"
+            ></motion.div>
+
+            {/* Profile Image */}
+            <motion.div
+              initial={{ y: 50, opacity: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              className="z-10 relative w-64 h-[300px] md:w-80 md:h-[380px] lg:w-[400px] lg:h-[480px] flex justify-center items-center ml-16"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/profile.png"
+                alt="Profile"
+                className="w-full h-full object-contain object-bottom drop-shadow-[0_20px_20px_rgba(0,0,0,0.5)]"
+              />
+            </motion.div>
+
+            {/* Small Floating Text Editor */}
+            <motion.div
+              initial={{ x: 50, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              transition={{
+                duration: 0.8,
+                delay: 0.6,
+                ease: 'easeOut',
+              }}
+              viewport={{ once: true }}
+              className="absolute bottom-12 left-0 md:-left-8 lg:left-5 z-20 bg-[#0f172a] rounded-lg border border-slate-700/50 shadow-2xl overflow-hidden w-48 md:w-56"
+            >
+              <div className="flex items-center px-3 py-2 bg-[#1e293b] border-b border-slate-700/50">
+                <div className="flex space-x-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                </div>
+              </div>
+              <div className="p-3 font-mono text-[10px] md:text-xs text-slate-300 leading-relaxed">
+                <span className="text-pink-400">const</span>{' '}
+                <span className="text-blue-400">coder</span>{' '}
+                <span className="text-white">=</span> {'{'}
+                <br />
+                &nbsp;&nbsp;<span className="text-sky-300">name</span>:{' '}
+                <span className="text-amber-300">&apos;NerdDev&apos;</span>,
+                <br />
+                &nbsp;&nbsp;<span className="text-sky-300">skills</span>: [
+                <span className="text-amber-300">&apos;React&apos;</span>,{' '}
+                <span className="text-amber-300">&apos;Go&apos;</span>]
+                <br />
+                {'}'};
+              </div>
+            </motion.div>
+
+            {/* Floating Icons */}
+            <motion.div
+              animate={{ y: [-10, 10, -10] }}
+              transition={{ repeat: Infinity, duration: 4 }}
+              className="absolute top-[10%] left-[20%] z-10 bg-white p-3 rounded-2xl shadow-lg border border-slate-100"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg"
+                alt="Figma"
+                className="w-8 h-8"
+              />
+            </motion.div>
+            <motion.div
+              animate={{ y: [10, -10, 10] }}
+              transition={{ repeat: Infinity, duration: 5 }}
+              className="absolute top-[20%] right-[10%] z-10 bg-white p-3 rounded-2xl shadow-lg border border-slate-100"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg"
+                alt="Postman"
+                className="w-8 h-8"
+              />
+            </motion.div>
+            <motion.div
+              animate={{ y: [-15, 15, -15] }}
+              transition={{ repeat: Infinity, duration: 6 }}
+              className="absolute bottom-[20%] right-[0%] z-10 bg-white p-3 rounded-2xl shadow-lg border border-slate-100"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg"
+                alt="VSCode"
+                className="w-8 h-8"
+              />
+            </motion.div>
+            <motion.div
+              animate={{ y: [15, -15, 15] }}
+              transition={{ repeat: Infinity, duration: 7 }}
+              className="absolute top-1/2 right-[-5%] z-10 bg-white p-3 rounded-2xl shadow-lg border border-slate-100"
+            >
+              <FaGithub size={32} className="text-black" />
+            </motion.div>
+          </div>
+        </motion.div>
       </section>
 
       {/* === Service Section === */}
-      <section id="service" className="w-full px-6 py-20">
+      <section id="service" className="w-full px-6 py-24">
         <motion.div
-          className="max-w-7xl mx-auto flex flex-col items-start gap-6"
+          className="max-w-6xl mx-auto flex flex-col items-center text-center gap-4"
           variants={fadeIn}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
         >
           <div className="flex items-center gap-2">
-            <div className="w-6 h-2 bg-orange-500" />
-            <h3 className="text-black text-2xl md:text-[32px] font-bold">
-              Services
-            </h3>
+            <span className="text-primary font-bold tracking-widest text-sm uppercase">
+              MY SERVICES
+            </span>
           </div>
-          <h2 className="text-black text-3xl md:text-[48px] font-bold">
-            Service that I <span className="text-orange-500">Provide</span>
+          <h2 className="text-slate-900 dark:text-white text-3xl md:text-5xl font-extrabold">
+            Some of my core <br />
+            competencies, check them out
           </h2>
+          <p className="text-slate-500 dark:text-slate-400 max-w-2xl mt-4">
+            Various services I can provide to help turn your digital project
+            ideas into reality.
+          </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-10 w-full justify-items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12 w-full text-left">
             <ServiceCard
-              icon={<Computer size={40} color="white" />}
-              title="Web Developer"
-              description="Membangun dan mengelola aplikasi web yang responsif dan interaktif."
+              icon={<HiOutlineCode size={28} />}
+              title="Frontend Development"
+              description="Building interactive, responsive user interfaces that deliver optimal experiences using React & Next.js."
             />
             <ServiceCard
-              icon={<Figma size={40} color="white" />}
-              title="UI/UX Designer"
-              description="Mendesain pengalaman pengguna dan tampilan antarmuka yang menarik."
+              icon={<HiOutlineServer size={28} />}
+              title="Backend Development"
+              description="Designing and building secure, scalable APIs and server architectures with Node.js and its ecosystem."
             />
             <ServiceCard
-              icon={<SiAdobephotoshop size={40} color="white" />}
-              title="Graphic Designer"
-              description="Menciptakan visual branding dan desain kreatif yang komunikatif."
+              icon={<HiOutlineDatabase size={28} />}
+              title="Fullstack Solutions"
+              description="End-to-end digital solution development from database design to ready-to-use user interfaces."
+            />
+            <ServiceCard
+              icon={<HiOutlineColorSwatch size={28} />}
+              title="UI/UX Design"
+              description="Designing prototypes and interfaces that are not only visually stunning but also intuitive and user-centric."
             />
           </div>
         </motion.div>

@@ -1,4 +1,4 @@
-import { getCertificates } from '@/server/actions/certificate-actions';
+import { getCertificates } from '@/server/actions/certificate.actions';
 import { useQuery } from '@tanstack/react-query';
 
 export const useQueryCertificate = (limit: number = 6, page: number = 1) => {
