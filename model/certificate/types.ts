@@ -7,6 +7,6 @@ export interface Certificate {
   publicId: string;
   categoryId: string;
   issuer: string;
-  issuer_date: string;
+  issuer_date: Date;
   category?: Category;
 }
