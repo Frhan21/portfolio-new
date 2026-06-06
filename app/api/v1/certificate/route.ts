@@ -2,8 +2,8 @@ import { certficateSchema } from '@/lib/validation';
 import {
   createCertificate,
   getCertificates,
-} from '@/server/services/certificate-services';
-import { uploadCoverImage } from '@/server/services/upload-image';
+} from '@/server/services/certificate.server';
+import { uploadImage } from '@/server/services/upload.server';
 import { revalidateTag } from 'next/cache';
 import { NextRequest } from 'next/server';
 import {
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
       return errorResponse('Image file is required', undefined, 400);
     }
 
-    const response = await uploadCoverImage(image);
+    const response = await uploadImage(image);
 
     const imageUrl = response.imageUrl;
     if (!imageUrl) {

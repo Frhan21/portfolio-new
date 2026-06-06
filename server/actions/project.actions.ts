@@ -1,129 +1,138 @@
-import { axiosInstance } from '@/lib/axios';
-import {
-  CreateProjectInput,
-  TProjectResponse,
-  TProjectResponses,
-  UpdateProjectInput,
-} from '@/model/project';
-import axios from 'axios';
+'use server';
 
-const API_BASE_PATH = '/project';
+import { projectSchema } from '@/lib/validation';
+import * as ProjectService from '@/server/services/project.server';
+import { uploadImage } from '@/server/services/upload.server';
+import { CreateProjectInput, Project } from '@/model/project';
 
-export const getProjects = async (
-  limit: number,
+// ─── Types ─────────────────────────────────────────────────────────────────
+
+type PaginatedResult = {
+  items: Project[];
+  meta: {
+    total: number;
+    page: number;
+    totalPages: number;
+  };
+};
+
+type ActionResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: string };
+
+// ─── GET ────────────────────────────────────────────────────────────────────
+
+export async function getProjects(
+  limit: number = 10,
   page: number = 1
-): Promise<TProjectResponses> => {
-  try {
-    const searchParams = new URLSearchParams();
-    if (typeof limit === 'number' && !Number.isNaN(limit)) {
-      searchParams.set('limit', limit.toString());
-    }
-    if (typeof page === 'number' && !Number.isNaN(page)) {
-      searchParams.set('page', page.toString());
-    }
+): Promise<PaginatedResult> {
+  const safeLimit = Math.max(1, limit);
+  const safePage = Math.max(1, page);
+  return ProjectService.getPaginatedProjects(safeLimit, safePage);
+}
 
-    const url =
-      searchParams.toString().length > 0
-        ? `${API_BASE_PATH}?${searchParams.toString()}`
-        : API_BASE_PATH;
-
-    const response = await axiosInstance.get(url);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: {
-        items: response.data.data,
-        meta: {
-          total: response.data.total,
-          page: response.data.page,
-          totalPages: response.data.totalPages,
-        },
-      },
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
-  }
-};
-
-export const getProjectById = async (id: string): Promise<TProjectResponse> => {
+export async function getProjectById(id: string): Promise<Project | null> {
   if (!id) throw new Error('Project ID is required');
-  try {
-    const response = await axiosInstance.get(`${API_BASE_PATH}/${id}`);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: response.data.data,
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
-  }
-};
+  return ProjectService.getProjectById(id);
+}
 
-export const addProject = async (
-  data: CreateProjectInput
-): Promise<TProjectResponse> => {
-  if (!data || !data.title) {
-    throw new Error('Project data and title are required');
-  }
-  try {
-    const response = await axiosInstance.post(`${API_BASE_PATH}`, data);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: response.data.data,
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
-  }
-};
+// ─── CREATE ─────────────────────────────────────────────────────────────────
 
-export const updateProject = async (
+export async function addProject(
+  formData: FormData
+): Promise<ActionResult<CreateProjectInput>> {
+  // 1. Validasi dengan Zod
+  const rawData = {
+    title: formData.get('title'),
+    categoryId: formData.get('categoryId'),
+    tags: String(formData.get('tags') ?? '')
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean),
+    demo: formData.get('demo') || undefined,
+    github: formData.get('github') || undefined,
+    image: formData.get('image'),
+  };
+
+  const validated = projectSchema.safeParse(rawData);
+  if (!validated.success) {
+    return { success: false, error: validated.error.errors[0].message };
+  }
+
+  // 2. Upload image ke Cloudinary
+  const { imageUrl, publicId } = await uploadImage(validated.data.image);
+
+  // 3. Simpan ke DB via service
+  const project = await ProjectService.createProject({
+    title: validated.data.title,
+    image: imageUrl,
+    publicId,
+    demo: validated.data.demo ?? null,
+    github: validated.data.github ?? null,
+    tags: validated.data.tags,
+    categoryId: validated.data.categoryId,
+  });
+
+  return { success: true, data: project };
+}
+
+// ─── UPDATE ─────────────────────────────────────────────────────────────────
+
+export async function updateProject(
   id: string,
-  data: UpdateProjectInput
-): Promise<TProjectResponse> => {
-  if (!id) throw new Error('Project ID is required for update');
-  if (!data || Object.keys(data).length === 0) {
-    throw new Error('Update data cannot be empty');
-  }
-  try {
-    const response = await axiosInstance.patch(`${API_BASE_PATH}/${id}`, data);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: response.data.data,
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
-  }
-};
+  formData: FormData
+): Promise<ActionResult<Project>> {
+  if (!id) return { success: false, error: 'Project ID is required' };
 
-export const deleteProject = async (
-  id: string
-): Promise<{ status_code: number; message: string; data: unknown }> => {
-  if (!id) throw new Error('Project ID is required for deletion');
-  try {
-    const response = await axiosInstance.delete(`${API_BASE_PATH}/${id}`);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: response.data?.data ?? null,
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
+  // 1. Validasi
+  const rawData = {
+    title: formData.get('title'),
+    categoryId: formData.get('categoryId'),
+    tags: String(formData.get('tags') ?? '')
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean),
+    demo: formData.get('demo') || undefined,
+    github: formData.get('github') || undefined,
+    image:
+      formData.get('image') instanceof File ? formData.get('image') : undefined,
+  };
+
+  // Use partial schema for update — image is optional
+  const partialSchema = projectSchema.partial({ image: true });
+  const validated = partialSchema.safeParse(rawData);
+  if (!validated.success) {
+    return { success: false, error: validated.error.errors[0].message };
   }
-};
+
+  // 2. Upload image baru jika ada
+  let imageData: { image?: string; publicId?: string } = {};
+  if (validated.data.image instanceof File && validated.data.image.size > 0) {
+    const { imageUrl, publicId } = await uploadImage(validated.data.image);
+    imageData = { image: imageUrl, publicId };
+  }
+
+  // 3. Update via service
+  const project = await ProjectService.updateProject(id, {
+    title: validated.data.title,
+    demo: validated.data.demo ?? null,
+    github: validated.data.github ?? null,
+    tags: validated.data.tags,
+    categoryId: validated.data.categoryId,
+    ...imageData,
+  });
+
+  return { success: true, data: project as Project };
+}
+
+// ─── DELETE ─────────────────────────────────────────────────────────────────
+
+export async function deleteProject(
+  id: string
+): Promise<ActionResult<{ id: string }>> {
+  if (!id) return { success: false, error: 'Project ID is required' };
+
+  await ProjectService.deleteProject(id);
+
+  return { success: true, data: { id } };
+}

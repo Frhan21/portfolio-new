@@ -1,11 +1,10 @@
 import cloudinary from '@/lib/cloudinary';
 import { certificateUpdateSchema } from '@/lib/validation';
-import { Certificate } from '@/model/certificate';
 import {
-  getCertificatebyId,
+  getCertificateById,
   updateCertificate,
-} from '@/server/services/certificate-services';
-import { uploadCoverImage } from '@/server/services/upload-image';
+} from '@/server/services/certificate.server';
+import { uploadImage } from '@/server/services/upload.server';
 import { revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -22,7 +21,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
         status: 404,
       });
     }
-    const cat = await getCertificatebyId(id);
+    const cat = await getCertificateById(id);
 
     if (!cat) {
       return NextResponse.json({
@@ -54,7 +53,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       );
     }
 
-    const existingCertificate = await getCertificatebyId(id);
+    const existingCertificate = await getCertificateById(id);
 
     if (!existingCertificate) {
       return NextResponse.json(
@@ -134,7 +133,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
     }
 
     if (image) {
-      const { imageUrl, publicId } = await uploadCoverImage(image);
+      const { imageUrl, publicId } = await uploadImage(image);
 
       if (existingCertificate.publicId) {
         try {
@@ -147,10 +146,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       updateData.publicId = publicId;
     }
 
-    const res = await updateCertificate(
-      id,
-      updateData as unknown as Certificate
-    );
+    const res = await updateCertificate(id, updateData);
 
     revalidateTag('certificates', 'max');
 

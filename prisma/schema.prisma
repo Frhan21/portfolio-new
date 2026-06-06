@@ -22,12 +22,25 @@ model Category {
 }
 
 model User {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  password      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
   id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  revoked   Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Project {

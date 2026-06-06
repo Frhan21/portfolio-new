@@ -1,135 +1,64 @@
-import { axiosInstance } from '@/lib/axios';
-import axios from 'axios';
+'use server';
+
+import { categorySchema } from '@/lib/validation';
+import * as CategoryService from '@/server/services/category.server';
 import {
-  TCategoryResponse,
-  TCategoryResponses,
+  Category,
   TCreateCategory,
-  UpdateCategoryInput,
+  CategoryActionResult,
 } from '@/model/category';
 
-const API_BASE_PATH = '/category';
+export async function getCategories() {
+  const categories = await CategoryService.getCategories();
+  return {
+    items: categories || [],
+    meta: {
+      total: categories?.length || 0,
+      page: 1,
+      totalPages: 1,
+    },
+  };
+}
 
-export const getCategories = async (
-  limit?: number,
-  page: number = 1
-): Promise<TCategoryResponses> => {
-  try {
-    const searchParams = new URLSearchParams();
-    if (
-      limit !== undefined &&
-      typeof limit === 'number' &&
-      !Number.isNaN(limit)
-    ) {
-      searchParams.set('limit', limit.toString());
-    }
-    if (typeof page === 'number' && !Number.isNaN(page)) {
-      searchParams.set('page', page.toString());
-    }
-
-    const url =
-      searchParams.toString().length > 0
-        ? `${API_BASE_PATH}?${searchParams.toString()}`
-        : API_BASE_PATH;
-
-    const response = await axiosInstance.get(url);
-    return {
-      status_code: response.status,
-      message: response.data.message ?? response.statusText,
-      data: {
-        items: response.data.categories ?? [],
-        meta: {
-          total: response.data.total ?? 0,
-          page: response.data.page ?? 1,
-          totalPages: response.data.totalPages ?? 1,
-        },
-      },
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
-  }
-};
-
-export const getCategoryById = async (
-  id: string
-): Promise<TCategoryResponse> => {
+export async function getCategoryById(id: string): Promise<Category | null> {
   if (!id) throw new Error('Category ID is required');
-  try {
-    const response = await axiosInstance.get(`${API_BASE_PATH}/${id}`);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: response.data.data,
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
-  }
-};
+  return CategoryService.getCategoryById(id);
+}
 
-export const addCategory = async (
+export async function addCategory(
   data: TCreateCategory
-): Promise<TCategoryResponse> => {
-  if (!data || !data.title) {
-    throw new Error('Category data and title are required');
+): Promise<CategoryActionResult<Category>> {
+  const validated = categorySchema.safeParse(data);
+  if (!validated.success) {
+    return { success: false, error: validated.error.errors[0].message };
   }
-  try {
-    const response = await axiosInstance.post(`${API_BASE_PATH}`, data);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: response.data.data,
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
-  }
-};
 
-export const updateCategory = async (
+  const category = await CategoryService.createCategory(validated.data.title);
+  return { success: true, data: category };
+}
+
+export async function updateCategory(
   id: string,
-  data: UpdateCategoryInput
-): Promise<TCategoryResponse> => {
-  if (!id) throw new Error('Category ID is required for update');
-  if (!data || Object.keys(data).length === 0) {
-    throw new Error('Update data cannot be empty');
-  }
-  try {
-    const response = await axiosInstance.patch(`${API_BASE_PATH}/${id}`, data);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: response.data.data,
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
-  }
-};
+  data: TCreateCategory
+): Promise<CategoryActionResult<Category>> {
+  if (!id) return { success: false, error: 'Category ID is required' };
 
-export const deleteCategory = async (
-  id: string
-): Promise<{ status_code: number; message: string; data: unknown }> => {
-  if (!id) throw new Error('Category ID is required for deletion');
-  try {
-    const response = await axiosInstance.delete(`${API_BASE_PATH}/${id}`);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: response.data?.data ?? null,
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
+  const validated = categorySchema.safeParse(data);
+  if (!validated.success) {
+    return { success: false, error: validated.error.errors[0].message };
   }
-};
+
+  const category = await CategoryService.updateCategory(
+    id,
+    validated.data.title
+  );
+  return { success: true, data: category };
+}
+
+export async function deleteCategory(
+  id: string
+): Promise<CategoryActionResult<{ id: string }>> {
+  if (!id) return { success: false, error: 'Category ID is required' };
+  await CategoryService.deleteCategory(id);
+  return { success: true, data: { id } };
+}

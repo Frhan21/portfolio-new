@@ -3,7 +3,7 @@
 import { getProjects } from '@/server/actions/project.actions';
 import { useQuery } from '@tanstack/react-query';
 
-export const useQueryProject = (limit: number = 4, page: number = 1) => {
+export const useQueryProject = (limit: number = 10, page: number = 1) => {
   return useQuery({
     queryKey: ['projects', limit, page],
     queryFn: () => getProjects(limit, page),

@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+const optionalUrl = z
+  .union([z.literal(''), z.string().url('URL tidak valid')])
+  .optional()
+  .transform((e) => (e === '' ? undefined : e));
+
 export const categorySchema = z.object({
   title: z.string().min(1, 'Judul kategori tidak boleh kosong'),
 });
@@ -11,16 +16,22 @@ export const projectSchema = z.object({
     .refine((file) => file.type.startsWith('image/'))
     .refine((file) => file.size > 0, 'Gambar proyek tidak boleh kosong')
     .refine(
-      (file) => file.size <= 5 * 1024 * 1024,
-      'Ukuran gambar maksimal 5MB'
+      (file) => file.size <= 1 * 1024 * 1024,
+      'Ukuran gambar maksimal 1MB'
     ),
 
-  demo: z.string().url('URL demo tidak valid').optional(),
-  github: z.string().url('URL GitHub tidak valid').optional(),
+  demo: optionalUrl.refine(
+    (value) => !value || /^https?:\/\//.test(value),
+    'URL demo tidak valid'
+  ),
+  github: optionalUrl.refine(
+    (value) => !value || /^https?:\/\//.test(value),
+    'URL GitHub tidak valid'
+  ),
   tags: z
     .array(z.string().min(1, 'Tag tidak boleh kosong'))
     .min(1, 'Setidaknya satu tag diperlukan'),
-  categoryId: z.string(),
+  categoryId: z.string().min(1, 'Kategori wajib dipilih'),
 });
 
 export const projectUpdateSchema = z.object({
@@ -30,17 +41,23 @@ export const projectUpdateSchema = z.object({
     .refine((file) => file.type.startsWith('image/'))
     .refine((file) => file.size > 0, 'Gambar proyek tidak boleh kosong')
     .refine(
-      (file) => file.size <= 5 * 1024 * 1024,
-      'Ukuran gambar maksimal 5MB'
+      (file) => file.size <= 1 * 1024 * 1024,
+      'Ukuran gambar maksimal 1MB'
     )
     .optional(),
 
-  demo: z.string().url('URL demo tidak valid').optional(),
-  github: z.string().url('URL GitHub tidak valid').optional(),
+  demo: optionalUrl.refine(
+    (value) => !value || /^https?:\/\//.test(value),
+    'URL demo tidak valid'
+  ),
+  github: optionalUrl.refine(
+    (value) => !value || /^https?:\/\//.test(value),
+    'URL GitHub tidak valid'
+  ),
   tags: z
     .array(z.string().min(1, 'Tag tidak boleh kosong'))
     .min(1, 'Setidaknya satu tag diperlukan'),
-  categoryId: z.string(),
+  categoryId: z.string().min(1, 'Kategori wajib dipilih'),
 });
 
 export const userSchema = z.object({
@@ -56,8 +73,8 @@ export const certficateSchema = z.object({
     .refine((file) => file.type.startsWith('image/'))
     .refine((file) => file.size > 0, 'Gambar sertifikat tidak boleh kosong')
     .refine(
-      (file) => file.size <= 5 * 1024 * 1024,
-      'Ukuran gambar maksimal 5MB'
+      (file) => file.size <= 1 * 1024 * 1024,
+      'Ukuran gambar maksimal 1MB'
     ),
   issuer: z.string().min(1, 'Organisasi tidak boleh kosong'),
   issuer_date: z.string().min(1, 'Tanggal tidak boleh kosong'),

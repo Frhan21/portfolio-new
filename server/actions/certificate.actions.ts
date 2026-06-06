@@ -1,135 +1,116 @@
-import { axiosInstance } from '@/lib/axios';
-import axios from 'axios';
+'use server';
+
+import { certficateSchema, certificateUpdateSchema } from '@/lib/validation';
+import * as CertificateService from '@/server/services/certificate.server';
+import { uploadImage } from '@/server/services/upload.server';
 import {
-  CreateCertificateInput,
-  TCertificateResponse,
-  TCertificateResponses,
-  UpdateCertificateInput,
+  Certificate,
+  CertificateActionResult,
+  CertificatePaginatedResult,
 } from '@/model/certificate';
 
-const API_BASE_PATH = '/certificate';
-
-export const getCertificates = async (
-  limit?: number,
+export async function getCertificates(
+  limit: number = 6,
   page: number = 1
-): Promise<TCertificateResponses> => {
-  try {
-    const searchParams = new URLSearchParams();
-    if (
-      limit !== undefined &&
-      typeof limit === 'number' &&
-      !Number.isNaN(limit)
-    ) {
-      searchParams.set('limit', limit.toString());
-    }
-    if (typeof page === 'number' && !Number.isNaN(page)) {
-      searchParams.set('page', page.toString());
-    }
+): Promise<CertificatePaginatedResult> {
+  const safeLimit = Math.max(1, limit);
+  const safePage = Math.max(1, page);
+  return CertificateService.getPaginatedCertificates(safeLimit, safePage);
+}
 
-    const url =
-      searchParams.toString().length > 0
-        ? `${API_BASE_PATH}?${searchParams.toString()}`
-        : API_BASE_PATH;
-
-    const response = await axiosInstance.get(url);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: {
-        items: response.data.data,
-        meta: {
-          total: response.data.total,
-          page: response.data.page,
-          totalPages: response.data.totalPages,
-        },
-      },
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
-  }
-};
-
-export const getCertificateById = async (
+export async function getCertificateById(
   id: string
-): Promise<TCertificateResponse> => {
+): Promise<Certificate | null> {
   if (!id) throw new Error('Certificate ID is required');
-  try {
-    const response = await axiosInstance.get(`${API_BASE_PATH}/${id}`);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: response.data.data,
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
-  }
-};
+  return CertificateService.getCertificateById(id);
+}
 
-export const addCertificate = async (
-  data: CreateCertificateInput
-): Promise<TCertificateResponse> => {
-  if (!data || !data.title) {
-    throw new Error('Certificate data and title are required');
-  }
-  try {
-    const response = await axiosInstance.post(`${API_BASE_PATH}`, data);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: response.data.data,
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
-  }
-};
+export async function addCertificate(
+  formData: FormData
+): Promise<CertificateActionResult<Certificate>> {
+  const rawData = {
+    title: formData.get('title'),
+    categoryId: formData.get('categoryId'),
+    issuer: formData.get('issuer'),
+    issuer_date: formData.get('issuer_date'),
+    image: formData.get('image'),
+  };
 
-export const updateCertificate = async (
+  const validated = certficateSchema.safeParse(rawData);
+  if (!validated.success) {
+    return { success: false, error: validated.error.errors[0].message };
+  }
+
+  const parsedIssuerDate = new Date(validated.data.issuer_date);
+  if (isNaN(parsedIssuerDate.getTime())) {
+    return { success: false, error: 'Format tanggal issuer tidak valid.' };
+  }
+
+  const { imageUrl, publicId } = await uploadImage(validated.data.image);
+
+  const certificate = await CertificateService.createCertificate({
+    title: validated.data.title,
+    image: imageUrl,
+    publicId,
+    categoryId: validated.data.categoryId,
+    issuer: validated.data.issuer,
+    issuer_date: parsedIssuerDate,
+  });
+
+  return { success: true, data: certificate };
+}
+
+export async function updateCertificate(
   id: string,
-  data: UpdateCertificateInput
-): Promise<TCertificateResponse> => {
-  if (!id) throw new Error('Certificate ID is required for update');
-  if (!data || Object.keys(data).length === 0) {
-    throw new Error('Update data cannot be empty');
-  }
-  try {
-    const response = await axiosInstance.patch(`${API_BASE_PATH}/${id}`, data);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: response.data.data,
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
-  }
-};
+  formData: FormData
+): Promise<CertificateActionResult<Certificate>> {
+  if (!id) return { success: false, error: 'Certificate ID is required' };
 
-export const deleteCertificate = async (
-  id: string
-): Promise<{ status_code: number; message: string; data: unknown }> => {
-  if (!id) throw new Error('Certificate ID is required for deletion');
-  try {
-    const response = await axiosInstance.delete(`${API_BASE_PATH}/${id}`);
-    return {
-      status_code: response.status,
-      message: response.statusText,
-      data: response.data?.data ?? null,
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error;
-    }
-    throw error;
+  const rawData = {
+    title: formData.get('title'),
+    categoryId: formData.get('categoryId'),
+    issuer: formData.get('issuer'),
+    issuer_date: formData.get('issuer_date'),
+    image:
+      formData.get('image') instanceof File ? formData.get('image') : undefined,
+  };
+
+  const partialSchema = certificateUpdateSchema;
+  const validated = partialSchema.safeParse(rawData);
+  if (!validated.success) {
+    return { success: false, error: validated.error.errors[0].message };
   }
-};
+
+  const updateData: Record<string, unknown> = {};
+  if (validated.data.title) updateData.title = validated.data.title;
+  if (validated.data.categoryId)
+    updateData.categoryId = validated.data.categoryId;
+  if (validated.data.issuer) updateData.issuer = validated.data.issuer;
+  if (validated.data.issuer_date) {
+    const parsedIssuerDate = new Date(validated.data.issuer_date);
+    if (isNaN(parsedIssuerDate.getTime())) {
+      return { success: false, error: 'Format tanggal issuer tidak valid.' };
+    }
+    updateData.issuer_date = parsedIssuerDate;
+  }
+
+  if (validated.data.image instanceof File && validated.data.image.size > 0) {
+    const { imageUrl, publicId } = await uploadImage(validated.data.image);
+    updateData.image = imageUrl;
+    updateData.publicId = publicId;
+  }
+
+  const certificate = await CertificateService.updateCertificate(
+    id,
+    updateData
+  );
+  return { success: true, data: certificate as Certificate };
+}
+
+export async function deleteCertificate(
+  id: string
+): Promise<CertificateActionResult<{ id: string }>> {
+  if (!id) return { success: false, error: 'Certificate ID is required' };
+  await CertificateService.deleteCertificate(id);
+  return { success: true, data: { id } };
+}

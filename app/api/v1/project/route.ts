@@ -4,9 +4,8 @@ import {
   validationErrorResponse,
 } from '@/lib/api-response';
 import { projectSchema } from '@/lib/validation';
-import { createProject, getProject } from '@/server/services/project-services';
-import { uploadCoverImage } from '@/server/services/upload-image';
-import { revalidateTag } from 'next/cache';
+import { createProject, getProject } from '@/server/services/project.server';
+import { uploadImage } from '@/server/services/upload.server';
 import { NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -33,15 +32,23 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  // NOTE: The primary create path for the dashboard uses the Server Action
+  // (server/actions/project.actions.ts → addProject). This route remains
+  // for external/public API consumers that call POST /api/v1/project directly.
   try {
     const formData = await req.formData();
     const data = Object.fromEntries(formData.entries());
-    console.log('Received data:', data);
 
-    const tags = typeof data.tags === 'string' ? data.tags.split(',') : [];
+    const tags =
+      typeof data.tags === 'string'
+        ? data.tags
+            .split(',')
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : [];
     const validate = projectSchema.safeParse({
       ...data,
-      tags: tags,
+      tags,
       image: formData.get('image') as File,
     });
 
@@ -53,6 +60,7 @@ export async function POST(req: NextRequest) {
     if (!image) {
       return errorResponse('Image file is required', undefined, 400);
     }
+
     const {
       title,
       tags: validatedTags,
@@ -60,11 +68,10 @@ export async function POST(req: NextRequest) {
       github,
       categoryId,
     } = validate.data;
-
-    const { imageUrl, publicId } = await uploadCoverImage(image);
+    const { imageUrl, publicId } = await uploadImage(image);
 
     const project = await createProject({
-      title: title,
+      title,
       image: imageUrl,
       publicId,
       demo: demo ?? null,
@@ -72,8 +79,6 @@ export async function POST(req: NextRequest) {
       tags: validatedTags,
       categoryId,
     });
-
-    revalidateTag('projects', 'max');
 
     return successResponse(project, 'Project created successfully', 201);
   } catch (error) {
