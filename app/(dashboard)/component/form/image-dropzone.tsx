@@ -5,18 +5,25 @@ import { toast } from 'sonner';
 interface ImageDropzoneProps {
   value?: File;
   onChange: (file: File) => void;
+  previewUrl?: string;
 }
 
-export function ImageDropzone({ value, onChange }: ImageDropzoneProps) {
+export function ImageDropzone({
+  value,
+  onChange,
+  previewUrl: initialPreviewUrl,
+}: ImageDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    initialPreviewUrl || null
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // If the form resets or initializes with empty file, clear the preview
     if (!value || value.size === 0) {
       const handle = setTimeout(() => {
-        setPreviewUrl(null);
+        setPreviewUrl(initialPreviewUrl || null);
       }, 0);
       return () => clearTimeout(handle);
     }
@@ -99,8 +106,8 @@ export function ImageDropzone({ value, onChange }: ImageDropzoneProps) {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center space-y-2 text-center">
-          <div className="rounded-full bg-secondary p-3">
-            <ImageIcon className="h-6 w-6 text-muted-foreground" />
+          <div className="rounded-full bg-primary p-3">
+            <ImageIcon className="h-6 w-6 text-primary-foreground" />
           </div>
           <div className="text-sm">
             <span className="font-semibold text-primary">

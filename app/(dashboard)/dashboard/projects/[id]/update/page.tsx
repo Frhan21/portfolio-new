@@ -1,26 +1,39 @@
-'use client';
+import { Metadata } from 'next';
+import { ProjectForm } from '../../components/form/form';
+import { getProjectById } from '@/server/actions/project.actions';
+import { notFound } from 'next/navigation';
 
-import Breadcrumbs from '@/app/(dashboard)/component/breadcrumbs';
+export const metadata: Metadata = {
+  title: 'Projects - Update',
+  description: 'Update existing project',
+};
 
-const UpdateProjectPage = () => {
+// Next.js 15 App Router standard
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
+
+  const project = await getProjectById(id);
+
+  if (!project) {
+    notFound();
+  }
+
   return (
-    <div className="flex-1 px-4 lg:flex lg:flex-col lg:gap-4">
+    <div className="flex-1 lg:flex lg:flex-col lg:gap-4">
       <header className="mb-6 space-y-5">
-        <Breadcrumbs />
         <div>
           <h1 className="text-3xl font-bold">Update Project</h1>
-          <p className="text-sm text-muted-foreground">
-            Form update project belum saya aktifkan lagi.
+          <p className="text-muted-foreground text-sm">
+            Update the information below to modify the project
           </p>
         </div>
       </header>
-
-      <div className="rounded-3xl border border-border/60 bg-card px-6 py-10 text-sm text-muted-foreground shadow-sm">
-        Untuk sekarang alurnya saya sederhanakan dulu ke create project agar
-        lebih mudah dianalisis dan dilanjutkan.
-      </div>
+      <ProjectForm initialData={project} />
     </div>
   );
-};
-
-export default UpdateProjectPage;
+}

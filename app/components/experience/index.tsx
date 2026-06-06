@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'motion/react';
-import React from 'react';
 import { Briefcase } from 'lucide-react';
 import { fadeIn, fadeUp } from '../motions';
 

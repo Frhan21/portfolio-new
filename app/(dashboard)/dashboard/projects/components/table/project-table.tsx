@@ -86,7 +86,7 @@ export default function ProjectTable() {
       </div>
 
       {/* Table Container */}
-      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+      <div className="bg-background rounded-xl border border-border shadow-sm overflow-hidden">
         <DataTable
           columns={columns}
           data={processedData}

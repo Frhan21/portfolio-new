@@ -4,10 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Globe, Github, Tag, FolderOpen, Type, ArrowLeft } from 'lucide-react';
+import { Award, FolderOpen, Type, ArrowLeft, Trash } from 'lucide-react';
 import Link from 'next/link';
 
-import { TProjectSchema, projectSchema } from './schema';
+import { TCertificateSchema } from './schema';
+import { certficateSchema } from '@/lib/validation';
 import {
   Field,
   FieldError,
@@ -25,101 +26,62 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useProjectMutation } from '@/app/components/project/hooks/use-project-mutation';
+import { useCertificateMutation } from '../../hooks/use-certifiacte-mutation';
 import { ImageDropzone } from '@/app/(dashboard)/component/form/image-dropzone';
 import { FormSection } from '@/app/(dashboard)/component/form/form-section';
-import { TagsInput } from './tags-input';
 import { Category } from '@/model/category';
-import { Project } from '@/model/project';
-import Swal from 'sweetalert2';
-import { deleteProject } from '@/server/actions/project.actions';
+import { Certificate } from '@/model/certificate';
 import { useQueryClient } from '@tanstack/react-query';
-import { Trash } from 'lucide-react';
 
-export function ProjectForm({ initialData }: { initialData?: Project | null }) {
+export default function CertificateForm({
+  initialData,
+}: {
+  initialData?: Certificate | null;
+}) {
   const isEdit = !!initialData;
-  const form = useForm<TProjectSchema>({
-    resolver: zodResolver(projectSchema),
+  const form = useForm<TCertificateSchema>({
+    resolver: zodResolver(certficateSchema),
     defaultValues: {
       title: initialData?.title || '',
-      image: new File([], ''),
-      tags: initialData?.tags || [],
+      issuer: initialData?.issuer || '',
+      issuer_date: initialData?.issuer_date
+        ? new Date(initialData.issuer_date).toISOString().split('T')[0]
+        : '',
       categoryId: initialData?.categoryId || '',
-      demo: initialData?.demo || '',
-      github: initialData?.github || '',
+      image: new File([], ''),
     },
   });
 
   const { data: categories, isLoading: categoriesLoading } = useQueryCategory();
-  const { mutate, isPending } = useProjectMutation({
+  const { mutate, isPending } = useCertificateMutation({
     isEdit,
-    projectId: initialData?.id,
+    certificateId: initialData?.id,
   });
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const handleDelete = async () => {
-    if (!initialData) return;
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: `You are about to delete "${initialData.title}". This action cannot be undone.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ea580c',
-      cancelButtonColor: '#64748b',
-      confirmButtonText: 'Yes, delete it!',
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await deleteProject(initialData.id);
-        Swal.fire({
-          title: 'Deleted!',
-          text: 'The project has been deleted.',
-          icon: 'success',
-          confirmButtonColor: '#ea580c',
-        });
-        queryClient.invalidateQueries({ queryKey: ['projects'] });
-        router.push('/dashboard/projects');
-      } catch (error) {
-        Swal.fire({
-          title: 'Error!',
-          text: 'Failed to delete the project.',
-          icon: 'error',
-          confirmButtonColor: '#ea580c',
-        });
-      }
-    }
-  };
-
-  const onSubmit = (data: TProjectSchema) => {
+  const onSubmit = (data: TCertificateSchema) => {
     const formData = new FormData();
     formData.append('title', data.title);
+    formData.append('issuer', data.issuer);
+    formData.append('issuer_date', data.issuer_date);
+    formData.append('categoryId', data.categoryId);
 
     if (data.image && data.image.size > 0) {
       formData.append('image', data.image);
     }
 
-    formData.append('categoryId', data.categoryId);
-
-    if (data.tags.length > 0) {
-      formData.append('tags', data.tags.join(','));
-    }
-
-    if (data.demo) formData.append('demo', data.demo);
-    if (data.github) formData.append('github', data.github);
-
     mutate(formData, {
       onSuccess: () => {
         toast.success(
-          `Project berhasil ${isEdit ? 'diperbarui' : 'disimpan'}!`
+          `Certificate berhasil ${isEdit ? 'diperbarui' : 'disimpan'}!`
         );
-        router.push('/dashboard/projects');
+        router.push('/dashboard/certificates');
       },
       onError: (error: Error) => {
         toast.error(
           error?.message ||
-            `Gagal ${isEdit ? 'memperbarui' : 'menyimpan'} project.`
+            `Gagal ${isEdit ? 'memperbarui' : 'menyimpan'} certificate.`
         );
       },
     });
@@ -142,8 +104,8 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
                 data-invalid={fieldState.invalid}
                 className="sm:col-span-2"
               >
-                <FieldLabel>Judul Proyek</FieldLabel>
-                <Input {...field} placeholder="E.g., E-commerce Dashboard" />
+                <FieldLabel>Judul Sertifikat</FieldLabel>
+                <Input {...field} placeholder="Masukkan judul sertifikat...." />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -189,18 +151,42 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
               </Field>
             )}
           />
+        </FieldGroup>
+      </FormSection>
 
-          {/* Tags */}
+      {/* Certificate Detail */}
+      <FormSection
+        icon={<Award className="h-3.5 w-3.5" />}
+        title="Detail Sertifikat"
+      >
+        <FieldGroup className="grid gap-4 sm:grid-cols-2">
+          {/* Issuer */}
           <Controller
+            name="issuer"
             control={form.control}
-            name="tags"
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>
-                  <Tag className="inline h-3.5 w-3.5 mr-1 text-muted-foreground" />
-                  Tags
-                </FieldLabel>
-                <TagsInput value={field.value} onChange={field.onChange} />
+                <FieldLabel>Issuer</FieldLabel>
+                <Input {...field} placeholder="Masukkan nama issuer...." />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+
+          {/* Issuer Date */}
+          <Controller
+            control={form.control}
+            name="issuer_date"
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel>Issuer Date</FieldLabel>
+                <Input
+                  type="date"
+                  {...field}
+                  placeholder="Pilih tanggal issuer...."
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -213,7 +199,7 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
       {/* Image */}
       <FormSection
         icon={<FolderOpen className="h-3.5 w-3.5" />}
-        title="Gambar Proyek"
+        title="Gambar Sertifikat"
       >
         <Controller
           name="image"
@@ -235,53 +221,11 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
         />
       </FormSection>
 
-      {/* Links */}
-      <FormSection
-        icon={<Globe className="h-3.5 w-3.5" />}
-        title="Tautan (Opsional)"
-      >
-        <FieldGroup className="grid gap-4 sm:grid-cols-2">
-          <Controller
-            control={form.control}
-            name="demo"
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>
-                  <Globe className="inline h-3.5 w-3.5 mr-1 text-muted-foreground" />
-                  Live Demo
-                </FieldLabel>
-                <Input {...field} placeholder="https://my-project.vercel.app" />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-
-          <Controller
-            control={form.control}
-            name="github"
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>
-                  <Github className="inline h-3.5 w-3.5 mr-1 text-muted-foreground" />
-                  GitHub Repository
-                </FieldLabel>
-                <Input {...field} placeholder="https://github.com/user/repo" />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-        </FieldGroup>
-      </FormSection>
-
       {/* Action Buttons */}
       <div className="flex items-center justify-between pt-2">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" type="button" asChild>
-            <Link href="/dashboard/projects">
+            <Link href="/dashboard/certificates">
               <ArrowLeft className="h-4 w-4" />
               Kembali
             </Link>
@@ -291,8 +235,8 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
           {isPending
             ? 'Menyimpan...'
             : isEdit
-              ? 'Update Project'
-              : 'Simpan Project'}
+              ? 'Update Certificate'
+              : 'Simpan Certificate'}
         </Button>
       </div>
     </form>
