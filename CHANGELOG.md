@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/Frhan21/portfolio-new/compare/v0.1.1...v0.1.2) (2026-06-08)
+
+### Features
+
+- **dashboard:** create certificate and categories CRUD form ([9ee40dc](https://github.com/Frhan21/portfolio-new/commit/9ee40dcaab244ef683df0f69c115920ae8befe93))
+- **dashboard:** create Certificate and Categories CRUD form ([d6a5736](https://github.com/Frhan21/portfolio-new/commit/d6a573621f79a19605959b7df880464461250559))
+- **dashboard:** create dashboard for CMS portfolio ([d6bc73d](https://github.com/Frhan21/portfolio-new/commit/d6bc73da2c1edcdba04f4cb7ec4907275a372735))
+- **experience:** add experience section for job list ([a82b6f7](https://github.com/Frhan21/portfolio-new/commit/a82b6f77abc04ce991c25ad751f3a8ff43d09a93))
+- **experience:** add experience section on database and implement to CMS and landing page ([adcccfb](https://github.com/Frhan21/portfolio-new/commit/adcccfb32bf831e8a4ae7cdf0610021d7e837a6c))
+- **experiences:** create CMS for experience and implement into landing page ([1e32ff0](https://github.com/Frhan21/portfolio-new/commit/1e32ff06abcaab39b4973569044988ec56b7e3f8))
+- redesign landing page ([9009311](https://github.com/Frhan21/portfolio-new/commit/90093112d77ae9a6b7011821329887d4c201cb98))
+- redesign landing page ([8338d67](https://github.com/Frhan21/portfolio-new/commit/8338d67666e1c3d3a62f521b3d9a04f65eb923ce))
+
+### Bug Fixes
+
+- add auth actions and server, refactoring auth using tanstack query ([2660be3](https://github.com/Frhan21/portfolio-new/commit/2660be3de293c886e877bb7aa0bdafccb38561f4))
+- **nav:** fix nav issue to associate with defaultThemes by system ([c907810](https://github.com/Frhan21/portfolio-new/commit/c9078109db7b5a77c86024795e27a88639e43aa6))
+
 ### 0.1.1 (2026-05-04)
 
 ### Features
