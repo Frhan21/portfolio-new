@@ -22,9 +22,9 @@ const ProjectPage = ({ searchParams }: ProjectPageProps) => {
 
   const { data, isLoading, isError } = useQueryProject(PAGE_SIZE, currentPage);
 
-  const totalPages = data?.data.meta.totalPages ?? 1;
-  const totalItems = data?.data.meta.total ?? 0;
-  const paginatedProjects = data?.data.items ?? [];
+  const totalPages = data?.meta.totalPages ?? 1;
+  const totalItems = data?.meta.total ?? 0;
+  const paginatedProjects = data?.items ?? [];
   const startItem = totalItems === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
   const endItem = Math.min(currentPage * PAGE_SIZE, totalItems);
   const pageLabel = `${startItem}-${endItem}`;

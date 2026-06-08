@@ -1,14 +1,13 @@
 import cloudinary from '@/lib/cloudinary';
 import prisma from '@/lib/prisma';
 import { projectUpdateSchema } from '@/lib/validation';
-import { Project } from '@/model/project';
 import { revalidateTag } from 'next/cache';
 import {
   deleteProject,
-  getProjectbyId,
+  getProjectById,
   updateProject,
-} from '@/server/services/project-services';
-import { uploadCoverImage } from '@/server/services/upload-image';
+} from '@/server/services/project.server';
+import { uploadImage } from '@/server/services/upload.server';
 import { NextRequest, NextResponse } from 'next/server';
 
 type RouteContext = {
@@ -24,7 +23,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
         { status: 400 }
       );
     }
-    const res = await getProjectbyId(id);
+    const res = await getProjectById(id);
 
     if (!res) {
       return NextResponse.json(
@@ -137,16 +136,13 @@ export async function PUT(req: NextRequest, context: RouteContext) {
         }
       }
 
-      const res = await uploadCoverImage(image);
+      const res = await uploadImage(image);
 
       updateData.image = res.imageUrl;
       updateData.publicId = res.publicId;
     }
 
-    const updatedProject = await updateProject(
-      id,
-      updateData as unknown as Project
-    );
+    const updatedProject = await updateProject(id, updateData);
 
     revalidateTag('projects', 'max');
 
@@ -166,7 +162,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
 export async function DELETE(req: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
-    const project = await getProjectbyId(id);
+    const project = await getProjectById(id);
 
     if (!project) {
       return NextResponse.json(
