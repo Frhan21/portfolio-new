@@ -2,6 +2,7 @@ import React from 'react';
 import Home from '../components/home';
 import About from '../components/about';
 import Tools from '../components/tools';
+import Experience from '../components/experience';
 import Project from '../components/project';
 import Certificate from '../components/certificate';
 import FAQ from '../components/faq';
@@ -23,6 +24,7 @@ const Page = () => {
       <Home />
       <About />
       <Tools />
+      <Experience />
       <Project />
       <Certificate />
       <FAQ />

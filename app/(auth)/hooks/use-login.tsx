@@ -1,15 +1,22 @@
 import { useMutation } from '@tanstack/react-query';
-import { loginAction } from '@/server/actions/auth.actions';
+import { signIn } from 'next-auth/react';
 import { LoginSchemaType } from '../component/form/schema/login-scheme';
+import { redirect } from 'next/navigation';
 
 export const useLogin = () => {
   return useMutation({
     mutationFn: async (data: LoginSchemaType) => {
-      const response = await loginAction(data);
-      if (!response.success) {
-        throw new Error(response.error);
+      const result = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        throw new Error('Invalid email or password');
       }
-      return response;
+
+      return { success: true, message: 'Login successful' };
     },
   });
 };

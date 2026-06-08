@@ -40,8 +40,8 @@ const Project = () => {
       {/* Client Component for Filtering */}
       <div className="w-full max-w-7xl mx-auto">
         <ProjectList
-          projects={project.data?.data.items ?? []}
-          categories={category.data?.data.items ?? []}
+          projects={project.data?.items ?? []}
+          categories={category.data?.items ?? []}
         />
       </div>
     </div>

@@ -3,7 +3,7 @@ import { categorySchema } from '@/lib/validation';
 import {
   createCategory,
   getCategories,
-} from '@/server/services/category-services';
+} from '@/server/services/category.server';
 import { NextResponse } from 'next/server';
 
 // const prisma = new PrismaClient();

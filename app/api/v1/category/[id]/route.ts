@@ -2,7 +2,7 @@ import {
   deleteCategory,
   getCategoryById,
   updateCategory,
-} from '@/server/services/category-services';
+} from '@/server/services/category.server';
 import { NextRequest, NextResponse } from 'next/server';
 
 type RouteContext = {

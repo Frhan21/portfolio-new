@@ -19,15 +19,34 @@ model Category {
   timestamp    DateTime      @default(now())
   projects     Project[]
   certificates Certificate[]
+
+  @@map("categories")
 }
 
 model User {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  password      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
   id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  revoked   Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+
+  @@map("refresh_tokens")
 }
 
 model Project {
@@ -42,6 +61,8 @@ model Project {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
   category   Category @relation(fields: [categoryId], references: [id])
+
+  @@map("projects")
 }
 
 model Certificate {
@@ -55,4 +76,20 @@ model Certificate {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
   category    Category @relation(fields: [categoryId], references: [id])
+
+  @@map("certificates")
+}
+
+model Experience {
+  id          String   @id @default(uuid())
+  company     String
+  position    String
+  startDate   DateTime
+  endDate     DateTime?
+  description String
+  badges      String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  @@map("experiences")
 }

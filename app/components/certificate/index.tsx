@@ -1,4 +1,4 @@
-import { getCertificates } from '@/server/services/certificate-services';
+import { getCertificates } from '@/server/services/certificate.server';
 import CertificateSlider from './certificate-slider';
 
 const Certificate = async () => {

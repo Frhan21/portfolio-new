@@ -13,6 +13,7 @@ import { Button, Input } from '../form-control';
 import AuthLayout from '../layout/auth-layout';
 import LoginSchema from './schema/login-scheme';
 import { RegisterSchema, RegisterSchemaType } from './schema/register-scheme';
+import { cn } from '@/lib/utils';
 
 interface AuthFormProps {
   type: 'login' | 'register';
@@ -175,6 +176,19 @@ const AuthForm = ({ type }: AuthFormProps) => {
           {isLogin ? 'Sign Up' : 'Sign In'}
         </Link>
       </p>
+      <div
+        className={cn(
+          'flex items-center justify-center mt-2',
+          isPending && 'opacity-50 cursor-not-allowed'
+        )}
+      >
+        <Link
+          href="/"
+          className="text-center text-sm text-[#6B7280] dark:text-[#9CA3AF] transition-colors duration-300 hover:text-foreground hover:underline"
+        >
+          Kembali ke halaman utama
+        </Link>
+      </div>
     </AuthLayout>
   );
 };

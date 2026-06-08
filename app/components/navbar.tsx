@@ -9,8 +9,9 @@ import { motion, AnimatePresence } from 'motion/react';
 
 const navLinks = [
   { to: 'home', label: 'Home' },
-  { to: 'projects', label: 'Projects' },
   { to: 'tech-stack', label: 'Stack' },
+  { to: 'experience', label: 'Experience' },
+  { to: 'projects', label: 'Projects' },
   { to: 'certificates', label: 'Certificates' },
   { to: 'faq', label: 'FAQ' },
   { to: 'contact', label: 'Contact' },

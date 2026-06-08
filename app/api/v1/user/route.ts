@@ -1,13 +1,9 @@
-import prisma from '@/lib/prisma';
+import * as UserRepository from '@/server/repositories/user.repository';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const users = await prisma.user.findMany({
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+    const users = await UserRepository.findAll();
     if (!users || users.length === 0) {
       return NextResponse.json({
         message: 'No users found',

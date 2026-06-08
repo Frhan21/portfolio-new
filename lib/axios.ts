@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { getCookie } from 'cookies-next';
 
 export const axiosInstance = axios.create({
-  baseURL: '/api/v1', // Can also use env var if applicable
+  baseURL: '/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -10,12 +9,6 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = getCookie('token');
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
     return config;
   },
   (error) => {
