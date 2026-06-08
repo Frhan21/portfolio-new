@@ -3,6 +3,8 @@
 import { motion } from 'motion/react';
 import { Briefcase } from 'lucide-react';
 import { fadeIn, fadeUp } from '../motions';
+import { useQueryExperience } from './hooks/use-query-experience';
+import { formatDate } from '@/lib/date';
 
 const experiences = [
   {
@@ -54,6 +56,8 @@ const containerVariants = {
 };
 
 const Experience = () => {
+  const { data: experiences, isLoading } = useQueryExperience();
+
   return (
     <section
       className="flex flex-col items-center justify-center w-full h-fit mt-20 md:px-12 px-4 mx-auto py-24"
@@ -123,7 +127,7 @@ const Experience = () => {
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
           >
-            {experiences.slice(0, 3).map((exp, index, arr) => (
+            {experiences?.items.slice(0, 3).map((exp, index, arr) => (
               <motion.div
                 key={index}
                 className="relative flex flex-col md:flex-row gap-6 md:gap-8 items-start group"
@@ -154,20 +158,26 @@ const Experience = () => {
                   <div className="relative z-10">
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-2">
                       <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors duration-300">
-                        {exp.title}
+                        {exp.position}
                       </h3>
                       <span className="text-sm font-semibold text-orange-500 shrink-0 bg-orange-50 dark:bg-orange-500/10 px-3 py-1 rounded-full">
-                        {exp.date}
+                        {formatDate(exp.startDate, 'en-US', {
+                          month: 'short',
+                          year: 'numeric',
+                        })}{' '}
+                        -{' '}
+                        {exp.endDate
+                          ? formatDate(exp.endDate, 'en-US', {
+                              month: 'short',
+                              year: 'numeric',
+                            })
+                          : 'Present'}
                       </span>
                     </div>
 
                     <div className="text-slate-500 dark:text-slate-400 font-medium mb-4 flex items-center gap-2">
                       <Briefcase size={14} className="text-orange-500" />
-                      {exp.role}{' '}
-                      <span className="text-slate-300 dark:text-slate-600">
-                        •
-                      </span>{' '}
-                      <span className="font-normal">{exp.type}</span>
+                      {exp.company}{' '}
                     </div>
 
                     <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed mb-6">

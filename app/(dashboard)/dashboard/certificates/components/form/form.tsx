@@ -16,6 +16,7 @@ import {
   FieldLabel,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { DatePicker } from '@/components/ui/date-picker';
 import { useQueryCategory } from '@/app/hooks/category-hooks/use-query-category';
 import { Button } from '@/components/ui/button';
 import {
@@ -182,9 +183,13 @@ export default function CertificateForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Issuer Date</FieldLabel>
-                <Input
-                  type="date"
-                  {...field}
+                <DatePicker
+                  date={field.value ? new Date(field.value) : undefined}
+                  setDate={(date) => {
+                    field.onChange(
+                      date ? date.toISOString().split('T')[0] : ''
+                    );
+                  }}
                   placeholder="Pilih tanggal issuer...."
                 />
                 {fieldState.invalid && (

@@ -82,3 +82,28 @@ export const certficateSchema = z.object({
 });
 
 export const certificateUpdateSchema = certficateSchema.partial();
+
+export const experienceSchema = z
+  .object({
+    company: z.string().min(1, 'Nama perusahaan tidak boleh kosong'),
+    position: z.string().min(1, 'Posisi tidak boleh kosong'),
+    startDate: z.string().min(1, 'Tanggal mulai tidak boleh kosong'),
+    endDate: z.string().optional(),
+    isCurrent: z.boolean(),
+    description: z.string().min(1, 'Deskripsi tidak boleh kosong'),
+    badges: z.array(z.string().min(1, 'Badge tidak boleh kosong')),
+  })
+  .refine((data) => data.isCurrent || !!data.endDate, {
+    message: 'Tanggal selesai wajib diisi',
+    path: ['endDate'],
+  })
+  .refine(
+    (data) => {
+      if (!data.endDate) return true;
+      return new Date(`${data.endDate}-01`) >= new Date(`${data.startDate}-01`);
+    },
+    {
+      message: 'Tanggal selesai tidak boleh lebih awal dari tanggal mulai',
+      path: ['endDate'],
+    }
+  );

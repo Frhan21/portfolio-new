@@ -1,7 +1,8 @@
 import { useQueryCertificate } from '@/app/components/certificate/hooks/use-query-certificate';
+import { useQueryExperience } from '@/app/components/experience/hooks/use-query-experience';
 import { useQueryProject } from '@/app/components/project/hooks/use-query-project';
 import { useQueryCategory } from '@/app/hooks/category-hooks/use-query-category';
-import { FileBadge, FolderGit2, Tag } from 'lucide-react';
+import { Briefcase, FileBadge, FolderGit2, Tag } from 'lucide-react';
 
 export function useDashboardData() {
   // 1. Fetch data from existing hooks
@@ -11,6 +12,8 @@ export function useDashboardData() {
     useQueryCategory();
   const { data: certificateResponse, isLoading: loadingCertificates } =
     useQueryCertificate();
+  const { data: experienceResponse, isLoading: loadingExperience } =
+    useQueryExperience();
 
   // 2. Extract total counts from paginated responses
   // projectResponse is PaginatedResult: { items, meta: { total, page, totalPages } }
@@ -19,8 +22,13 @@ export function useDashboardData() {
   const projectTotal = projectResponse?.meta?.total?.toString() ?? '0';
   const categories = categoryResponse;
   const certificates = certificateResponse;
+  const experiences = experienceResponse;
 
-  const isLoading = loadingProjects || loadingCategories || loadingCertificates;
+  const isLoading =
+    loadingProjects ||
+    loadingCategories ||
+    loadingCertificates ||
+    loadingExperience;
 
   // Helper to get total count
   const getTotal = (data: { items?: unknown[] } | undefined) =>
@@ -46,6 +54,12 @@ export function useDashboardData() {
       icon: <Tag className="h-5 w-5 text-orange-600" />,
       iconBgColor: 'bg-orange-100',
     },
+    {
+      title: 'Total Experience',
+      value: getTotal(experiences),
+      icon: <Briefcase className="h-5 w-5 text-green-600" />,
+      iconBgColor: 'bg-green-100',
+    },
   ];
 
   return {
@@ -55,6 +69,7 @@ export function useDashboardData() {
       projects,
       categories,
       certificates,
+      experiences,
     },
   };
 }
