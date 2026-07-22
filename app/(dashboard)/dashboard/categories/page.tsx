@@ -9,11 +9,13 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <HeaderPage
+        eyebrow="Content structure"
         title="Categories"
         description="Kelola daftar kategori yang akan ditampilkan di halaman portfolio."
         url="/dashboard/categories/create"
+        actionLabel="Add category"
       />
       <CategoryTable />
     </div>

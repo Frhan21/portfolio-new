@@ -9,11 +9,13 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <HeaderPage
+        eyebrow="Portfolio content"
         title="Experiences"
         description="Kelola daftar pengalaman kerja yang ditampilkan di halaman portfolio."
         url="/dashboard/experiences/create"
+        actionLabel="Add experience"
       />
       <ExperienceTable />
     </div>

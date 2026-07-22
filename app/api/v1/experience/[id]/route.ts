@@ -1,3 +1,4 @@
+import { revalidateTag } from 'next/cache';
 import {
   deleteExperience,
   getExperienceById,
@@ -5,6 +6,7 @@ import {
 } from '@/server/services/experience.server';
 import { experienceSchema } from '@/lib/validation';
 import { NextRequest, NextResponse } from 'next/server';
+import { isAuthenticatedRequest } from '@/lib/api-auth';
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -13,6 +15,9 @@ type RouteContext = {
 const parseMonthDate = (value: string) => new Date(`${value}-01T00:00:00.000Z`);
 
 export async function PUT(req: NextRequest, context: RouteContext) {
+  if (!(await isAuthenticatedRequest())) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
   const body = await req.json();
   const { id } = await context.params;
 
@@ -35,6 +40,8 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       badges: validation.data.badges,
     });
 
+    revalidateTag('experiences', 'max');
+
     return NextResponse.json({
       message: 'Experience updated successfully',
       experience,
@@ -49,6 +56,9 @@ export async function PUT(req: NextRequest, context: RouteContext) {
 }
 
 export async function DELETE(req: NextRequest, context: RouteContext) {
+  if (!(await isAuthenticatedRequest())) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
   const { id } = await context.params;
   const experience = await getExperienceById(id);
 
@@ -60,6 +70,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
 
   try {
     await deleteExperience(id);
+    revalidateTag('experiences', 'max');
     return NextResponse.json({
       message: 'Experience deleted successfully',
     });

@@ -1,13 +1,21 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, Resolver, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Globe, Github, Tag, FolderOpen, Type, ArrowLeft } from 'lucide-react';
+import {
+  Globe,
+  Github,
+  Tag,
+  FolderOpen,
+  Type,
+  ArrowLeft,
+  Trash,
+} from 'lucide-react';
 import Link from 'next/link';
 
-import { TProjectSchema, projectSchema } from './schema';
+import { TProjectSchema, projectSchema, projectUpdateSchema } from './schema';
 import {
   Field,
   FieldError,
@@ -28,18 +36,23 @@ import {
 import { useProjectMutation } from '@/app/components/project/hooks/use-project-mutation';
 import { ImageDropzone } from '@/app/(dashboard)/component/form/image-dropzone';
 import { FormSection } from '@/app/(dashboard)/component/form/form-section';
+import {
+  dashboardControlClassName,
+  FormActionBar,
+} from '@/app/(dashboard)/component/form/form-controls';
 import { TagsInput } from './tags-input';
 import { Category } from '@/model/category';
 import { Project } from '@/model/project';
 import Swal from 'sweetalert2';
 import { deleteProject } from '@/server/actions/project.actions';
 import { useQueryClient } from '@tanstack/react-query';
-import { Trash } from 'lucide-react';
 
 export function ProjectForm({ initialData }: { initialData?: Project | null }) {
   const isEdit = !!initialData;
   const form = useForm<TProjectSchema>({
-    resolver: zodResolver(projectSchema),
+    resolver: zodResolver(
+      isEdit ? projectUpdateSchema : projectSchema
+    ) as Resolver<TProjectSchema>,
     defaultValues: {
       title: initialData?.title || '',
       image: new File([], ''),
@@ -81,7 +94,7 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
         });
         queryClient.invalidateQueries({ queryKey: ['projects'] });
         router.push('/dashboard/projects');
-      } catch (error) {
+      } catch {
         Swal.fire({
           title: 'Error!',
           text: 'Failed to delete the project.',
@@ -126,7 +139,7 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
       {/* Basic Info */}
       <FormSection
         icon={<Type className="h-3.5 w-3.5" />}
@@ -143,7 +156,11 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
                 className="sm:col-span-2"
               >
                 <FieldLabel>Judul Proyek</FieldLabel>
-                <Input {...field} placeholder="E.g., E-commerce Dashboard" />
+                <Input
+                  {...field}
+                  placeholder="E.g., E-commerce Dashboard"
+                  className={dashboardControlClassName}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -166,7 +183,9 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
                   defaultValue={field.value}
                   disabled={categoriesLoading}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger
+                    className={`${dashboardControlClassName} w-full`}
+                  >
                     <SelectValue
                       placeholder={
                         categoriesLoading ? 'Loading...' : 'Pilih Kategori'
@@ -250,7 +269,11 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
                   <Globe className="inline h-3.5 w-3.5 mr-1 text-muted-foreground" />
                   Live Demo
                 </FieldLabel>
-                <Input {...field} placeholder="https://my-project.vercel.app" />
+                <Input
+                  {...field}
+                  placeholder="https://my-project.vercel.app"
+                  className={dashboardControlClassName}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -267,7 +290,11 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
                   <Github className="inline h-3.5 w-3.5 mr-1 text-muted-foreground" />
                   GitHub Repository
                 </FieldLabel>
-                <Input {...field} placeholder="https://github.com/user/repo" />
+                <Input
+                  {...field}
+                  placeholder="https://github.com/user/repo"
+                  className={dashboardControlClassName}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -278,23 +305,39 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
       </FormSection>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-between pt-2">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" type="button" asChild>
-            <Link href="/dashboard/projects">
-              <ArrowLeft className="h-4 w-4" />
-              Kembali
-            </Link>
+      <FormActionBar
+        secondaryActions={
+          <>
+            <Button variant="ghost" size="sm" type="button" asChild>
+              <Link href="/dashboard/projects">
+                <ArrowLeft className="h-4 w-4" />
+                Kembali
+              </Link>
+            </Button>
+            {isEdit && (
+              <Button
+                variant="ghost"
+                size="sm"
+                type="button"
+                onClick={handleDelete}
+                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                <Trash className="h-4 w-4" />
+                Delete
+              </Button>
+            )}
+          </>
+        }
+        primaryAction={
+          <Button type="submit" disabled={isPending}>
+            {isPending
+              ? 'Menyimpan...'
+              : isEdit
+                ? 'Update Project'
+                : 'Simpan Project'}
           </Button>
-        </div>
-        <Button type="submit" disabled={isPending} className="min-w-32">
-          {isPending
-            ? 'Menyimpan...'
-            : isEdit
-              ? 'Update Project'
-              : 'Simpan Project'}
-        </Button>
-      </div>
+        }
+      />
     </form>
   );
 }

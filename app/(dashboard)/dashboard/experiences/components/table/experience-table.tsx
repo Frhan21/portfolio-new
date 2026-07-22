@@ -5,16 +5,16 @@ import { DataTable } from '@/components/ui/data-table';
 import { columns } from './column';
 
 export default function ExperienceTable() {
-  const { data: experiences, isLoading } = useQueryExperience();
+  const { data: experiences, isLoading, error } = useQueryExperience();
 
   return (
-    <div className="bg-background border border-border shadow-sm overflow-hidden">
-      <DataTable
-        columns={columns}
-        data={experiences?.items || []}
-        isLoading={isLoading}
-        emptyMessage="Data belum ditambahkan"
-      />
-    </div>
+    <DataTable
+      columns={columns}
+      data={experiences?.items || []}
+      isLoading={isLoading}
+      error={error}
+      searchPlaceholder="Search loaded experiences..."
+      emptyMessage="Add an experience to build your public timeline."
+    />
   );
 }

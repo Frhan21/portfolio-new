@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FaGithub } from 'react-icons/fa';
 import { LuArrowRight } from 'react-icons/lu';
-import { fadeUp } from '../motions';
+import { scaleIn } from '../motions';
 
 interface CardComponentProps {
   projects: Project[];
@@ -31,7 +31,7 @@ export default function CardComponent({
       {projects.map((project, index) => (
         <motion.div
           key={project.id}
-          variants={fadeUp}
+          variants={scaleIn}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}

@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
+import HeaderPage from '../../../../component/header-page';
 import { ExperienceForm } from '../../components/form/form';
 import { getExperienceById } from '@/server/actions/experience.actions';
 
@@ -22,15 +23,12 @@ export default async function Page({
   }
 
   return (
-    <div className="flex-1 lg:flex lg:flex-col lg:gap-4">
-      <header className="mb-6 space-y-5">
-        <div>
-          <h1 className="text-3xl font-bold">Update Experience</h1>
-          <p className="text-muted-foreground text-sm">
-            Update the information below to modify the experience
-          </p>
-        </div>
-      </header>
+    <div className="mx-auto w-full max-w-5xl space-y-7">
+      <HeaderPage
+        eyebrow="Portfolio content"
+        title="Update experience"
+        description="Review and update this role's timeline, details, and highlights."
+      />
       <ExperienceForm initialData={experience} />
     </div>
   );

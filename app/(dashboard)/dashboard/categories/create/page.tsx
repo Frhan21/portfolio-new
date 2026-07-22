@@ -1,5 +1,6 @@
 import { CategoryForm } from '../components/form/form';
 import { Metadata } from 'next';
+import HeaderPage from '../../../component/header-page';
 
 export const metadata: Metadata = {
   title: 'Categories - Create',
@@ -8,15 +9,12 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="flex-1 lg:flex lg:flex-col lg:gap-4">
-      <header className="mb-6 space-y-5">
-        <div>
-          <h1 className="text-3xl font-bold">Add Category</h1>
-          <p className="text-muted-foreground text-sm">
-            Fill the information below to create a new category
-          </p>
-        </div>
-      </header>
+    <div className="mx-auto w-full max-w-5xl space-y-7">
+      <HeaderPage
+        eyebrow="Portfolio content"
+        title="Create category"
+        description="Add a category to organize projects and certificates."
+      />
       <CategoryForm />
     </div>
   );

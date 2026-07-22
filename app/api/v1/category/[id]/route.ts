@@ -4,12 +4,16 @@ import {
   updateCategory,
 } from '@/server/services/category.server';
 import { NextRequest, NextResponse } from 'next/server';
+import { isAuthenticatedRequest } from '@/lib/api-auth';
 
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
 export async function PUT(req: NextRequest, context: RouteContext) {
+  if (!(await isAuthenticatedRequest())) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
   const body = await req.json();
   const { id } = await context.params;
   try {
@@ -29,6 +33,9 @@ export async function PUT(req: NextRequest, context: RouteContext) {
 }
 
 export async function DELETE(req: NextRequest, context: RouteContext) {
+  if (!(await isAuthenticatedRequest())) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
   const { id } = await context.params;
   const cat = await getCategoryById(id);
 

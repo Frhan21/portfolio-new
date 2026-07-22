@@ -7,6 +7,7 @@ import { projectSchema } from '@/lib/validation';
 import { createProject, getProject } from '@/server/services/project.server';
 import { uploadImage } from '@/server/services/upload.server';
 import { NextRequest } from 'next/server';
+import { isAuthenticatedRequest } from '@/lib/api-auth';
 
 export async function GET(req: NextRequest) {
   try {
@@ -32,6 +33,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!(await isAuthenticatedRequest())) {
+    return errorResponse('Unauthorized', undefined, 401);
+  }
   // NOTE: The primary create path for the dashboard uses the Server Action
   // (server/actions/project.actions.ts → addProject). This route remains
   // for external/public API consumers that call POST /api/v1/project directly.

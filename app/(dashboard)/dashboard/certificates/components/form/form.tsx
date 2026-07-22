@@ -1,14 +1,14 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, Resolver, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Award, FolderOpen, Type, ArrowLeft, Trash } from 'lucide-react';
+import { Award, FolderOpen, Type, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 import { TCertificateSchema } from './schema';
-import { certficateSchema } from '@/lib/validation';
+import { certficateSchema, certificateUpdateSchema } from '@/lib/validation';
 import {
   Field,
   FieldError,
@@ -30,9 +30,12 @@ import {
 import { useCertificateMutation } from '../../hooks/use-certifiacte-mutation';
 import { ImageDropzone } from '@/app/(dashboard)/component/form/image-dropzone';
 import { FormSection } from '@/app/(dashboard)/component/form/form-section';
+import {
+  dashboardControlClassName,
+  FormActionBar,
+} from '@/app/(dashboard)/component/form/form-controls';
 import { Category } from '@/model/category';
 import { Certificate } from '@/model/certificate';
-import { useQueryClient } from '@tanstack/react-query';
 
 export default function CertificateForm({
   initialData,
@@ -41,7 +44,9 @@ export default function CertificateForm({
 }) {
   const isEdit = !!initialData;
   const form = useForm<TCertificateSchema>({
-    resolver: zodResolver(certficateSchema),
+    resolver: zodResolver(
+      isEdit ? certificateUpdateSchema : certficateSchema
+    ) as Resolver<TCertificateSchema>,
     defaultValues: {
       title: initialData?.title || '',
       issuer: initialData?.issuer || '',
@@ -59,7 +64,6 @@ export default function CertificateForm({
     certificateId: initialData?.id,
   });
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   const onSubmit = (data: TCertificateSchema) => {
     const formData = new FormData();
@@ -89,7 +93,7 @@ export default function CertificateForm({
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
       {/* Basic Info */}
       <FormSection
         icon={<Type className="h-3.5 w-3.5" />}
@@ -106,7 +110,11 @@ export default function CertificateForm({
                 className="sm:col-span-2"
               >
                 <FieldLabel>Judul Sertifikat</FieldLabel>
-                <Input {...field} placeholder="Masukkan judul sertifikat...." />
+                <Input
+                  {...field}
+                  placeholder="Masukkan judul sertifikat...."
+                  className={dashboardControlClassName}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -129,7 +137,9 @@ export default function CertificateForm({
                   defaultValue={field.value}
                   disabled={categoriesLoading}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger
+                    className={`${dashboardControlClassName} w-full`}
+                  >
                     <SelectValue
                       placeholder={
                         categoriesLoading ? 'Loading...' : 'Pilih Kategori'
@@ -168,7 +178,11 @@ export default function CertificateForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Issuer</FieldLabel>
-                <Input {...field} placeholder="Masukkan nama issuer...." />
+                <Input
+                  {...field}
+                  placeholder="Masukkan nama issuer...."
+                  className={dashboardControlClassName}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -227,23 +241,25 @@ export default function CertificateForm({
       </FormSection>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-between pt-2">
-        <div className="flex items-center gap-2">
+      <FormActionBar
+        secondaryActions={
           <Button variant="ghost" size="sm" type="button" asChild>
             <Link href="/dashboard/certificates">
               <ArrowLeft className="h-4 w-4" />
               Kembali
             </Link>
           </Button>
-        </div>
-        <Button type="submit" disabled={isPending} className="min-w-32">
-          {isPending
-            ? 'Menyimpan...'
-            : isEdit
-              ? 'Update Certificate'
-              : 'Simpan Certificate'}
-        </Button>
-      </div>
+        }
+        primaryAction={
+          <Button type="submit" disabled={isPending}>
+            {isPending
+              ? 'Menyimpan...'
+              : isEdit
+                ? 'Update Certificate'
+                : 'Simpan Certificate'}
+          </Button>
+        }
+      />
     </form>
   );
 }

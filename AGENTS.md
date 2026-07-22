@@ -3,10 +3,10 @@
 ## Stack
 
 - **Framework**: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4
-- **Database**: Prisma + PostgreSQL (5 models: Category, User, Project, Certificate, RefreshToken)
+- **Database**: Prisma + PostgreSQL (6 models: Category, User, Project, Certificate, RefreshToken, Experience)
 - **Auth**: NextAuth v5 (Credentials provider) + JWT strategy + Refresh Token (DB-based), middleware (`proxy.ts`)
 - **Data Fetching**: Server Actions (`'use server'`) for auth mutations; TanStack React Query + Axios for client GETs; REST API routes (`app/api/v1/`) for CRUD
-- **Caching**: `unstable_cache` from `next/cache` with tag-based revalidation (tags: `projects`, `certificates`)
+- **Caching**: `unstable_cache` from `next/cache` with tag-based revalidation (tags: `projects`, `certificates`, `experiences`)
 - **Image Storage**: Cloudinary (upload via `server/services/upload-image.ts`)
 - **UI**: shadcn/ui (New York style), Tailwind CSS v4, Motion (framer-motion fork), lucide-react icons
 - **Forms**: react-hook-form + `@hookform/resolvers` + Zod schemas
@@ -51,6 +51,7 @@
 │   │   ├── dashboard/projects/
 │   │   ├── dashboard/certificates/
 │   │   ├── dashboard/categories/
+│   │   ├── dashboard/experiences/
 │   │   └── dashboard/settings/
 │   ├── (main)/                       # Route group: Public homepage
 │   │   ├── layout.tsx                # Navbar + Footer
@@ -66,11 +67,14 @@
 │   │   ├── category/[id]/route.ts    # PUT (update), DELETE
 │   │   ├── certificate/route.ts      # GET (list), POST (create with image)
 │   │   ├── certificate/[id]/route.ts # GET, PUT (update with image), DELETE
+│   │   ├── experience/route.ts       # GET (list), POST (create)
+│   │   ├── experience/[id]/route.ts  # GET, PUT (update), DELETE
 │   │   ├── project/route.ts          # GET (list), POST (create with image)
 │   │   ├── project/[id]/route.ts     # GET, PUT (update with image), DELETE
 │   │   └── user/route.ts             # GET (list)
 │   ├── components/                   # Homepage section components
 │   │   ├── home/ (hero), about/, project/, certificate/, contact/, faq/
+│   │   ├── experience/ (hooks, components)
 │   │   ├── navbar.tsx, footer.tsx, skills-bar.tsx, motions.ts
 │   │   └── card/index.tsx            # Project card (used in homepage & portfolio)
 │   ├── hooks/                        # App-level hooks
@@ -84,6 +88,7 @@
 │   ├── repositories/                  # Data access layer (Prisma queries only)
 │   │   ├── category.repository.ts
 │   │   ├── certificate.repository.ts
+│   │   ├── experience.repository.ts
 │   │   ├── project.repository.ts
 │   │   ├── refresh-token.repository.ts
 │   │   └── user.repository.ts
@@ -91,12 +96,14 @@
 │   │   ├── auth.server.ts             # Auth: registerUser, revokeUserSessions, getUser
 │   │   ├── category.server.ts         # Category CRUD (thin, delegates to repository)
 │   │   ├── certificate.server.ts      # Certificate CRUD + paginated & cached queries
+│   │   ├── experience.server.ts       # Experience CRUD + paginated & cached queries
 │   │   ├── project.server.ts          # Project CRUD + paginated & cached queries
 │   │   └── upload.server.ts           # Cloudinary image upload
 │   └── actions/                       # Client-side axios wrappers + Server Actions
 │       ├── auth.actions.ts            # Server Action ('use server' + cookies)
 │       ├── category.actions.ts        # Client CRUD via axios
 │       ├── certificate.actions.ts     # Client CRUD via axios
+│       ├── experience.actions.ts      # Client CRUD via axios + Server Actions
 │       └── project.actions.ts         # Client CRUD via axios
 ├── lib/                               # Shared utilities
 │   ├── api-response.ts                # successResponse, errorResponse, validationErrorResponse
@@ -107,7 +114,7 @@
 │   ├── jwt.ts                         # generateToken, verifyToken, decodetoken
 │   ├── prisma.ts                      # PrismaClient singleton
 │   ├── utils.ts                       # cn() (clsx + tailwind-merge)
-│   └── validation.ts                  # Zod schemas: category, project, user, certificate
+│   └── validation.ts                  # Zod schemas: category, project, user, certificate, experience
 ├── components/
 │   └── ui/                            # 15 shadcn/ui components (New York style)
 │       ├── button.tsx, card.tsx, input.tsx, label.tsx, tabs.tsx
@@ -117,7 +124,7 @@
 │       ├── dropdown-menu.tsx, tooltip.tsx, separator.tsx
 │       ├── skeleton.tsx, sonner.tsx
 ├── model/                             # TypeScript type definitions
-│   ├── category.ts, user.ts, project.ts, certificate.ts
+│   ├── category.ts, user.ts, project.ts, certificate.ts, experience.ts
 ├── commons/                           # Shared constants & types
 │   ├── constant/dashboard-menu.ts
 │   └── types/response.ts              # TResponseItem, TResponsePaginate, TResponseError
@@ -126,7 +133,7 @@
 │   └── jwt-payload.ts                # JwtPayload type
 ├── hooks/use-mobile.ts                # useIsMobile() hook (768px breakpoint)
 ├── proxy.ts                           # Next.js middleware (auth guard)
-├── prisma/schema.prisma               # 5 models (Category, User, Project, Certificate, RefreshToken)
+├── prisma/schema.prisma               # 6 models (Category, User, Project, Certificate, RefreshToken, Experience)
 └── .github/workflows/production.yaml  # CI: npm ci → prisma generate → lint → build
 ```
 
@@ -147,6 +154,8 @@ Client GETs (TanStack Query):
 API Routes (CRUD):
   Request → app/api/v1/{resource}/route.ts → service (*.server.ts) → repository (*.repository.ts) → Prisma → Response
 ```
+
+Experience follows the same patterns: `experience.server.ts` for caching/queries, `experience.repository.ts` for Prisma, `experience.actions.ts` for Server Actions, and `app/api/v1/experience/` for REST endpoints.
 
 ### Layer Responsibilities
 
@@ -200,7 +209,7 @@ API Routes (CRUD):
 - Query logging in non-production
 - UUID primary keys (`@default(uuid())`)
 - Timestamps via `@default(now())` / `@updatedAt`
-- 5 models: Category, User, Project, Certificate, RefreshToken
+- 6 models: Category, User, Project, Certificate, RefreshToken, Experience
 
 ### Auth & Middleware
 
@@ -227,7 +236,7 @@ AUTH_URL=       # http://localhost:3000 (dev)
 
 - `unstable_cache` with keys `['{resource}', 'page', '{page}', 'limit', '{limit}']`
 - Revalidation: `revalidate: 120` (seconds) + tag-based: `revalidateTag('{resource}')` after mutations
-- Cache tags used: `projects`, `certificates`
+- Cache tags used: `projects`, `certificates`, `experiences`
 
 ### TanStack Query Defaults (in `app/providers/query-provider.tsx`)
 
@@ -237,7 +246,7 @@ AUTH_URL=       # http://localhost:3000 (dev)
 
 ### Zod Validation
 
-- Shared schemas for categories, projects, and certificates in `lib/validation.ts`
+- Shared schemas for categories, projects, certificates, and experiences in `lib/validation.ts`
 - Auth form schemas in `app/(auth)/component/form/schema/`
   - `login-scheme.tsx`: `{ email, password }`
   - `register-scheme.ts`: `{ name, email, password, confirmPassword }` (with `.refine` for password match)
@@ -265,7 +274,7 @@ AUTH_URL=http://localhost:3000
 
 ## Known Issues / Inconsistencies (TODO)
 
-- **Typo in validation.ts**: `certficateSchema` (missing 'i') on line 52 — use as-is or fix
+- **Typo in validation.ts**: `certficateSchema` (missing 'i') on line 69 — use as-is or fix
 - **Mixed API response patterns**: some routes use `successResponse`/`errorResponse` helpers from `lib/api-response.ts`, others use raw `NextResponse.json()`
 - **Mixed type vs interface**: `Project` model uses `type`, all others use `interface`
 - **Naming inconsistency**: `decodetoken` → should be `decodeToken` (in `lib/jwt.ts`)
@@ -273,3 +282,17 @@ AUTH_URL=http://localhost:3000
 ## Testing
 
 No test framework configured.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live as GitHub issues in this repo. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Five canonical roles, each label string equal to its name: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context — one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.

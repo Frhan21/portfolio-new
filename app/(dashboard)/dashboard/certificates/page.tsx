@@ -9,15 +9,15 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <HeaderPage
-        title="Certificate"
+        eyebrow="Portfolio content"
+        title="Certificates"
         description="Kelola daftar sertifikat yang ditampilkan di halaman portfolio."
         url="/dashboard/certificates/create"
+        actionLabel="Add certificate"
       />
-      <div>
-        <CertificateTable />
-      </div>
+      <CertificateTable />
     </div>
   );
 }

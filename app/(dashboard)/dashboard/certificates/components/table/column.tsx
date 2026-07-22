@@ -11,7 +11,7 @@ import { Certificate } from '@/model/certificate';
 import { deleteCertificate } from '@/server/actions/certificate.actions';
 import { useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
-import { Badge, Edit, MoreHorizontal, Trash } from 'lucide-react';
+import { Edit, ImageIcon, MoreHorizontal, Trash } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Swal from 'sweetalert2';
@@ -23,17 +23,17 @@ export const columns: ColumnDef<Certificate>[] = [
     cell: ({ row }) => {
       const image = row.original.image;
       return image ? (
-        <div className="relative h-10 w-16 overflow-hidden rounded-md border bg-muted">
+        <div className="relative h-11 w-16 overflow-hidden rounded-lg border border-border/70 bg-muted">
           <Image
             src={image}
-            alt="Certificate Image"
+            alt={`Preview of ${row.original.title}`}
             fill
             className="object-cover"
           />
         </div>
       ) : (
-        <div className="h-10 w-16 rounded-md bg-muted flex items-center justify-center text-xs text-muted-foreground border">
-          No Img
+        <div className="flex h-11 w-16 items-center justify-center rounded-lg border border-dashed bg-muted/50 text-muted-foreground">
+          <ImageIcon className="size-4" aria-label="No certificate image" />
         </div>
       );
     },
@@ -43,7 +43,7 @@ export const columns: ColumnDef<Certificate>[] = [
     header: 'Certificate Name',
     cell: ({ row }) => {
       const title = row.original.title;
-      return <span className="font-medium text-sm">{title}</span>;
+      return <span className="text-sm font-semibold">{title}</span>;
     },
   },
   {
@@ -68,7 +68,7 @@ export const columns: ColumnDef<Certificate>[] = [
     cell: ({ row }) => {
       const categoryTitle = row.original.category?.title;
       return (
-        <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+        <div className="inline-flex items-center rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
           {categoryTitle || '-'}
         </div>
       );
@@ -76,7 +76,7 @@ export const columns: ColumnDef<Certificate>[] = [
   },
   {
     id: 'actions',
-    header: 'Actions',
+    header: () => <span className="sr-only">Actions</span>,
     cell: ({ row }) => <ActionCell certificate={row.original} />,
   },
 ];
@@ -105,7 +105,7 @@ const ActionCell = ({ certificate }: { certificate: Certificate }) => {
           confirmButtonColor: '#ea580c',
         });
         queryClient.invalidateQueries({ queryKey: ['certificates'] });
-      } catch (error) {
+      } catch {
         Swal.fire({
           title: 'Error!',
           text: 'Failed to delete the certificate.',
@@ -119,7 +119,7 @@ const ActionCell = ({ certificate }: { certificate: Certificate }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
+        <Button variant="ghost" className="h-8 w-8 rounded-lg p-0">
           <span className="sr-only">Open menu</span>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
@@ -134,7 +134,7 @@ const ActionCell = ({ certificate }: { certificate: Certificate }) => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700"
+          className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
           onClick={handleDelete}
         >
           <Trash className="mr-2 h-4 w-4" />

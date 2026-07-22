@@ -1,6 +1,13 @@
 import { Project } from '@/model/project';
 import { ColumnDef } from '@tanstack/react-table';
-import { Edit, MoreHorizontal, Trash, ArrowUpDown } from 'lucide-react';
+import {
+  Edit,
+  MoreHorizontal,
+  Trash,
+  ArrowUpDown,
+  ExternalLink,
+  ImageIcon,
+} from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -40,7 +47,7 @@ const ActionCell = ({ project }: { project: Project }) => {
           confirmButtonColor: '#ea580c',
         });
         queryClient.invalidateQueries({ queryKey: ['projects'] });
-      } catch (error) {
+      } catch {
         Swal.fire({
           title: 'Error!',
           text: 'Failed to delete the project.',
@@ -54,7 +61,7 @@ const ActionCell = ({ project }: { project: Project }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
+        <Button variant="ghost" className="h-8 w-8 rounded-lg p-0">
           <span className="sr-only">Open menu</span>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
@@ -69,7 +76,7 @@ const ActionCell = ({ project }: { project: Project }) => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700"
+          className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
           onClick={handleDelete}
         >
           <Trash className="mr-2 h-4 w-4" />
@@ -87,17 +94,17 @@ export const columns: ColumnDef<Project>[] = [
     cell: ({ row }) => {
       const image = row.original.image;
       return image ? (
-        <div className="relative h-10 w-16 overflow-hidden rounded-md border bg-muted">
+        <div className="relative h-11 w-16 overflow-hidden rounded-lg border border-border/70 bg-muted">
           <Image
             src={image}
-            alt="Project Image"
+            alt={`Preview of ${row.original.title}`}
             fill
             className="object-cover"
           />
         </div>
       ) : (
-        <div className="h-10 w-16 rounded-md bg-muted flex items-center justify-center text-xs text-muted-foreground border">
-          No Img
+        <div className="flex h-11 w-16 items-center justify-center rounded-lg border border-dashed bg-muted/50 text-muted-foreground">
+          <ImageIcon className="size-4" aria-label="No project image" />
         </div>
       );
     },
@@ -109,7 +116,7 @@ export const columns: ColumnDef<Project>[] = [
       const title = row.original.title;
       return (
         <div className="flex items-center gap-3">
-          <span className="font-medium text-sm">{title}</span>
+          <span className="text-sm font-semibold text-foreground">{title}</span>
         </div>
       );
     },
@@ -120,7 +127,7 @@ export const columns: ColumnDef<Project>[] = [
     header: ({ column }) => {
       return (
         <div
-          className="flex items-center cursor-pointer hover:text-slate-900 transition-colors"
+          className="flex cursor-pointer items-center transition-colors hover:text-foreground"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Category
@@ -131,7 +138,7 @@ export const columns: ColumnDef<Project>[] = [
     cell: ({ row }) => {
       const categoryTitle = row.original.category?.title;
       return (
-        <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+        <div className="inline-flex items-center rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
           {categoryTitle || '-'}
         </div>
       );
@@ -146,9 +153,10 @@ export const columns: ColumnDef<Project>[] = [
         <Link
           href={github}
           target="_blank"
-          className="text-sm text-blue-600 hover:underline"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground transition-colors hover:text-primary"
         >
-          Github Link
+          Repository <ExternalLink className="size-3.5" />
         </Link>
       ) : (
         <span className="text-sm text-muted-foreground">-</span>
@@ -164,9 +172,10 @@ export const columns: ColumnDef<Project>[] = [
         <Link
           href={demo}
           target="_blank"
-          className="text-sm text-blue-600 hover:underline"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground transition-colors hover:text-primary"
         >
-          Visit Site
+          Live site <ExternalLink className="size-3.5" />
         </Link>
       ) : (
         <span className="text-sm text-muted-foreground">-</span>
@@ -175,7 +184,7 @@ export const columns: ColumnDef<Project>[] = [
   },
   {
     id: 'actions',
-    header: 'Actions',
+    header: () => <span className="sr-only">Actions</span>,
     cell: ({ row }) => <ActionCell project={row.original} />,
   },
 ];

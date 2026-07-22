@@ -28,6 +28,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { DatePicker } from '@/components/ui/date-picker';
 import { FormSection } from '@/app/(dashboard)/component/form/form-section';
+import {
+  DashboardTextarea,
+  dashboardControlClassName,
+  FormActionBar,
+} from '@/app/(dashboard)/component/form/form-controls';
 import { TagsInput } from '@/app/(dashboard)/dashboard/projects/components/form/tags-input';
 import { deleteExperience } from '@/server/actions/experience.actions';
 import { useExperienceMutation } from '../../hooks/use-experience-mutation';
@@ -140,7 +145,7 @@ export function ExperienceForm({
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
       <FormSection
         icon={<Briefcase className="h-3.5 w-3.5" />}
         title="Informasi Pekerjaan"
@@ -155,7 +160,11 @@ export function ExperienceForm({
                   <Building2 className="inline h-3.5 w-3.5 mr-1 text-muted-foreground" />
                   Perusahaan
                 </FieldLabel>
-                <Input {...field} placeholder="E.g., Acme Studio" />
+                <Input
+                  {...field}
+                  placeholder="E.g., Acme Studio"
+                  className={dashboardControlClassName}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -172,7 +181,11 @@ export function ExperienceForm({
                   <Briefcase className="inline h-3.5 w-3.5 mr-1 text-muted-foreground" />
                   Posisi
                 </FieldLabel>
-                <Input {...field} placeholder="E.g., Frontend Developer" />
+                <Input
+                  {...field}
+                  placeholder="E.g., Frontend Developer"
+                  className={dashboardControlClassName}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -287,11 +300,10 @@ export function ExperienceForm({
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>Ringkasan pekerjaan</FieldLabel>
-              <textarea
+              <DashboardTextarea
                 {...field}
                 rows={5}
                 placeholder="Tuliskan tanggung jawab, kontribusi, atau pencapaian utama."
-                className="border-input file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground flex w-full min-w-0 rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -299,35 +311,39 @@ export function ExperienceForm({
         />
       </FormSection>
 
-      <div className="flex items-center justify-between pt-2">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" type="button" asChild>
-            <Link href="/dashboard/experiences">
-              <ArrowLeft className="h-4 w-4" />
-              Kembali
-            </Link>
-          </Button>
-          {isEdit && (
-            <Button
-              variant="destructive"
-              size="sm"
-              type="button"
-              onClick={handleDelete}
-              className="bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 dark:bg-red-950/50 dark:text-red-400 dark:hover:bg-red-950"
-            >
-              <Trash className="mr-2 h-4 w-4" />
-              Delete
+      <FormActionBar
+        secondaryActions={
+          <>
+            <Button variant="ghost" size="sm" type="button" asChild>
+              <Link href="/dashboard/experiences">
+                <ArrowLeft className="h-4 w-4" />
+                Kembali
+              </Link>
             </Button>
-          )}
-        </div>
-        <Button type="submit" disabled={isPending} className="min-w-32">
-          {isPending
-            ? 'Menyimpan...'
-            : isEdit
-              ? 'Update Experience'
-              : 'Simpan Experience'}
-        </Button>
-      </div>
+            {isEdit && (
+              <Button
+                variant="destructive"
+                size="sm"
+                type="button"
+                onClick={handleDelete}
+                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Delete
+              </Button>
+            )}
+          </>
+        }
+        primaryAction={
+          <Button type="submit" disabled={isPending}>
+            {isPending
+              ? 'Menyimpan...'
+              : isEdit
+                ? 'Update Experience'
+                : 'Simpan Experience'}
+          </Button>
+        }
+      />
     </form>
   );
 }

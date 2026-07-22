@@ -5,19 +5,16 @@ import { useQueryCertificate } from '@/app/components/certificate/hooks/use-quer
 import { columns } from './column';
 
 export default function CertificateTable() {
-  const { data: certificates, isLoading } = useQueryCertificate();
+  const { data: certificates, isLoading, error } = useQueryCertificate();
 
   return (
-    <div className="flex flex-col space-y-4">
-      {/* Table Container */}
-      <div className="bg-background rounded-xl border border-border shadow-sm overflow-hidden">
-        <DataTable
-          columns={columns}
-          data={certificates?.items || []}
-          isLoading={isLoading}
-          emptyMessage="Data belum ditambahkan"
-        />
-      </div>
-    </div>
+    <DataTable
+      columns={columns}
+      data={certificates?.items || []}
+      isLoading={isLoading}
+      error={error}
+      searchPlaceholder="Search loaded certificates..."
+      emptyMessage="Add a certificate to publish it in your portfolio."
+    />
   );
 }

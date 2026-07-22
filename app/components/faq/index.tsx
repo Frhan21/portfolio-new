@@ -2,7 +2,14 @@
 
 import { AnimatePresence, motion } from 'motion/react';
 import { useState } from 'react';
-import { fadeIn, fadeUp } from '../motions';
+import { fadeIn } from '../motions';
+
+const slideAlternating = [
+  { hidden: { opacity: 0, x: -30 }, visible: { opacity: 1, x: 0 } },
+  { hidden: { opacity: 0, x: 30 }, visible: { opacity: 1, x: 0 } },
+  { hidden: { opacity: 0, x: -30 }, visible: { opacity: 1, x: 0 } },
+  { hidden: { opacity: 0, x: 30 }, visible: { opacity: 1, x: 0 } },
+];
 
 const faqData = [
   {
@@ -37,10 +44,10 @@ const FAQ = () => {
 
   return (
     <section
-      className="w-full flex flex-col items-center justify-center py-24 px-6 bg-secondary rounded-3xl"
+      className="w-full flex flex-col items-center justify-center py-16 sm:py-24 px-4 sm:px-6 bg-secondary rounded-2xl sm:rounded-3xl"
       id="faq"
     >
-      <div className="max-w-6xl w-full flex flex-col md:flex-row gap-12 lg:gap-20 items-start">
+      <div className="max-w-6xl w-full flex flex-col md:flex-row gap-8 sm:gap-12 lg:gap-20 items-start">
         {/* Left: Heading */}
         <motion.div
           className="flex flex-col items-start text-left w-full md:w-1/3"
@@ -95,11 +102,11 @@ const FAQ = () => {
           {faqData.map((faq, index) => (
             <motion.div
               key={index}
-              variants={fadeUp}
+              variants={slideAlternating[index % slideAlternating.length]}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.1 }}
-              custom={index}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
               className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm"
             >
               <button

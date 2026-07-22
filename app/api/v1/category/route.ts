@@ -5,6 +5,7 @@ import {
   getCategories,
 } from '@/server/services/category.server';
 import { NextResponse } from 'next/server';
+import { isAuthenticatedRequest } from '@/lib/api-auth';
 
 // const prisma = new PrismaClient();
 
@@ -31,6 +32,9 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  if (!(await isAuthenticatedRequest())) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const body = await req.json();
 

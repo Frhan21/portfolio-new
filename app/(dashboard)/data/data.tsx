@@ -6,14 +6,26 @@ import { Briefcase, FileBadge, FolderGit2, Tag } from 'lucide-react';
 
 export function useDashboardData() {
   // 1. Fetch data from existing hooks
-  const { data: projectResponse, isLoading: loadingProjects } =
-    useQueryProject();
-  const { data: categoryResponse, isLoading: loadingCategories } =
-    useQueryCategory();
-  const { data: certificateResponse, isLoading: loadingCertificates } =
-    useQueryCertificate();
-  const { data: experienceResponse, isLoading: loadingExperience } =
-    useQueryExperience();
+  const {
+    data: projectResponse,
+    isLoading: loadingProjects,
+    error: projectError,
+  } = useQueryProject();
+  const {
+    data: categoryResponse,
+    isLoading: loadingCategories,
+    error: categoryError,
+  } = useQueryCategory();
+  const {
+    data: certificateResponse,
+    isLoading: loadingCertificates,
+    error: certificateError,
+  } = useQueryCertificate();
+  const {
+    data: experienceResponse,
+    isLoading: loadingExperience,
+    error: experienceError,
+  } = useQueryExperience();
 
   // 2. Extract total counts from paginated responses
   // projectResponse is PaginatedResult: { items, meta: { total, page, totalPages } }
@@ -39,32 +51,38 @@ export function useDashboardData() {
     {
       title: 'Total Projects',
       value: projectTotal,
-      icon: <FolderGit2 className="h-5 w-5 text-blue-600" />,
-      iconBgColor: 'bg-blue-100',
+      icon: <FolderGit2 className="h-5 w-5" />,
+      href: '/dashboard/projects',
     },
     {
       title: 'Total Certificates',
       value: getTotal(certificates),
-      icon: <FileBadge className="h-5 w-5 text-green-600" />,
-      iconBgColor: 'bg-green-100',
+      icon: <FileBadge className="h-5 w-5" />,
+      href: '/dashboard/certificates',
     },
     {
       title: 'Total Categories',
       value: getTotal(categories),
-      icon: <Tag className="h-5 w-5 text-orange-600" />,
-      iconBgColor: 'bg-orange-100',
+      icon: <Tag className="h-5 w-5" />,
+      href: '/dashboard/categories',
     },
     {
       title: 'Total Experience',
       value: getTotal(experiences),
-      icon: <Briefcase className="h-5 w-5 text-green-600" />,
-      iconBgColor: 'bg-green-100',
+      icon: <Briefcase className="h-5 w-5" />,
+      href: '/dashboard/experiences',
     },
   ];
 
   return {
     statCards,
     isLoading,
+    error:
+      projectError ||
+      categoryError ||
+      certificateError ||
+      experienceError ||
+      null,
     raw: {
       projects,
       categories,

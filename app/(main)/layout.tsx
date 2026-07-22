@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import Footer from '../components/footer';
 import Navbar from '../components/navbar';
+import { SmoothScroll } from '../components/smooth-scroll';
+import { ScrollProgress } from '../components/scroll-progress';
+import { LandingPreloader } from '../components/landing-preloader';
 import '../globals.css';
 
 export const metadata: Metadata = {
@@ -14,10 +17,14 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="w-full relative transition-colors duration-300 ease-in-out">
-      <Navbar />
-      <main>{children}</main>
-      <Footer />
-    </main>
+    <SmoothScroll>
+      <ScrollProgress />
+      <LandingPreloader />
+      <div className="w-full relative transition-colors duration-300 ease-in-out">
+        <Navbar />
+        <main>{children}</main>
+        <Footer />
+      </div>
+    </SmoothScroll>
   );
 }

@@ -5,8 +5,6 @@ import {
   Home,
   Tag,
   User,
-  FileText,
-  Link,
 } from 'lucide-react';
 
 export const APPLICATION_MENUS = [
@@ -39,18 +37,8 @@ export const APPLICATION_MENUS = [
 
 export const APP_SETTINGS_MENUS = [
   {
-    title: 'About Me',
-    url: '/dashboard/settings/about-me',
+    title: 'Portfolio Profile',
+    url: '/dashboard/settings/profile',
     icon: User,
-  },
-  {
-    title: 'CV dan Portolfio',
-    url: '/dashboard/settings/cv-dan-portolfio',
-    icon: FileText,
-  },
-  {
-    title: 'Social Media',
-    url: '/dashboard/settings/social-media',
-    icon: Link,
   },
 ];

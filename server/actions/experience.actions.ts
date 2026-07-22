@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidateTag } from 'next/cache';
 import { experienceSchema } from '@/lib/validation';
 import * as ExperienceService from '@/server/services/experience.server';
 import {
@@ -7,6 +8,7 @@ import {
   Experience,
   ExperienceActionResult,
 } from '@/model/experience';
+import { auth } from '@/lib/auth';
 
 interface PaginatedResult {
   items: Experience[];
@@ -18,6 +20,8 @@ interface PaginatedResult {
 }
 
 const parseMonthDate = (value: string) => new Date(`${value}-01T00:00:00.000Z`);
+
+const isAuthorized = async () => Boolean((await auth())?.user?.id);
 
 const parseExperienceFormData = (formData: FormData) => {
   const isCurrent = formData.get('isCurrent') === 'true';
@@ -54,7 +58,7 @@ export async function getExperiences(
 ): Promise<PaginatedResult> {
   const safeLimit = Math.max(1, limit);
   const safePage = Math.max(1, page);
-  return ExperienceService.getPaginatedExperiences(safeLimit, safePage);
+  return ExperienceService.getCachedPaginatedExperiences(safeLimit, safePage);
 }
 
 export async function getExperienceById(
@@ -67,6 +71,7 @@ export async function getExperienceById(
 export async function addExperience(
   formData: FormData
 ): Promise<ExperienceActionResult<Experience>> {
+  if (!(await isAuthorized())) return { success: false, error: 'Unauthorized' };
   const validated = experienceSchema.safeParse(
     parseExperienceFormData(formData)
   );
@@ -78,6 +83,8 @@ export async function addExperience(
     buildExperienceInput(validated.data)
   );
 
+  revalidateTag('experiences', 'max');
+
   return { success: true, data: experience };
 }
 
@@ -85,6 +92,7 @@ export async function updateExperience(
   id: string,
   formData: FormData
 ): Promise<ExperienceActionResult<Experience>> {
+  if (!(await isAuthorized())) return { success: false, error: 'Unauthorized' };
   if (!id) return { success: false, error: 'Experience ID is required' };
 
   const validated = experienceSchema.safeParse(
@@ -99,15 +107,20 @@ export async function updateExperience(
     buildExperienceInput(validated.data)
   );
 
+  revalidateTag('experiences', 'max');
+
   return { success: true, data: experience };
 }
 
 export async function deleteExperience(
   id: string
 ): Promise<ExperienceActionResult<{ id: string }>> {
+  if (!(await isAuthorized())) return { success: false, error: 'Unauthorized' };
   if (!id) return { success: false, error: 'Experience ID is required' };
 
   await ExperienceService.deleteExperience(id);
+
+  revalidateTag('experiences', 'max');
 
   return { success: true, data: { id } };
 }

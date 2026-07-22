@@ -4,6 +4,7 @@ import { projectSchema } from '@/lib/validation';
 import * as ProjectService from '@/server/services/project.server';
 import { uploadImage } from '@/server/services/upload.server';
 import { CreateProjectInput, Project } from '@/model/project';
+import { auth } from '@/lib/auth';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -19,6 +20,8 @@ type PaginatedResult = {
 type ActionResult<T> =
   | { success: true; data: T }
   | { success: false; error: string };
+
+const isAuthorized = async () => Boolean((await auth())?.user?.id);
 
 // ─── GET ────────────────────────────────────────────────────────────────────
 
@@ -41,6 +44,7 @@ export async function getProjectById(id: string): Promise<Project | null> {
 export async function addProject(
   formData: FormData
 ): Promise<ActionResult<CreateProjectInput>> {
+  if (!(await isAuthorized())) return { success: false, error: 'Unauthorized' };
   // 1. Validasi dengan Zod
   const rawData = {
     title: formData.get('title'),
@@ -82,6 +86,7 @@ export async function updateProject(
   id: string,
   formData: FormData
 ): Promise<ActionResult<Project>> {
+  if (!(await isAuthorized())) return { success: false, error: 'Unauthorized' };
   if (!id) return { success: false, error: 'Project ID is required' };
 
   // 1. Validasi
@@ -130,6 +135,7 @@ export async function updateProject(
 export async function deleteProject(
   id: string
 ): Promise<ActionResult<{ id: string }>> {
+  if (!(await isAuthorized())) return { success: false, error: 'Unauthorized' };
   if (!id) return { success: false, error: 'Project ID is required' };
 
   await ProjectService.deleteProject(id);

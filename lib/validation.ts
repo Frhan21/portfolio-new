@@ -5,6 +5,23 @@ const optionalUrl = z
   .optional()
   .transform((e) => (e === '' ? undefined : e));
 
+const optionalHttpUrl = optionalUrl.refine(
+  (value) => !value || /^https?:\/\//.test(value),
+  'URL harus menggunakan http atau https'
+);
+
+export const portfolioProfileSchema = z.object({
+  displayName: z.string().trim().min(2, 'Nama minimal 2 karakter').max(80),
+  headline: z.string().trim().min(10, 'Headline minimal 10 karakter').max(160),
+  bio: z.string().trim().min(20, 'Bio minimal 20 karakter').max(1000),
+  email: z.string().trim().email('Email tidak valid'),
+  cvUrl: optionalHttpUrl,
+  githubUrl: optionalHttpUrl,
+  linkedinUrl: optionalHttpUrl,
+  instagramUrl: optionalHttpUrl,
+  twitterUrl: optionalHttpUrl,
+});
+
 export const categorySchema = z.object({
   title: z.string().min(1, 'Judul kategori tidak boleh kosong'),
 });

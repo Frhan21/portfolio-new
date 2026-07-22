@@ -8,6 +8,9 @@ import {
   CertificateActionResult,
   CertificatePaginatedResult,
 } from '@/model/certificate';
+import { auth } from '@/lib/auth';
+
+const isAuthorized = async () => Boolean((await auth())?.user?.id);
 
 export async function getCertificates(
   limit: number = 6,
@@ -28,6 +31,7 @@ export async function getCertificateById(
 export async function addCertificate(
   formData: FormData
 ): Promise<CertificateActionResult<Certificate>> {
+  if (!(await isAuthorized())) return { success: false, error: 'Unauthorized' };
   const rawData = {
     title: formData.get('title'),
     categoryId: formData.get('categoryId'),
@@ -64,6 +68,7 @@ export async function updateCertificate(
   id: string,
   formData: FormData
 ): Promise<CertificateActionResult<Certificate>> {
+  if (!(await isAuthorized())) return { success: false, error: 'Unauthorized' };
   if (!id) return { success: false, error: 'Certificate ID is required' };
 
   const rawData = {
@@ -110,6 +115,7 @@ export async function updateCertificate(
 export async function deleteCertificate(
   id: string
 ): Promise<CertificateActionResult<{ id: string }>> {
+  if (!(await isAuthorized())) return { success: false, error: 'Unauthorized' };
   if (!id) return { success: false, error: 'Certificate ID is required' };
   await CertificateService.deleteCertificate(id);
   return { success: true, data: { id } };

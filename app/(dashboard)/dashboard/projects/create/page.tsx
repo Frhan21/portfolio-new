@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import HeaderPage from '../../../component/header-page';
 import { ProjectForm } from '../components/form/form';
 
 export const metadata: Metadata = {
@@ -8,15 +9,12 @@ export const metadata: Metadata = {
 
 const CreateProjectPage = () => {
   return (
-    <div className="flex-1 lg:flex lg:flex-col lg:gap-4">
-      <header className="mb-6 space-y-5">
-        <div>
-          <h1 className="text-3xl font-bold">Create Project</h1>
-          <p className="text-muted-foreground text-sm">
-            Fill the information below to create a new project
-          </p>
-        </div>
-      </header>
+    <div className="mx-auto w-full max-w-5xl space-y-7">
+      <HeaderPage
+        eyebrow="Portfolio content"
+        title="Create project"
+        description="Fill in the details below to add a new project to your portfolio."
+      />
       <ProjectForm />
     </div>
   );

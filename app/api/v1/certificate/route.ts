@@ -11,6 +11,7 @@ import {
   errorResponse,
   validationErrorResponse,
 } from '@/lib/api-response';
+import { isAuthenticatedRequest } from '@/lib/api-auth';
 
 export async function GET() {
   try {
@@ -26,6 +27,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  if (!(await isAuthenticatedRequest())) {
+    return errorResponse('Unauthorized', undefined, 401);
+  }
   try {
     const formData = await req.formData();
     const data = {

@@ -1,81 +1,72 @@
 import Link from 'next/link';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { RiInstagramFill } from 'react-icons/ri';
+import { getPublicPortfolioProfile } from '@/server/services/profile.server';
 
-const SOCIAL_LINKS = [
-  {
-    icon: RiInstagramFill,
-    label: 'Instagram',
-    href: 'https://instagram.com/farhan_r45',
-  },
-  { icon: FaGithub, label: 'GitHub', href: 'https://github.com/Frhan21' },
-  {
-    icon: FaLinkedin,
-    label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/m-farhan-ramadhan-9b083b266/',
-  },
-];
-
-const Footer = () => {
+export default async function Footer() {
+  const profile = await getPublicPortfolioProfile();
+  const socialLinks = [
+    { icon: RiInstagramFill, label: 'Instagram', href: profile.instagramUrl },
+    { icon: FaGithub, label: 'GitHub', href: profile.githubUrl },
+    { icon: FaLinkedin, label: 'LinkedIn', href: profile.linkedinUrl },
+  ].filter(
+    (link): link is { icon: typeof FaGithub; label: string; href: string } =>
+      Boolean(link.href)
+  );
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative w-full bg-slate-900 dark:bg-card text-white py-12 mt-12 rounded-t-[40px] overflow-hidden shadow-2xl">
-      {/* Decorative Blur */}
-      <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[60%] h-[300px] bg-primary/20 blur-[120px] rounded-full pointer-events-none z-0" />
-
-      <div className="container relative z-10 mx-auto px-6 md:px-12 max-w-4xl flex flex-col items-center text-center">
-        <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">
+    <footer className="relative mt-12 w-full overflow-hidden rounded-t-[40px] bg-slate-900 py-12 text-white shadow-2xl dark:bg-card">
+      <div className="pointer-events-none absolute top-[-20%] left-1/2 z-0 h-[300px] w-[60%] -translate-x-1/2 rounded-full bg-primary/20 blur-[120px]" />
+      <div className="container relative z-10 mx-auto flex max-w-4xl flex-col items-center px-6 text-center md:px-12">
+        <h2 className="mb-4 text-3xl font-extrabold tracking-tight md:text-5xl">
           Let&apos;s Get <span className="text-primary italic">Connected</span>
         </h2>
-        <p className="text-slate-400 text-sm md:text-base max-w-lg mb-8">
-          Turning ideas into delightful digital experiences. Reach out for
-          collaborations, freelance projects, or just to say hi.
+        <p className="mb-8 max-w-lg text-sm text-slate-400 md:text-base">
+          Turning ideas into reliable digital experiences. Reach out for
+          collaborations or freelance projects.
         </p>
-
-        <div className="flex gap-4 mb-10">
-          {SOCIAL_LINKS.map(({ icon: Icon, label, href }) => (
+        {socialLinks.length > 0 && (
+          <div className="mb-10 flex gap-4">
+            {socialLinks.map(({ icon: Icon, label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={label}
+                className="group rounded-full border border-white/10 bg-white/5 p-3.5 text-white shadow-lg transition-all hover:border-primary hover:bg-primary hover:text-slate-950 hover:shadow-orange-500/30"
+              >
+                <Icon
+                  size={20}
+                  className="transition-transform group-hover:scale-110"
+                />
+              </Link>
+            ))}
+          </div>
+        )}
+        <div className="mb-8 h-px w-full bg-white/10" />
+        <div className="flex w-full flex-col items-center justify-between gap-4 text-sm text-slate-400 md:flex-row">
+          <p>
+            © {year} {profile.displayName}. All rights reserved.
+          </p>
+          <span className="flex items-center gap-2">
             <Link
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={label}
-              className="p-3.5 rounded-full bg-white/5 border border-white/10 text-white transition-all hover:bg-primary hover:border-primary shadow-lg hover:shadow-orange-500/30 group"
+              href="#contact"
+              className="font-medium transition-colors hover:text-white hover:underline duration-500"
             >
-              <Icon
-                size={20}
-                className="group-hover:scale-110 transition-transform"
-              />
+              Contact
             </Link>
-          ))}
-        </div>
-
-        <div className="w-full h-px bg-white/10 mb-8" />
-
-        <div className="flex flex-col md:flex-row items-center justify-between w-full text-sm text-slate-400 gap-4">
-          <p>© {year} M. Farhan Ramadhan. All rights reserved.</p>
-          <div className="flex gap-6 font-medium">
-            <Link
-              href="/privacy"
-              className="hover:text-white transition-colors"
-            >
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-white transition-colors">
-              Terms of Service
-            </Link>
+            <span className="mx-2 text-slate-500">|</span>
             <Link
               href="/dashboard"
-              className="hover:text-white transition-colors hover:underline"
+              className="font-medium transition-colors hover:text-white hover:underline duration-500"
             >
               Admin
             </Link>
-          </div>
+          </span>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

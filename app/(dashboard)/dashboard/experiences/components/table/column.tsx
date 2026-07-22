@@ -99,7 +99,7 @@ const ActionCell = ({ experience }: { experience: Experience }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
+        <Button variant="ghost" className="h-8 w-8 rounded-lg p-0">
           <span className="sr-only">Open menu</span>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
@@ -114,7 +114,7 @@ const ActionCell = ({ experience }: { experience: Experience }) => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700"
+          className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
           onClick={handleDelete}
         >
           <Trash className="mr-2 h-4 w-4" />
@@ -131,7 +131,7 @@ export const columns: ColumnDef<Experience>[] = [
     header: 'Position',
     cell: ({ row }) => (
       <div>
-        <div className="text-sm font-medium">{row.original.position}</div>
+        <div className="text-sm font-semibold">{row.original.position}</div>
         <div className="text-xs text-muted-foreground">
           {row.original.company}
         </div>
@@ -152,7 +152,7 @@ export const columns: ColumnDef<Experience>[] = [
     id: 'duration',
     header: 'Duration',
     cell: ({ row }) => (
-      <div className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+      <div className="inline-flex items-center rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
         {getExperienceDuration(row.original.startDate, row.original.endDate)}
       </div>
     ),
@@ -188,7 +188,7 @@ export const columns: ColumnDef<Experience>[] = [
   },
   {
     id: 'actions',
-    header: 'Actions',
+    header: () => <span className="sr-only">Actions</span>,
     cell: ({ row }) => <ActionCell experience={row.original} />,
   },
 ];

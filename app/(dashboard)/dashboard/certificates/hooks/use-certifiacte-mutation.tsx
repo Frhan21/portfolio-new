@@ -1,4 +1,3 @@
-import { Certificate } from '@/model/certificate';
 import {
   addCertificate,
   updateCertificate,

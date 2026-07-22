@@ -18,6 +18,7 @@ const segmentLabels: Record<string, string> = {
   projects: 'Projects',
   certificates: 'Certificates',
   categories: 'Categories',
+  experiences: 'Experiences',
   settings: 'Settings',
   create: 'Create',
   update: 'Update',
@@ -48,7 +49,7 @@ export default function Breadcrumbs() {
           <BreadcrumbLink asChild>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
             >
               <House className="h-3.5 w-3.5" />
               <span className="text-xs font-medium">Dashboard</span>

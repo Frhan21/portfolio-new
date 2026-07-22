@@ -1,9 +1,11 @@
+import { revalidateTag } from 'next/cache';
 import { experienceSchema } from '@/lib/validation';
 import {
   createExperience,
   getExperiences,
 } from '@/server/services/experience.server';
 import { NextResponse } from 'next/server';
+import { isAuthenticatedRequest } from '@/lib/api-auth';
 
 const parseMonthDate = (value: string) => new Date(`${value}-01T00:00:00.000Z`);
 
@@ -24,6 +26,9 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  if (!(await isAuthenticatedRequest())) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const body = await req.json();
     const validation = experienceSchema.safeParse(body);
@@ -43,6 +48,8 @@ export async function POST(req: Request) {
       description: validation.data.description,
       badges: validation.data.badges,
     });
+
+    revalidateTag('experiences', 'max');
 
     return NextResponse.json({
       message: 'Experience created successfully',

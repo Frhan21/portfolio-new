@@ -5,34 +5,46 @@ import Link from 'next/link';
 interface HeaderPageProps {
   title: string;
   description?: string;
-  url: string;
+  url?: string;
+  actionLabel?: string;
+  eyebrow?: string;
 }
 
 export default function HeaderPage({
   title,
   description,
   url,
+  actionLabel,
+  eyebrow,
 }: HeaderPageProps) {
   return (
-    <div className="flex items-start justify-between gap-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+    <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="max-w-2xl">
+        {eyebrow && (
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+            {eyebrow}
+          </p>
+        )}
+        <h1 className="text-3xl font-semibold tracking-[-0.035em] text-foreground sm:text-4xl">
           {title}
         </h1>
         {description && (
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+          <p className="mt-2 max-w-[65ch] text-sm leading-6 text-muted-foreground">
+            {description}
+          </p>
         )}
       </div>
-      <Button
-        size="sm"
-        className="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
-        asChild
-      >
-        <Link href={url}>
-          <Plus className="h-4 w-4" />
-          Tambah {title}
-        </Link>
-      </Button>
-    </div>
+      {url && (
+        <Button
+          className="h-10 w-full shrink-0 rounded-xl px-4 shadow-[0_10px_24px_-14px_rgba(254,119,67,0.9)] sm:w-auto"
+          asChild
+        >
+          <Link href={url}>
+            <Plus className="h-4 w-4" />
+            {actionLabel ?? `Tambah ${title}`}
+          </Link>
+        </Button>
+      )}
+    </header>
   );
 }

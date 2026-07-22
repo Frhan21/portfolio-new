@@ -8,6 +8,10 @@ import { categorySchema } from '@/lib/validation';
 import { useCategoryMutation } from '../../hooks/use-category-mutation';
 import { FormSection } from '@/app/(dashboard)/component/form/form-section';
 import {
+  dashboardControlClassName,
+  FormActionBar,
+} from '@/app/(dashboard)/component/form/form-controls';
+import {
   Field,
   FieldError,
   FieldGroup,
@@ -86,7 +90,7 @@ export const CategoryForm = ({
         });
         queryClient.invalidateQueries({ queryKey: ['categories'] });
         router.push('/dashboard/categories');
-      } catch (error) {
+      } catch {
         Swal.fire({
           title: 'Error!',
           text: 'Failed to delete the category.',
@@ -98,7 +102,7 @@ export const CategoryForm = ({
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
       <FormSection
         icon={<Type className="h-3.5 w-3.5" />}
         title="Informasi Dasar"
@@ -110,7 +114,11 @@ export const CategoryForm = ({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Judul Kategori</FieldLabel>
-                <Input {...field} placeholder="Masukkan judul kategori...." />
+                <Input
+                  {...field}
+                  placeholder="Masukkan judul kategori...."
+                  className={dashboardControlClassName}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -120,35 +128,39 @@ export const CategoryForm = ({
         </FieldGroup>
       </FormSection>
 
-      <div className="flex items-center justify-between pt-2">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" type="button" asChild>
-            <Link href="/dashboard/categories">
-              <ArrowLeft className="h-4 w-4" />
-              Kembali
-            </Link>
-          </Button>
-          {isEdit && (
-            <Button
-              variant="destructive"
-              size="sm"
-              type="button"
-              onClick={handleDelete}
-              className="bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 dark:bg-red-950/50 dark:text-red-400 dark:hover:bg-red-950"
-            >
-              <Trash className="mr-2 h-4 w-4" />
-              Delete
+      <FormActionBar
+        secondaryActions={
+          <>
+            <Button variant="ghost" size="sm" type="button" asChild>
+              <Link href="/dashboard/categories">
+                <ArrowLeft className="h-4 w-4" />
+                Kembali
+              </Link>
             </Button>
-          )}
-        </div>
-        <Button type="submit" disabled={isPending} className="min-w-32">
-          {isPending
-            ? 'Menyimpan...'
-            : isEdit
-              ? 'Update Category'
-              : 'Simpan Category'}
-        </Button>
-      </div>
+            {isEdit && (
+              <Button
+                variant="destructive"
+                size="sm"
+                type="button"
+                onClick={handleDelete}
+                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Delete
+              </Button>
+            )}
+          </>
+        }
+        primaryAction={
+          <Button type="submit" disabled={isPending}>
+            {isPending
+              ? 'Menyimpan...'
+              : isEdit
+                ? 'Update Category'
+                : 'Simpan Category'}
+          </Button>
+        }
+      />
     </form>
   );
 };

@@ -4,8 +4,16 @@ import { useQueryClient } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
 import { deleteCategory } from '@/server/actions/category.actions';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash } from 'lucide-react';
+import { Edit, MoreHorizontal, Trash } from 'lucide-react';
 import Link from 'next/link';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const ActionCell = ({ category }: { category: Category }) => {
   const queryClient = useQueryClient();
@@ -31,7 +39,7 @@ const ActionCell = ({ category }: { category: Category }) => {
           confirmButtonColor: '#ea580c',
         });
         queryClient.invalidateQueries({ queryKey: ['categories'] });
-      } catch (error) {
+      } catch {
         Swal.fire({
           title: 'Error!',
           text: 'Failed to delete the category.',
@@ -43,18 +51,29 @@ const ActionCell = ({ category }: { category: Category }) => {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <Button variant="outline" size="sm" asChild>
-        <Link href={`/dashboard/categories/${category.id}/update`}>
-          <Edit className="mr-2 h-4 w-4" />
-          Edit
-        </Link>
-      </Button>
-      <Button variant="destructive" size="sm" onClick={handleDelete}>
-        <Trash className="mr-2 h-4 w-4" />
-        Delete
-      </Button>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 rounded-lg p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuItem asChild>
+          <Link href={`/dashboard/categories/${category.id}/update`}>
+            <Edit className="mr-2 size-4" /> Edit
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={handleDelete}
+          className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+        >
+          <Trash className="mr-2 size-4" /> Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
@@ -63,11 +82,12 @@ export const columns: ColumnDef<Category>[] = [
     accessorKey: 'title',
     header: 'Title',
     cell: ({ row }) => (
-      <div className="text-sm font-medium">{row.original.title}</div>
+      <div className="text-sm font-semibold">{row.original.title}</div>
     ),
   },
   {
-    header: 'Actions',
+    id: 'actions',
+    header: () => <span className="sr-only">Actions</span>,
     cell: ({ row }) => <ActionCell category={row.original} />,
   },
 ];

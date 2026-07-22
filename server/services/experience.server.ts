@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import * as ExperienceRepository from '@/server/repositories/experience.repository';
 import {
   CreateExperienceInput,
@@ -42,6 +43,16 @@ export const getExperiences = (limit?: number) =>
 
 export const getPaginatedExperiences = (limit: number, page: number) =>
   buildExperiencePage(limit, page);
+
+export const getCachedPaginatedExperiences = async (
+  limit: number,
+  page: number
+) =>
+  unstable_cache(
+    async () => buildExperiencePage(limit, page),
+    ['experiences', 'page', `${page}`, 'limit', `${limit}`],
+    { revalidate: 120, tags: ['experiences'] }
+  )();
 
 export const getExperienceById = (id: string) =>
   ExperienceRepository.findById(id);

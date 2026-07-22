@@ -7,6 +7,7 @@ import {
 import { uploadImage } from '@/server/services/upload.server';
 import { revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
+import { isAuthenticatedRequest } from '@/lib/api-auth';
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -44,6 +45,9 @@ export async function GET(req: NextRequest, context: RouteContext) {
 }
 
 export async function PUT(req: NextRequest, context: RouteContext) {
+  if (!(await isAuthenticatedRequest())) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const { id } = await context.params;
     if (!id) {

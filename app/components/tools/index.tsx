@@ -1,7 +1,7 @@
 'use client';
 
-import { motion } from 'motion/react';
-import React from 'react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import React, { useRef } from 'react';
 import { FaGitAlt } from 'react-icons/fa';
 import {
   SiDocker,
@@ -75,13 +75,25 @@ const ToolBadge = ({ tool }: { tool: Tool }) => (
 );
 
 const Tools = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  const headerScale = useTransform(scrollYProgress, [0.1, 0.35], [0.95, 1]);
+  const headerOpacity = useTransform(scrollYProgress, [0.1, 0.3], [0, 1]);
+
   return (
     <section
+      ref={sectionRef}
       className="w-full flex flex-col items-center justify-center py-24 overflow-hidden"
       id="tech-stack"
     >
       <motion.div
-        className="flex flex-col items-center justify-center gap-4 text-center px-4 max-w-3xl mb-16"
+        style={{ scale: headerScale, opacity: headerOpacity }}
+        className="flex flex-col items-center justify-center gap-3 sm:gap-4 text-center px-4 max-w-3xl mb-10 sm:mb-16"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
@@ -95,14 +107,15 @@ const Tools = () => {
 
         <motion.h2
           variants={fadeUp}
-          className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white"
+          className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white"
         >
-          What do I use for work? <br /> Check this out 🔥
+          What do I use for work? <br className="hidden sm:block" /> Check this
+          out 🔥
         </motion.h2>
 
         <motion.p
           variants={fadeUp}
-          className="text-slate-500 dark:text-slate-400 mt-2"
+          className="text-slate-500 dark:text-slate-400 mt-1 sm:mt-2 text-sm sm:text-base"
         >
           Tools, frameworks, and random tech I genuinely enjoy using.
         </motion.p>

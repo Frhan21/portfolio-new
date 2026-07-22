@@ -14,7 +14,7 @@ import {
   SidebarRail,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { BookOpen, ChevronRight } from 'lucide-react';
+import { ArrowUpRight, BookOpen } from 'lucide-react';
 import {
   APP_SETTINGS_MENUS,
   APPLICATION_MENUS,
@@ -34,33 +34,35 @@ export default function DashboardSidebar({
   const { open } = useSidebar();
 
   return (
-    <Sidebar collapsible="icon" {...props}>
-      {/* Header / Logo */}
-      <SidebarHeader className="border-b border-sidebar-border">
+    <Sidebar
+      collapsible="icon"
+      className="border-none bg-transparent [&_[data-sidebar=sidebar]]:bg-[#17232b] [&_[data-sidebar=sidebar]]:text-[#f4efe8]"
+      {...props}
+    >
+      <SidebarHeader className="border-b border-white/8">
         <div
           className={`flex items-center gap-3 py-4 ${open ? 'px-3' : 'px-0 justify-center'}`}
         >
-          <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+          <div className="flex aspect-square size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_8px_24px_-12px_rgba(254,119,67,0.9)]">
             <BookOpen className="size-4" />
           </div>
           {open && (
             <div className="flex flex-col leading-none">
-              <span className="font-semibold text-sm text-sidebar-foreground">
+              <span className="text-sm font-semibold tracking-tight text-white">
                 Portfolio
               </span>
-              <span className="text-[11px] text-sidebar-foreground/50 font-medium uppercase tracking-widest">
-                Admin
+              <span className="mt-1 text-[10px] font-medium uppercase tracking-[0.2em] text-white/45">
+                Content studio
               </span>
             </div>
           )}
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="py-2">
-        {/* Application Menu */}
+      <SidebarContent className="px-1 py-3">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/40 px-3 mb-1">
-            {open ? 'Menu' : '—'}
+          <SidebarGroupLabel className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">
+            {open ? 'Workspace' : ''}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -72,6 +74,7 @@ export default function DashboardSidebar({
                       asChild
                       isActive={active}
                       tooltip={menu.title}
+                      className="h-10 rounded-xl px-3 text-white/65 transition-colors hover:bg-white/7 hover:text-white data-[active=true]:bg-primary data-[active=true]:font-semibold data-[active=true]:text-primary-foreground data-[active=true]:shadow-[0_10px_28px_-16px_rgba(254,119,67,0.9)]"
                     >
                       <Link
                         href={menu.url}
@@ -82,7 +85,7 @@ export default function DashboardSidebar({
                           {menu.title}
                         </span>
                         {open && active && (
-                          <ChevronRight className="ml-auto size-3.5 opacity-60" />
+                          <span className="ml-auto size-1.5 rounded-full bg-current" />
                         )}
                       </Link>
                     </SidebarMenuButton>
@@ -95,8 +98,8 @@ export default function DashboardSidebar({
 
         {/* Settings Menu */}
         <SidebarGroup className="mt-2">
-          <SidebarGroupLabel className="text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/40 px-3 mb-1">
-            {open ? 'Settings' : '—'}
+          <SidebarGroupLabel className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">
+            {open ? 'Settings' : ''}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -108,6 +111,7 @@ export default function DashboardSidebar({
                       asChild
                       isActive={active}
                       tooltip={menu.title}
+                      className="h-10 rounded-xl px-3 text-white/65 transition-colors hover:bg-white/7 hover:text-white data-[active=true]:bg-primary data-[active=true]:font-semibold data-[active=true]:text-primary-foreground"
                     >
                       <Link
                         href={menu.url}
@@ -118,7 +122,7 @@ export default function DashboardSidebar({
                           {menu.title}
                         </span>
                         {open && active && (
-                          <ChevronRight className="ml-auto size-3.5 opacity-60" />
+                          <span className="ml-auto size-1.5 rounded-full bg-current" />
                         )}
                       </Link>
                     </SidebarMenuButton>
@@ -130,12 +134,16 @@ export default function DashboardSidebar({
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Footer version tag */}
       {open && (
-        <SidebarFooter className="border-t border-sidebar-border px-4 py-3">
-          <span className="text-[11px] text-sidebar-foreground/30 font-medium">
-            v1.0.0 · Portfolio CMS
-          </span>
+        <SidebarFooter className="border-t border-white/8 p-3">
+          <Link
+            href="/"
+            target="_blank"
+            className="flex items-center justify-between rounded-xl border border-white/10 px-3 py-3 text-xs font-medium text-white/60 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
+          >
+            View portfolio
+            <ArrowUpRight className="size-3.5" />
+          </Link>
         </SidebarFooter>
       )}
 

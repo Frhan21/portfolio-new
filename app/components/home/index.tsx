@@ -2,8 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { Briefcase, DownloadIcon } from 'lucide-react';
-import { motion } from 'motion/react';
-import { useEffect, useState } from 'react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { useEffect, useRef, useState } from 'react';
 import {
   SiGo,
   SiLaravel,
@@ -13,9 +13,24 @@ import {
   SiTypescript,
 } from 'react-icons/si';
 import { fadeIn, fadeUp } from '../motions';
+import { PortfolioProfile } from '@/model/profile';
 
-const Home = () => {
+interface HomeProps {
+  profile: PortfolioProfile;
+}
+
+const Home = ({ profile }: HomeProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, 120]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  const contentScale = useTransform(scrollYProgress, [0, 0.7], [1, 0.95]);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 50);
@@ -24,7 +39,8 @@ const Home = () => {
 
   return (
     <motion.section
-      className="relative mx-auto min-h-[90vh] flex w-full max-w-6xl flex-col items-center justify-center py-20 px-6"
+      ref={sectionRef}
+      className="relative mx-auto min-h-[85vh] sm:min-h-[90vh] flex w-full max-w-6xl flex-col items-center justify-center py-16 sm:py-20 px-4 sm:px-6"
       id="home"
       initial="hidden"
       animate={isLoaded ? 'visible' : 'hidden'}
@@ -89,31 +105,33 @@ const Home = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col items-center text-center z-10 w-full">
+      <motion.div
+        style={{ y: contentY, opacity: contentOpacity, scale: contentScale }}
+        className="flex flex-col items-center text-center z-10 w-full"
+      >
         <motion.div
           variants={fadeUp}
-          className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm px-6 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-200 shadow-sm mb-8"
+          className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 shadow-sm mb-6 sm:mb-8"
         >
-          <span className="text-xl">👋</span>
-          Hello, I&apos;m M. Farhan Ramadhan
+          <span className="text-lg sm:text-xl">👋</span>
+          <span>Hello, I&apos;m {profile.displayName}</span>
         </motion.div>
 
         <motion.h1
-          className="text-5xl md:text-7xl lg:text-[90px] font-extrabold leading-[1.1] text-slate-900 dark:text-white tracking-tight mb-12 max-w-5xl mx-auto"
+          className="text-4xl sm:text-5xl md:text-7xl lg:text-[90px] font-extrabold leading-[1.1] text-slate-900 dark:text-white tracking-tight mb-8 sm:mb-12 max-w-5xl mx-auto"
           variants={fadeUp}
           transition={{ delay: 0.1 }}
         >
-          Newbie Software <br />
-          Engineer <span className="text-primary">Wannabe</span>
+          {profile.headline}
         </motion.h1>
 
         <motion.div
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-4xl"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full max-w-4xl px-2 sm:px-0"
           variants={fadeUp}
           transition={{ delay: 0.2 }}
         >
           <Button
-            className="w-full sm:w-[300px] flex items-center justify-center gap-2 rounded-full bg-primary px-10 py-6 text-base font-bold text-white shadow-xl shadow-orange-500/25 hover:bg-primary/90 transition-all active:scale-[0.98]"
+            className="w-full sm:w-[300px] flex items-center justify-center gap-2 rounded-full bg-primary px-8 sm:px-10 py-5 sm:py-6 text-sm sm:text-base font-bold text-slate-950 shadow-xl shadow-orange-500/25 hover:bg-primary/90 transition-all active:scale-[0.98]"
             asChild
           >
             <a href="#projects">
@@ -121,18 +139,20 @@ const Home = () => {
               <Briefcase />
             </a>
           </Button>
-          <Button
-            variant="outline"
-            className="w-full sm:w-[300px] flex items-center justify-center gap-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-card px-10 py-6 text-base font-bold text-slate-900 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-[0.98]"
-            asChild
-          >
-            <a href="/cv.pdf" target="_blank" rel="noopener noreferrer">
-              Download CV
-              <DownloadIcon />
-            </a>
-          </Button>
+          {profile.cvUrl && (
+            <Button
+              variant="outline"
+              className="w-full sm:w-[300px] flex items-center justify-center gap-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-card px-8 sm:px-10 py-5 sm:py-6 text-sm sm:text-base font-bold text-slate-900 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-[0.98]"
+              asChild
+            >
+              <a href={profile.cvUrl} target="_blank" rel="noopener noreferrer">
+                Download CV
+                <DownloadIcon />
+              </a>
+            </Button>
+          )}
         </motion.div>
-      </div>
+      </motion.div>
     </motion.section>
   );
 };

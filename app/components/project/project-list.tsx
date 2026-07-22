@@ -3,9 +3,17 @@
 import { Button } from '@/components/ui/button';
 import { Category } from '@/model/category';
 import type { Project } from '@/model/project';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { Layers } from 'lucide-react';
 import CardComponent from '../card';
 import { fadeUp } from '../motions';
 
@@ -18,48 +26,51 @@ export default function ProjectList({
 }) {
   const [activeCategory, setActiveCategory] = useState<string>('All');
 
-  // Filter projects based on active category
   const filteredProjects =
     activeCategory === 'All'
       ? projects
       : projects.filter((p) => p.category?.title === activeCategory);
 
-  // Get max 4 projects
-  const displayProjects = filteredProjects.slice(0, 4);
+  const displayProjects = filteredProjects.slice(0, 6);
 
   return (
     <div className="w-full flex flex-col items-center">
-      {/* Category Filter Tabs */}
+      {/* Category Filter - Select Dropdown */}
       <motion.div
         variants={fadeUp}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
-        className="flex flex-wrap justify-center gap-3 mb-10 w-full"
+        className="flex items-center justify-center gap-3 mb-10 w-full"
       >
-        <button
-          onClick={() => setActiveCategory('All')}
-          className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-            activeCategory === 'All'
-              ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-              : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 dark:bg-card dark:text-slate-400 dark:border-slate-800 dark:hover:bg-slate-800'
-          }`}
-        >
-          All Categories
-        </button>
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setActiveCategory(cat.title)}
-            className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-              activeCategory === cat.title
-                ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 dark:bg-card dark:text-slate-400 dark:border-slate-800 dark:hover:bg-slate-800'
-            }`}
+        <div className="relative">
+          <Select
+            value={activeCategory}
+            onValueChange={(val) => setActiveCategory(val)}
           >
-            {cat.title}
-          </button>
-        ))}
+            <SelectTrigger className="w-[200px] rounded-full border-slate-200 dark:border-slate-700 bg-white dark:bg-card shadow-sm px-5 py-5 h-auto text-sm font-semibold text-slate-700 dark:text-slate-300 [&_svg:not([class*='text-'])]:text-slate-400">
+              <Layers size={16} className="mr-1 text-primary" />
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent className="rounded-2xl border-slate-200 dark:border-slate-700">
+              <SelectItem
+                value="All"
+                className="rounded-lg text-sm font-medium cursor-pointer focus:bg-orange-50 dark:focus:bg-orange-500/10 focus:text-orange-600 dark:focus:text-orange-400"
+              >
+                All Categories
+              </SelectItem>
+              {categories.map((cat) => (
+                <SelectItem
+                  key={cat.id}
+                  value={cat.title}
+                  className="rounded-lg text-sm font-medium cursor-pointer focus:bg-orange-50 dark:focus:bg-orange-500/10 focus:text-orange-600 dark:focus:text-orange-400"
+                >
+                  {cat.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </motion.div>
 
       {/* Projects Grid with Animation */}

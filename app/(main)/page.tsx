@@ -1,34 +1,46 @@
 import React from 'react';
+import dynamicImport from 'next/dynamic';
 import Home from '../components/home';
 import About from '../components/about';
-import Tools from '../components/tools';
-import Experience from '../components/experience';
-import Project from '../components/project';
-import Certificate from '../components/certificate';
-import FAQ from '../components/faq';
-import Contact from '../components/contact';
+import { ParallaxBackground } from '../components/parallax-background';
+import { getPublicPortfolioProfile } from '@/server/services/profile.server';
 
-const Page = () => {
+export const dynamic = 'force-dynamic';
+
+const Tools = dynamicImport(() => import('../components/tools'), {
+  loading: () => <div className="h-[200px]" />,
+});
+const Experience = dynamicImport(() => import('../components/experience'), {
+  loading: () => <div className="h-[400px]" />,
+});
+const Project = dynamicImport(() => import('../components/project'), {
+  loading: () => <div className="h-[400px]" />,
+});
+const Certificate = dynamicImport(() => import('../components/certificate'), {
+  loading: () => <div className="h-[300px]" />,
+});
+const FAQ = dynamicImport(() => import('../components/faq'), {
+  loading: () => <div className="h-[300px]" />,
+});
+const Contact = dynamicImport(() => import('../components/contact'), {
+  loading: () => <div className="h-[300px]" />,
+});
+
+const Page = async () => {
+  const profile = await getPublicPortfolioProfile();
+
   return (
     <div className="flex flex-col relative w-full overflow-hidden">
-      {/* Global Background Blur Circles (Orange) spanning the entire page */}
-      <div className="absolute top-0 left-0 w-full h-full -z-10 pointer-events-none">
-        <div className="absolute top-[2%] left-[10%] w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-orange-500/30 dark:bg-orange-500/15 rounded-full blur-[100px] md:blur-[150px]"></div>
-        <div className="absolute top-[15%] right-[5%] w-[400px] h-[400px] md:w-[600px] md:h-[600px] bg-orange-500/20 dark:bg-orange-500/10 rounded-full blur-[120px] md:blur-[150px]"></div>
-        <div className="absolute top-[35%] left-[15%] w-[350px] h-[350px] md:w-[500px] md:h-[500px] bg-orange-500/25 dark:bg-orange-500/10 rounded-full blur-[100px] md:blur-[150px]"></div>
-        <div className="absolute top-[55%] right-[10%] w-[450px] h-[450px] md:w-[600px] md:h-[600px] bg-orange-500/20 dark:bg-orange-500/10 rounded-full blur-[120px] md:blur-[150px]"></div>
-        <div className="absolute top-[75%] left-[5%] w-[500px] h-[500px] md:w-[700px] md:h-[700px] bg-orange-500/25 dark:bg-orange-500/10 rounded-full blur-[120px] md:blur-[180px]"></div>
-        <div className="absolute bottom-[5%] right-[15%] w-[400px] h-[400px] md:w-[500px] md:h-[500px] bg-orange-500/30 dark:bg-orange-500/15 rounded-full blur-[100px] md:blur-[150px]"></div>
-      </div>
+      <ParallaxBackground />
 
-      <Home />
-      <About />
+      <Home profile={profile} />
+      <About profile={profile} />
       <Tools />
       <Experience />
       <Project />
       <Certificate />
       <FAQ />
-      <Contact />
+      <Contact profile={profile} />
     </div>
   );
 };

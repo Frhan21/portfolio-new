@@ -9,6 +9,9 @@ export const create = (data: {
 export const findByToken = (token: string) =>
   prisma.refreshToken.findUnique({ where: { token } });
 
+export const findById = (id: string) =>
+  prisma.refreshToken.findUnique({ where: { id } });
+
 export const revokeAllByUserId = (userId: string) =>
   prisma.refreshToken.updateMany({
     where: { userId, revoked: false },

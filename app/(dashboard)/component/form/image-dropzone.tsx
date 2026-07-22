@@ -1,4 +1,11 @@
-import { useState, useRef, ChangeEvent, DragEvent, useEffect } from 'react';
+import {
+  useState,
+  useRef,
+  ChangeEvent,
+  DragEvent,
+  KeyboardEvent,
+  useEffect,
+} from 'react';
 import { UploadCloud, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -35,7 +42,7 @@ export function ImageDropzone({
       clearTimeout(handle);
       URL.revokeObjectURL(url);
     };
-  }, [value]);
+  }, [initialPreviewUrl, value]);
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -50,7 +57,6 @@ export function ImageDropzone({
   const processFile = (file: File) => {
     if (file.type.startsWith('image/')) {
       onChange(file);
-      setPreviewUrl(URL.createObjectURL(file));
     } else {
       toast.error('Please upload a valid image file');
     }
@@ -70,17 +76,28 @@ export function ImageDropzone({
     }
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      fileInputRef.current?.click();
+    }
+  };
+
   return (
     <div
-      className={`relative mt-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${
+      role="button"
+      tabIndex={0}
+      aria-label={previewUrl ? 'Replace image' : 'Upload image'}
+      className={`relative flex min-h-52 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed p-4 outline-none transition-[border-color,background-color] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:p-6 ${
         isDragging
           ? 'border-primary bg-primary/10'
-          : 'border-muted-foreground/25 hover:bg-accent/50'
+          : 'border-muted-foreground/30 bg-muted/20 hover:border-primary/50 hover:bg-primary/[0.035]'
       }`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       onClick={() => fileInputRef.current?.click()}
+      onKeyDown={handleKeyDown}
     >
       <input
         type="file"
@@ -90,7 +107,7 @@ export function ImageDropzone({
         onChange={handleFileSelect}
       />
       {previewUrl ? (
-        <div className="relative aspect-video w-full max-w-sm overflow-hidden rounded-md border">
+        <div className="relative aspect-video w-full max-w-md overflow-hidden rounded-xl border border-border/70 bg-muted">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={previewUrl}
@@ -106,8 +123,8 @@ export function ImageDropzone({
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center space-y-2 text-center">
-          <div className="rounded-full bg-primary p-3">
-            <ImageIcon className="h-6 w-6 text-primary-foreground" />
+          <div className="rounded-xl bg-primary/10 p-3 text-primary">
+            <ImageIcon className="h-6 w-6" />
           </div>
           <div className="text-sm">
             <span className="font-semibold text-primary">

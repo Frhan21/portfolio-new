@@ -1,8 +1,14 @@
-import React from 'react';
-import AuthForm from '../component/form/page';
+import { redirect } from 'next/navigation';
+
+export const metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 const RegisterPage = () => {
-  return <AuthForm type="register" />;
+  redirect('/login');
 };
 
 export default RegisterPage;

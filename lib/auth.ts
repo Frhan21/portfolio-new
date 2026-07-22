@@ -24,7 +24,7 @@ async function generateAndStoreRefreshToken(userId: string) {
 }
 
 async function verifyAndRefreshAccessToken(tokenId: string) {
-  const refreshToken = await RefreshTokenRepository.findByToken(tokenId);
+  const refreshToken = await RefreshTokenRepository.findById(tokenId);
 
   if (
     !refreshToken ||
