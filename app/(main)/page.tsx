@@ -30,7 +30,7 @@ const Page = async () => {
   const profile = await getPublicPortfolioProfile();
 
   return (
-    <div className="flex flex-col relative w-full overflow-hidden">
+    <div className="flex flex-col relative w-full overflow-x-clip">
       <ParallaxBackground />
 
       <Home profile={profile} />

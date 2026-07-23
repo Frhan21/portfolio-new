@@ -25,7 +25,11 @@ export default function CertificateSlider({
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {displayCertificates.map((cert) => (
-          <CertificateItem key={cert.id} cert={cert} />
+          <CertificateItem
+            key={cert.id}
+            cert={cert}
+            className="w-[280px] sm:w-[340px] md:w-[380px] shrink-0 snap-center"
+          />
         ))}
 
         {/* "See More" Card at the end */}
@@ -34,7 +38,7 @@ export default function CertificateSlider({
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="min-w-[300px] h-[280px] md:h-[320px] shrink-0 snap-center bg-primary/10 dark:bg-primary/5 rounded-[32px] border border-primary/20 p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-primary/20 transition-colors group"
+          className="min-w-[300px] h-[280px] md:h-80 shrink-0 snap-center bg-primary/10 dark:bg-primary/5 rounded-4xl border border-primary/20 p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-primary/20 transition-colors group"
         >
           <Link
             href="/certificate"

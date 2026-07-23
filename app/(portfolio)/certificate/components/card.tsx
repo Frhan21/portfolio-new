@@ -19,9 +19,13 @@ const CertificateCard = ({ certificates }: CertificateProps) => {
   }
 
   return (
-    <div className="grid w-full gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+    <div className="grid w-full gap-6 md:gap-8 grid-cols-1 md:grid-cols-2">
       {certificates.map((certificate) => (
-        <CertificateItem key={certificate.id} cert={certificate} />
+        <CertificateItem
+          key={certificate.id}
+          cert={certificate}
+          className="w-full"
+        />
       ))}
     </div>
   );

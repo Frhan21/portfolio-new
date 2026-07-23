@@ -7,7 +7,7 @@ import { use } from 'react';
 import Header from '../components/header';
 import Pagination from '../components/pagination';
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 6;
 
 type ProjectPageProps = {
   searchParams?: Promise<{ page?: string }> | { page?: string };

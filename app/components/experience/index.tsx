@@ -1,10 +1,11 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { Card3D } from '@/components/ui/card-3d';
+import { formatDate } from '@/lib/date';
 import { Briefcase } from 'lucide-react';
+import { motion } from 'motion/react';
 import { fadeIn, fadeUp } from '../motions';
 import { useQueryExperience } from './hooks/use-query-experience';
-import { formatDate } from '@/lib/date';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -24,9 +25,9 @@ const Experience = () => {
       className="flex flex-col items-center justify-center w-full h-fit mt-16 sm:mt-20 md:px-12 px-4 mx-auto py-16 sm:py-24"
       id="experience"
     >
-      <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 sm:gap-12 lg:gap-24 relative">
+      <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 sm:gap-12 lg:gap-24 relative items-start">
         {/* Left Side — Sticky */}
-        <div className="w-full lg:w-5/12 shrink-0 lg:sticky lg:top-32 lg:self-start">
+        <div className="w-full lg:w-5/12 shrink-0 lg:sticky lg:top-28 lg:self-start z-10">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -59,24 +60,26 @@ const Experience = () => {
               communicate.
             </motion.p>
 
-            <motion.div
-              variants={fadeUp}
-              className="bg-white dark:bg-card border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row gap-4 md:items-center"
-            >
-              <div className="flex flex-col shrink-0">
-                <span className="text-2xl font-bold text-orange-500">
-                  Track Record
-                </span>
-                <span className="text-xs font-semibold text-orange-400 uppercase tracking-wide">
-                  Proven & Reliable
-                </span>
-              </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400 border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-700 pt-4 md:pt-0 md:pl-4">
-                A blend of backend engineering, frontend development, and
-                creative roles that highlights a holistic approach to building
-                digital solutions.
-              </p>
-            </motion.div>
+            <Card3D intensity={8} enableGlare={false}>
+              <motion.div
+                variants={fadeUp}
+                className="bg-white dark:bg-card border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row gap-4 md:items-center"
+              >
+                <div className="flex flex-col shrink-0">
+                  <span className="text-2xl font-bold text-orange-500">
+                    Track Record
+                  </span>
+                  <span className="text-xs font-semibold text-orange-400 uppercase tracking-wide">
+                    Proven & Reliable
+                  </span>
+                </div>
+                <p className="text-sm text-slate-600 dark:text-slate-400 border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-700 pt-4 md:pt-0 md:pl-4">
+                  A blend of backend engineering, frontend development, and
+                  creative roles that highlights a holistic approach to building
+                  digital solutions.
+                </p>
+              </motion.div>
+            </Card3D>
           </motion.div>
         </div>
 
@@ -91,7 +94,7 @@ const Experience = () => {
           >
             {experiences?.items.slice(0, 3).map((exp, index, arr) => (
               <motion.div
-                key={index}
+                key={exp.id || index}
                 className="relative flex flex-col md:flex-row gap-6 md:gap-8 items-start group"
                 variants={fadeUp}
               >
@@ -99,62 +102,66 @@ const Experience = () => {
                   <div className="absolute left-[15px] top-12 -bottom-12 w-0.5 bg-orange-200 dark:bg-orange-900/50 hidden md:block z-0"></div>
                 )}
 
-                <div className="hidden md:flex shrink-0 w-[32px] h-[32px] bg-orange-100 dark:bg-orange-900/30 rounded-full items-center justify-center relative z-10 border-4 border-background mt-4">
+                <div className="hidden md:flex shrink-0 w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-full items-center justify-center relative z-10 border-4 border-background mt-4">
                   <div className="w-3 h-3 bg-orange-500 rounded-full group-hover:scale-125 transition-transform"></div>
                 </div>
 
-                <motion.div
-                  className="bg-white dark:bg-card border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm flex-1 relative overflow-hidden"
-                  whileHover={{
-                    y: -4,
-                    boxShadow:
-                      '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-                  }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                >
-                  <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-orange-400 to-orange-600 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out z-0"></div>
+                <div className="flex-1 w-full">
+                  <Card3D intensity={10} className="w-full">
+                    <motion.div
+                      className="bg-white dark:bg-card border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm flex-1 relative overflow-hidden w-full"
+                      whileHover={{
+                        y: -4,
+                        boxShadow:
+                          '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                      }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                    >
+                      <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-orange-400 to-orange-600 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out z-0"></div>
 
-                  <div className="relative z-10">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-2">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors duration-300">
-                        {exp.position}
-                      </h3>
-                      <span className="text-sm font-semibold text-orange-500 shrink-0 bg-orange-50 dark:bg-orange-500/10 px-3 py-1 rounded-full">
-                        {formatDate(exp.startDate, 'en-US', {
-                          month: 'short',
-                          year: 'numeric',
-                        })}{' '}
-                        -{' '}
-                        {exp.endDate
-                          ? formatDate(exp.endDate, 'en-US', {
+                      <div className="relative z-10">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-2">
+                          <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors duration-300">
+                            {exp.position}
+                          </h3>
+                          <span className="text-sm font-semibold text-orange-500 shrink-0 bg-orange-50 dark:bg-orange-500/10 px-3 py-1 rounded-full w-fit">
+                            {formatDate(exp.startDate, 'en-US', {
                               month: 'short',
                               year: 'numeric',
-                            })
-                          : 'Present'}
-                      </span>
-                    </div>
+                            })}{' '}
+                            -{' '}
+                            {exp.endDate
+                              ? formatDate(exp.endDate, 'en-US', {
+                                  month: 'short',
+                                  year: 'numeric',
+                                })
+                              : 'Present'}
+                          </span>
+                        </div>
 
-                    <div className="text-slate-500 dark:text-slate-400 font-medium mb-4 flex items-center gap-2">
-                      <Briefcase size={14} className="text-orange-500" />
-                      {exp.company}{' '}
-                    </div>
+                        <div className="text-slate-500 dark:text-slate-400 font-medium mb-4 flex items-center gap-2">
+                          <Briefcase size={14} className="text-orange-500" />
+                          {exp.company}{' '}
+                        </div>
 
-                    <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed mb-6">
-                      {exp.description}
-                    </p>
+                        <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed mb-6">
+                          {exp.description}
+                        </p>
 
-                    <div className="flex flex-wrap gap-2">
-                      {exp.badges.map((badge, idx) => (
-                        <span
-                          key={idx}
-                          className="bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 px-3 py-1 text-xs font-medium rounded-full group-hover:bg-orange-50 dark:group-hover:bg-orange-500/10 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors duration-300"
-                        >
-                          {badge}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
+                        <div className="flex flex-wrap gap-2">
+                          {exp.badges.map((badge, idx) => (
+                            <span
+                              key={idx}
+                              className="bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 px-3 py-1 text-xs font-medium rounded-full group-hover:bg-orange-50 dark:group-hover:bg-orange-500/10 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors duration-300"
+                            >
+                              {badge}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  </Card3D>
+                </div>
               </motion.div>
             ))}
           </motion.div>

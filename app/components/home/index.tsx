@@ -1,5 +1,6 @@
 'use client';
 
+import { Card3D } from '@/components/ui/card-3d';
 import { Button } from '@/components/ui/button';
 import { Briefcase, DownloadIcon } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'motion/react';
@@ -109,13 +110,15 @@ const Home = ({ profile }: HomeProps) => {
         style={{ y: contentY, opacity: contentOpacity, scale: contentScale }}
         className="flex flex-col items-center text-center z-10 w-full"
       >
-        <motion.div
-          variants={fadeUp}
-          className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 shadow-sm mb-6 sm:mb-8"
-        >
-          <span className="text-lg sm:text-xl">👋</span>
-          <span>Hello, I&apos;m {profile.displayName}</span>
-        </motion.div>
+        <Card3D intensity={15} enableGlare={false}>
+          <motion.div
+            variants={fadeUp}
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 shadow-sm mb-6 sm:mb-8"
+          >
+            <span className="text-lg sm:text-xl">👋</span>
+            <span>Hello, I&apos;m {profile.displayName}</span>
+          </motion.div>
+        </Card3D>
 
         <motion.h1
           className="text-4xl sm:text-5xl md:text-7xl lg:text-[90px] font-extrabold leading-[1.1] text-slate-900 dark:text-white tracking-tight mb-8 sm:mb-12 max-w-5xl mx-auto"
