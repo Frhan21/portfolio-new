@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github.com/Frhan21/portfolio-new/compare/v0.1.2...v0.1.3) (2026-07-24)
+
+### Features
+
+- **experience:** sync portfolio page with database ([d1f7f3c](https://github.com/Frhan21/portfolio-new/commit/d1f7f3c22296b7876dfbde3e460ad85cf6eea68d))
+- fix performance and redesign landing page and dashboard ([a39fa26](https://github.com/Frhan21/portfolio-new/commit/a39fa2684c01086ffca268dec611af6a5685ebff))
+
 ### [0.1.2](https://github.com/Frhan21/portfolio-new/compare/v0.1.1...v0.1.2) (2026-06-08)
 
 ### Features
