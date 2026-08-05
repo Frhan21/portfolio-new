@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/Frhan21/portfolio-new/compare/v0.1.3...v0.1.4) (2026-08-05)
+
+### Bug Fixes
+
+- fixing bug on project card github button cannot clicked ([a475029](https://github.com/Frhan21/portfolio-new/commit/a4750294094baeafc70136d4e3fbc83b518b7ad3))
+
 ### [0.1.3](https://github.com/Frhan21/portfolio-new/compare/v0.1.2...v0.1.3) (2026-07-24)
 
 ### Features
