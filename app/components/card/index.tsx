@@ -71,14 +71,18 @@ export default function CardComponent({
               )}
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-2.5 sm:gap-3 mt-auto">
+              <div className="relative z-30 flex items-center gap-2.5 sm:gap-3 mt-auto">
                 {project.demo && (
                   <Button
                     asChild
                     variant="outline"
                     className="rounded-full border-slate-600 bg-slate-800/60 text-white hover:bg-slate-700 hover:text-white px-3.5 sm:px-4 py-2 h-auto text-xs flex items-center gap-1 transition-colors"
                   >
-                    <Link href={project.demo} target="_blank">
+                    <Link
+                      href={project.demo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <LuArrowRight size={14} />
                       Demo
                     </Link>
@@ -90,7 +94,11 @@ export default function CardComponent({
                     asChild
                     className="rounded-full bg-orange-500 hover:bg-orange-600 text-white px-3.5 sm:px-4 py-2 h-auto text-xs flex items-center gap-1 shadow-lg shadow-orange-500/20 border-none"
                   >
-                    <Link href={project.github} target="_blank">
+                    <Link
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <FaGithub size={14} />
                       Github
                     </Link>
@@ -100,7 +108,7 @@ export default function CardComponent({
             </div>
 
             {/* Project Image (Bottom Right) */}
-            <div className="absolute -bottom-[15%] -right-[15%] w-[75%] sm:w-[80%] h-[55%] sm:h-[60%] z-10 transition-transform duration-500 group-hover:-translate-y-4 group-hover:-translate-x-4">
+            <div className="pointer-events-none absolute -bottom-[15%] -right-[15%] w-[75%] sm:w-[80%] h-[55%] sm:h-[60%] z-10 transition-transform duration-500 group-hover:-translate-y-4 group-hover:-translate-x-4">
               <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl rotate-[-10deg] border-4 border-slate-800">
                 {project.image ? (
                   <Image
