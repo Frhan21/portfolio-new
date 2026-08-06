@@ -55,7 +55,7 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
     ) as Resolver<TProjectSchema>,
     defaultValues: {
       title: initialData?.title || '',
-      image: new File([], ''),
+      image: isEdit ? undefined : new File([], ''),
       tags: initialData?.tags || [],
       categoryId: initialData?.categoryId || '',
       demo: initialData?.demo || '',
@@ -139,7 +139,12 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+    <form
+      onSubmit={form.handleSubmit(onSubmit, () => {
+        toast.error('Periksa kembali data proyek yang belum valid.');
+      })}
+      className="space-y-5"
+    >
       {/* Basic Info */}
       <FormSection
         icon={<Type className="h-3.5 w-3.5" />}
