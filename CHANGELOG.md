@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.5](https://github.com/Frhan21/portfolio-new/compare/v0.1.4...v0.1.5) (2026-08-06)
+
+### Bug Fixes
+
+- fix button update project ([fc701b1](https://github.com/Frhan21/portfolio-new/commit/fc701b1a16f226f6e261c809a095a6088ffa9ffd))
+
 ### [0.1.4](https://github.com/Frhan21/portfolio-new/compare/v0.1.3...v0.1.4) (2026-08-05)
 
 ### Bug Fixes
