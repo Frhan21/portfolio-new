@@ -1,8 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Category } from '@/model/category';
-import type { Project } from '@/model/project';
+import type { Category, Project } from '@/payload-types';
 import {
   Select,
   SelectContent,
@@ -29,7 +28,11 @@ export default function ProjectList({
   const filteredProjects =
     activeCategory === 'All'
       ? projects
-      : projects.filter((p) => p.category?.title === activeCategory);
+      : projects.filter(
+          (p) =>
+            typeof p.category === 'object' &&
+            p.category?.title === activeCategory
+        );
 
   const displayProjects = filteredProjects.slice(0, 6);
 

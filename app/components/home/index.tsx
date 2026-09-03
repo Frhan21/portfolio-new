@@ -14,7 +14,7 @@ import {
   SiTypescript,
 } from 'react-icons/si';
 import { fadeIn, fadeUp } from '../motions';
-import { PortfolioProfile } from '@/model/profile';
+import type { PortfolioProfile } from '@/payload-types';
 
 interface HomeProps {
   profile: PortfolioProfile;

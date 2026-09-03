@@ -1,7 +1,18 @@
 import type { CollectionConfig } from 'payload';
 
+import { revalidateCollection } from '../revalidate';
+
 export const Experiences: CollectionConfig = {
   slug: 'experiences',
+  hooks: {
+    afterChange: [
+      ({ doc }) => {
+        revalidateCollection('experiences');
+        return doc;
+      },
+    ],
+    afterDelete: [() => revalidateCollection('experiences')],
+  },
   admin: {
     useAsTitle: 'position',
     defaultColumns: ['position', 'company', 'startDate', 'endDate'],

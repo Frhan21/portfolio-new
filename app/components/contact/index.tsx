@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'motion/react';
 import React, { useRef, useState } from 'react';
 import { FaEnvelope, FaGithub, FaLinkedin } from 'react-icons/fa';
 import { fadeLeft, fadeRight } from '../motions';
-import { PortfolioProfile } from '@/model/profile';
+import type { PortfolioProfile } from '@/payload-types';
 
 interface ContactProps {
   profile: PortfolioProfile;

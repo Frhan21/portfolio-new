@@ -1,9 +1,9 @@
-import { getCertificates } from '@/server/services/certificate.server';
+'use client';
+
+import type { Certificate } from '@/payload-types';
 import CertificateSlider from './certificate-slider';
 
-const Certificate = async () => {
-  const certificates = await getCertificates();
-
+const Certificate = ({ certificates }: { certificates: Certificate[] }) => {
   return (
     <div
       className="flex flex-col items-center justify-center w-full h-fit py-24 md:px-12 px-4 mx-auto"

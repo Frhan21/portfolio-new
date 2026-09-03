@@ -12,7 +12,7 @@ const main = async () => {
     'experiences',
     'users',
     'media',
-  ]) {
+  ] as const) {
     const { totalDocs } = await payload.count({ collection: slug });
     console.log(`${slug}: ${totalDocs}`);
   }

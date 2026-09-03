@@ -1,5 +1,7 @@
 import type { CollectionConfig, PayloadRequest } from 'payload';
 
+import { revalidateCollection } from '../revalidate';
+
 const slugify = (title: string) =>
   title
     .toLowerCase()
@@ -30,6 +32,15 @@ const uniqueSlug = async (
 
 export const Projects: CollectionConfig = {
   slug: 'projects',
+  hooks: {
+    afterChange: [
+      ({ doc }) => {
+        revalidateCollection('projects');
+        return doc;
+      },
+    ],
+    afterDelete: [() => revalidateCollection('projects')],
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'category', 'tags', 'updatedAt'],

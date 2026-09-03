@@ -1,6 +1,6 @@
 'use client';
 
-import { Certificate } from '@/model/certificate';
+import type { Certificate } from '@/payload-types';
 import CertificateItem from '@/app/components/certificate/certificate-item';
 
 interface CertificateProps {

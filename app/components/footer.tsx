@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { RiInstagramFill } from 'react-icons/ri';
-import { getPublicPortfolioProfile } from '@/server/services/profile.server';
+import { getCachedProfile } from '@/server/queries';
 
 export default async function Footer() {
-  const profile = await getPublicPortfolioProfile();
+  const profile = await getCachedProfile();
   const socialLinks = [
     { icon: RiInstagramFill, label: 'Instagram', href: profile.instagramUrl },
     { icon: FaGithub, label: 'GitHub', href: profile.githubUrl },
@@ -59,7 +59,7 @@ export default async function Footer() {
             </Link>
             <span className="mx-2 text-slate-500">|</span>
             <Link
-              href="/dashboard"
+              href="/admin"
               className="font-medium transition-colors hover:text-white hover:underline duration-500"
             >
               Admin

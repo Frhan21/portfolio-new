@@ -1,7 +1,18 @@
 import type { CollectionConfig } from 'payload';
 
+import { revalidateCollection } from '../revalidate';
+
 export const Certificates: CollectionConfig = {
   slug: 'certificates',
+  hooks: {
+    afterChange: [
+      ({ doc }) => {
+        revalidateCollection('certificates');
+        return doc;
+      },
+    ],
+    afterDelete: [() => revalidateCollection('certificates')],
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'issuer', 'issueDate', 'category'],

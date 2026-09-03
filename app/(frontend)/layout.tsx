@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { Toaster } from 'sonner';
 import '../globals.css';
-import QueryProvider from '../providers/query-provider';
-import AuthProvider from '../providers/auth-provider';
 import { ThemeProvider } from '../providers/theme-provider';
 import { poppins } from '../fonts';
 
@@ -27,9 +25,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Toaster position="top-right" duration={3000} />
-          <AuthProvider>
-            <QueryProvider>{children}</QueryProvider>
-          </AuthProvider>
+          {children}
         </ThemeProvider>
       </body>
     </html>

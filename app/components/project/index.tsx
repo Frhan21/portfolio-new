@@ -1,25 +1,15 @@
 'use client';
 
-import { useQueryCategory } from '@/app/hooks/category-hooks/use-query-category';
-import { useQueryProject } from './hooks/use-query-project';
 import ProjectList from './project-list';
-import ProjectSkeleton from './project-skeleton';
+import type { Category, Project } from '@/payload-types';
 
-const Project = () => {
-  const project = useQueryProject();
-  const category = useQueryCategory();
-
-  if (project.isLoading || category.isLoading) {
-    return (
-      <div
-        className="flex flex-col items-center justify-center w-full h-fit mt-20 md:px-12 px-4 mx-auto py-24"
-        id="projects"
-      >
-        <ProjectSkeleton cardCount={4} />
-      </div>
-    );
-  }
-
+const Project = ({
+  projects,
+  categories,
+}: {
+  projects: Project[];
+  categories: Category[];
+}) => {
   return (
     <div
       className="flex flex-col items-center justify-center w-full h-fit mt-20 md:px-12 px-4 mx-auto py-24"
@@ -39,10 +29,7 @@ const Project = () => {
 
       {/* Client Component for Filtering */}
       <div className="w-full max-w-7xl mx-auto">
-        <ProjectList
-          projects={project.data?.items ?? []}
-          categories={category.data?.items ?? []}
-        />
+        <ProjectList projects={projects} categories={categories} />
       </div>
     </div>
   );

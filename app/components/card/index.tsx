@@ -2,7 +2,7 @@
 
 import { Card3D } from '@/components/ui/card-3d';
 import { Button } from '@/components/ui/button';
-import type { Project } from '@/model/project';
+import type { Project } from '@/payload-types';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -42,7 +42,9 @@ export default function CardComponent({
             <div className="p-5 sm:p-6 md:p-8 z-20 flex flex-col h-full max-w-[88%] sm:max-w-[85%]">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-[10px] uppercase tracking-wider font-bold text-slate-300 border border-slate-700 rounded-full px-3 py-1 bg-slate-800/80 backdrop-blur-xs">
-                  {project.category?.title ?? 'Project'}
+                  {typeof project.category === 'object'
+                    ? project.category?.title
+                    : 'Project'}
                 </span>
               </div>
 
@@ -51,7 +53,7 @@ export default function CardComponent({
               </h3>
 
               <p className="text-slate-400 text-xs sm:text-sm line-clamp-2 mb-4">
-                Project description is not available yet.
+                {project.summary || 'Project description is not available yet.'}
               </p>
 
               {!!project.tags?.length && (
@@ -72,6 +74,17 @@ export default function CardComponent({
 
               {/* Action Buttons */}
               <div className="relative z-30 flex items-center gap-2.5 sm:gap-3 mt-auto">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="rounded-full border-slate-600 bg-slate-800/60 text-white hover:bg-slate-700 hover:text-white px-3.5 sm:px-4 py-2 h-auto text-xs flex items-center gap-1 transition-colors"
+                >
+                  <Link href={`/projects/${project.slug}`}>
+                    <LuArrowRight size={14} />
+                    Detail
+                  </Link>
+                </Button>
+
                 {project.demo && (
                   <Button
                     asChild
@@ -110,9 +123,9 @@ export default function CardComponent({
             {/* Project Image (Bottom Right) */}
             <div className="pointer-events-none absolute -bottom-[15%] -right-[15%] w-[75%] sm:w-[80%] h-[55%] sm:h-[60%] z-10 transition-transform duration-500 group-hover:-translate-y-4 group-hover:-translate-x-4">
               <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl rotate-[-10deg] border-4 border-slate-800">
-                {project.image ? (
+                {typeof project.image === 'object' && project.image?.url ? (
                   <Image
-                    src={project.image}
+                    src={project.image.url}
                     alt={project.title}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
