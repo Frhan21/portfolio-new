@@ -1,6 +1,6 @@
 'use server';
 
-import { RegisterSchemaType } from '@/app/(auth)/component/form/schema/register-scheme';
+import { RegisterSchemaType } from '@/app/(frontend)/(auth)/component/form/schema/register-scheme';
 import { revokeUserSessions } from '@/server/services/auth.server';
 import { auth } from '@/lib/auth';
 

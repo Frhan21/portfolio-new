@@ -20,28 +20,27 @@ jobs:
       CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
       CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
       CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      JWT_EXPIRED: ${{ secrets.JWT_EXPIRED }}
+      PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
 
     steps:
       # 1. Ambil kodingan terbaru
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Siapkan Node.js versi 20
+      # 2. Siapkan Node.js versi 22 (LTS)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       # 3. Install dependencies (npm ci lebih cepat & stabil untuk CI)
       - name: Install Dependencies
         run: npm ci
 
-      # 4. Generate Prisma Client (Wajib ada DATABASE_URL)
-      - name: Generate Prisma Client
-        run: npx prisma generate
+      # 4. Generate Payload Types & Import Map (wajib sebelum build)
+      - name: Generate Payload Types & Import Map
+        run: npx payload generate:types && npx payload generate:importmap
 
       # 5. Cek Kualitas Kode (Linting)
       # Langkah ini akan GAGAL jika ada error syntax/aturan code
