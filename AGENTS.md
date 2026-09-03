@@ -2,297 +2,119 @@
 
 ## Stack
 
-- **Framework**: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4
-- **Database**: Prisma + PostgreSQL (6 models: Category, User, Project, Certificate, RefreshToken, Experience)
-- **Auth**: NextAuth v5 (Credentials provider) + JWT strategy + Refresh Token (DB-based), middleware (`proxy.ts`)
-- **Data Fetching**: Server Actions (`'use server'`) for auth mutations; TanStack React Query + Axios for client GETs; REST API routes (`app/api/v1/`) for CRUD
-- **Caching**: `unstable_cache` from `next/cache` with tag-based revalidation (tags: `projects`, `certificates`, `experiences`)
-- **Image Storage**: Cloudinary (upload via `server/services/upload-image.ts`)
-- **UI**: shadcn/ui (New York style), Tailwind CSS v4, Motion (framer-motion fork), lucide-react icons
-- **Forms**: react-hook-form + `@hookform/resolvers` + Zod schemas
+- **Framework**: Next.js 16 (App Router, Turbopack), React 19, TypeScript 6, Tailwind CSS v4
+- **CMS**: Payload 3 (embedded di app Next.js yang sama) — koleksi + admin panel `/admin`
+- **Database**: PostgreSQL via `@payloadcms/db-postgres` (Drizzle internal, schema PG `payload`)
+- **Auth**: Payload auth built-in (HTTP-only cookie, first user dibuat di `/admin`)
+- **Media**: Cloudinary via custom storage adapter (`payload/adapters/cloudinary.ts` + `@payloadcms/plugin-cloud-storage`)
+- **UI**: shadcn/ui (New York style), Motion, lucide-react, react-icons
 - **Theming**: next-themes (light / dark / system)
-- **Notifications**: sonner (Toaster), sweetalert2
+- **Notifications**: sonner (Toaster)
 - **DevOps**: Husky (pre-commit → lint-staged, commit-msg → commitlint, pre-push → build), Commitizen, standard-version, CI (push/PR ke develop/production)
 
 ## Commands
 
-| Command                 | Description                                    |
-| ----------------------- | ---------------------------------------------- |
-| `npm run dev`           | Dev server at localhost:3000                   |
-| `npm run build`         | Production build (pre-push hook enforces this) |
-| `npm run start`         | Start production server                        |
-| `npm run lint`          | ESLint                                         |
-| `npx prisma generate`   | Required before build (CI step)                |
-| `npx prisma db push`    | Push schema to DB                              |
-| `npx prisma db pull`    | Pull schema from DB                            |
-| `npx prisma studio`     | DB browser                                     |
-| `npm run commit`        | Commitizen interactive commit (conventional)   |
-| `npm run release`       | standard-version (changelog + git tag)         |
-| `npm run release:minor` | Minor version bump                             |
-| `npm run release:major` | Major version bump                             |
+| Command                      | Description                            |
+| ---------------------------- | -------------------------------------- |
+| `npm run dev`                | Dev server at localhost:3000           |
+| `npm run build`              | Production build (pre-push hook)       |
+| `npm run start`              | Start production server                |
+| `npm run lint`               | ESLint                                 |
+| `npm run generate:types`     | Payload types → `payload-types.ts`     |
+| `npm run generate:importmap` | Payload admin import map (prebuild CI) |
+| `npm run commit`             | Commitizen interactive commit          |
+| `npm run release`            | standard-version (changelog + git tag) |
 
 ## Project Structure
 
 ```
+├── payload.config.ts                 # buildConfig: postgres adapter (schema: payload), lexical, cloudinary plugin
+├── payload-types.ts                  # Generated types (jangan edit manual)
+├── payload/
+│   ├── adapters/cloudinary.ts        # Custom storage adapter (upload/delete Cloudinary)
+│   ├── revalidate.ts                 # revalidateTag helper untuk collection hooks
+│   ├── collections/                  # Categories, Media, Projects, Certificates, Experiences, Users
+│   └── globals/PortfolioProfile.ts   # Global profile (bukan collection)
 ├── app/
-│   ├── globals.css                   # Tailwind v4 CSS-first config + custom properties
-│   ├── layout.tsx                    # Root layout: ThemeProvider, QueryProvider, Toaster
-│   ├── not-found.tsx                 # Custom 404 page
-│   ├── (auth)/                       # Route group: Login / Register
-│   │   ├── login/page.tsx
-│   │   ├── register/page.tsx
-│   │   ├── component/
-│   │   │   ├── form/page.tsx         # AuthForm (react-hook-form + zod, handles both login/register)
-│   │   │   └── form/schema/          # LoginSchema (login-scheme.tsx), RegisterSchema (register-scheme.ts)
-│   │   └── hooks/                    # use-login.tsx, use-register.tsx (TanStack Query mutations)
-│   ├── (dashboard)/                  # Route group: Admin dashboard
-│   │   ├── dashboard/layout.tsx      # SidebarProvider + DashboardSidebar + DashboardHeader
-│   │   ├── dashboard/page.tsx        # Stat cards overview
-│   │   ├── dashboard/projects/
-│   │   ├── dashboard/certificates/
-│   │   ├── dashboard/categories/
-│   │   ├── dashboard/experiences/
-│   │   └── dashboard/settings/
-│   ├── (main)/                       # Route group: Public homepage
-│   │   ├── layout.tsx                # Navbar + Footer
-│   │   └── page.tsx                  # Hero, About, Tools, Project, Certificate, FAQ, Contact
-│   ├── (portfolio)/                  # Route group: Sub-pages
-│   │   ├── projects/page.tsx
-│   │   ├── certificate/page.tsx
-│   │   └── experience/page.tsx
-│   ├── api/auth/                      # NextAuth route handler
-│   │   └── [...nextauth]/route.ts
-│   ├── api/v1/                       # REST API route handlers
-│   │   ├── category/route.ts         # GET (list), POST (create)
-│   │   ├── category/[id]/route.ts    # PUT (update), DELETE
-│   │   ├── certificate/route.ts      # GET (list), POST (create with image)
-│   │   ├── certificate/[id]/route.ts # GET, PUT (update with image), DELETE
-│   │   ├── experience/route.ts       # GET (list), POST (create)
-│   │   ├── experience/[id]/route.ts  # GET, PUT (update), DELETE
-│   │   ├── project/route.ts          # GET (list), POST (create with image)
-│   │   ├── project/[id]/route.ts     # GET, PUT (update with image), DELETE
-│   │   └── user/route.ts             # GET (list)
-│   ├── components/                   # Homepage section components
-│   │   ├── home/ (hero), about/, project/, certificate/, contact/, faq/
-│   │   ├── experience/ (hooks, components)
-│   │   ├── navbar.tsx, footer.tsx, skills-bar.tsx, motions.ts
-│   │   └── card/index.tsx            # Project card (used in homepage & portfolio)
-│   ├── hooks/                        # App-level hooks
-│   │   ├── category-hooks/use-query-category.ts
-│   │   └── use-typing.ts             # Typewriter effect
-│   └── providers/
-│       ├── auth-provider.tsx          # NextAuth SessionProvider
-│       ├── query-provider.tsx         # TanStack QueryClientProvider
-│       └── theme-provider.tsx         # next-themes ThemeProvider
+│   ├── (payload)/                    # Admin panel + REST API bawaan Payload (jangan diubah)
+│   │   ├── layout.tsx                # RootLayout @payloadcms/next + server functions
+│   │   ├── admin/[[...segments]]/    # Admin catch-all views
+│   │   ├── admin/importMap.js        # Generated
+│   │   └── api/[...slug]/route.ts    # REST catch-all (dipakai admin UI)
+│   ├── (frontend)/                   # Route group root layout publik
+│   │   ├── layout.tsx                # ThemeProvider + Toaster (TANPA QueryProvider)
+│   │   ├── not-found.tsx
+│   │   ├── (main)/page.tsx           # Homepage (server component, fetch via server/queries)
+│   │   ├── (portfolio)/projects/     # List + [slug] detail page (rich text)
+│   │   ├── (portfolio)/certificate/  # List paginated
+│   │   └── (portfolio)/experience/   # List paginated
+│   ├── components/                   # Section components homepage (server + client split)
+│   ├── globals.css                   # Tailwind v4 + @tailwindcss/typography
+│   └── providers/theme-provider.tsx  # next-themes
 ├── server/
-│   ├── repositories/                  # Data access layer (Prisma queries only)
-│   │   ├── category.repository.ts
-│   │   ├── certificate.repository.ts
-│   │   ├── experience.repository.ts
-│   │   ├── project.repository.ts
-│   │   ├── refresh-token.repository.ts
-│   │   └── user.repository.ts
-│   ├── services/                      # Business logic layer (uses repositories)
-│   │   ├── auth.server.ts             # Auth: registerUser, revokeUserSessions, getUser
-│   │   ├── category.server.ts         # Category CRUD (thin, delegates to repository)
-│   │   ├── certificate.server.ts      # Certificate CRUD + paginated & cached queries
-│   │   ├── experience.server.ts       # Experience CRUD + paginated & cached queries
-│   │   ├── project.server.ts          # Project CRUD + paginated & cached queries
-│   │   └── upload.server.ts           # Cloudinary image upload
-│   └── actions/                       # Client-side axios wrappers + Server Actions
-│       ├── auth.actions.ts            # Server Action ('use server' + cookies)
-│       ├── category.actions.ts        # Client CRUD via axios
-│       ├── certificate.actions.ts     # Client CRUD via axios
-│       ├── experience.actions.ts      # Client CRUD via axios + Server Actions
-│       └── project.actions.ts         # Client CRUD via axios
-├── lib/                               # Shared utilities
-│   ├── api-response.ts                # successResponse, errorResponse, validationErrorResponse
-│   ├── auth.ts                        # NextAuth v5 config (Credentials + JWT + refresh token)
-│   ├── axios.ts                       # Axios instance (baseURL /api/v1)
-│   ├── cloudinary.ts                  # Cloudinary v2 config
-│   ├── date.ts                        # formatDate() (locale id-ID)
-│   ├── jwt.ts                         # generateToken, verifyToken, decodetoken
-│   ├── prisma.ts                      # PrismaClient singleton
-│   ├── utils.ts                       # cn() (clsx + tailwind-merge)
-│   └── validation.ts                  # Zod schemas: category, project, user, certificate, experience
-├── components/
-│   └── ui/                            # 15 shadcn/ui components (New York style)
-│       ├── button.tsx, card.tsx, input.tsx, label.tsx, tabs.tsx
-│       ├── data-table.tsx             # TanStack React Table wrapper
-│       ├── sidebar.tsx                # shadcn Sidebar (collapsible)
-│       ├── table.tsx, field.tsx, sheet.tsx
-│       ├── dropdown-menu.tsx, tooltip.tsx, separator.tsx
-│       ├── skeleton.tsx, sonner.tsx
-├── model/                             # TypeScript type definitions
-│   ├── category.ts, user.ts, project.ts, certificate.ts, experience.ts
-├── commons/                           # Shared constants & types
-│   ├── constant/dashboard-menu.ts
-│   └── types/response.ts              # TResponseItem, TResponsePaginate, TResponseError
-├── types/
-│   ├── auth.ts                       # NextAuth module augmentation (Session, JWT)
-│   └── jwt-payload.ts                # JwtPayload type
-├── hooks/use-mobile.ts                # useIsMobile() hook (768px breakpoint)
-├── proxy.ts                           # Next.js middleware (auth guard)
-├── prisma/schema.prisma               # 6 models (Category, User, Project, Certificate, RefreshToken, Experience)
-└── .github/workflows/production.yaml  # CI: npm ci → prisma generate → lint → build
+│   └── queries.ts                    # SATU-SATUNYA data layer: Local API + unstable_cache + tags
+├── components/ui/                    # shadcn/ui components
+├── lib/                              # date.ts (formatDate), utils.ts (cn)
+└── .github/workflows/production.yaml # CI: npm ci → payload generate → lint → build
 ```
 
 ## Architecture Patterns
 
-### Data Flow (Clean Architecture)
+### Data Flow (Payload Local API)
 
 ```
-Server Actions (auth — 'use server'):
-  Component → auth.actions.ts → auth.server.ts → user.repository.ts / refresh-token.repository.ts → Prisma → Response
+Server Components → server/queries.ts (unstable_cache, tags: projects/certificates/experiences/categories/profile)
+                  → payload.find/findGlobal (Local API, depth 1)
+                  → Drizzle (internal @payloadcms/db-postgres) → PostgreSQL schema "payload"
 
-Client Login (NextAuth):
-  Component → signIn('credentials', ...) → NextAuth authorize → auth.server.ts → user.repository.ts → Prisma → Response
-
-Client GETs (TanStack Query):
-  Component → useQuery hook → actions file (axios) → API route → service (*.server.ts) → repository (*.repository.ts) → Prisma → Response
-
-API Routes (CRUD):
-  Request → app/api/v1/{resource}/route.ts → service (*.server.ts) → repository (*.repository.ts) → Prisma → Response
+Mutasi: hanya lewat /admin (Payload) → afterChange/afterDelete hooks → revalidateTag(tag, 'max')
 ```
 
-Experience follows the same patterns: `experience.server.ts` for caching/queries, `experience.repository.ts` for Prisma, `experience.actions.ts` for Server Actions, and `app/api/v1/experience/` for REST endpoints.
+### Aturan Penting
 
-### Layer Responsibilities
+- **Tidak ada REST client/axios/TanStack Query** untuk halaman publik — semua server components + Local API
+- **ID relasi Payload = number** (postgres adapter). Jangan stringify
+- **Media**: upload koleksi `media` (relationTo) — field `image` berbentuk object `{ url, alt, publicId }` setelah depth populate; akses via `typeof x.image === 'object' && x.image.url`
+- **Cloudinary URL** tersimpan di field `url` dokumen media; `publicId` dipakai adapter untuk destroy
+- **Project.slug**: auto-generate dari title via field hook (boleh diisi manual, harus unik)
+- **Detail page projek**: `app/(frontend)/(portfolio)/projects/[slug]/page.tsx` — render richText via `RichText` dari `@payloadcms/richtext-lexical/react`
+- **Caching**: `unstable_cache` (revalidate 120s + tag). Invalidate otomatis via collection hooks
+- **Turbopack**: `next dev`/`next build` default; font google OK di dev & build versi Next 16.3.x ini
+- **`"type": "module"`** di package.json wajib (payload config loader ESM; Lexical pakai top-level await)
 
-| Layer               | Path                                  | Responsibility                                                                    |
-| ------------------- | ------------------------------------- | --------------------------------------------------------------------------------- |
-| **Repository**      | `server/repositories/*.repository.ts` | Pure Prisma queries, no business logic, no caching                                |
-| **Service**         | `server/services/*.server.ts`         | Business logic, validation, caching (`unstable_cache`), delegates to repositories |
-| **Action (server)** | `server/actions/auth.actions.ts`      | Server Action entry point (`'use server'`), cookie handling, validation           |
-| **Action (client)** | `server/actions/*.actions.ts`         | Client-side axios wrappers consumed by TanStack Query hooks                       |
-| **API Route**       | `app/api/v1/{resource}/route.ts`      | HTTP controller, request parsing, response formatting                             |
+### Konvensi
 
-### API Response Shape (from `lib/api-response.ts`)
+- File: `kebab-case` untuk action/query, `PascalCase` komponen; path alias `@/*`
+- Code style: no semicolons (legacy file ada yang semicolon — biarkan), single quotes, 2-space, trailing commas
+- Types data dari `@/payload-types` (generated) — buat type manual hanya untuk bentuk view
+- `unstable_cache` key: `['{resource}', ...]` + args otomatis masuk cache key
 
-```ts
-// Standard
-{ success: boolean, message: string, data?: T, error?: string }
-
-// Parsed by client wrappers → { status_code: number, message: string, data: T }
-// Paginated → { status_code: number, message: string, data: { items: T[], meta: { total, page, totalPages } } }
-```
-
-### Routing Patterns
-
-- Route groups: `(main)`, `(portfolio)`, `(auth)`, `(dashboard)` — no URL prefix
-- API routes: `/api/v1/{resource}` — RESTful (GET, POST, PUT, DELETE)
-- Middleware (`proxy.ts`): protects `/dashboard/*`, redirects authenticated users from `/login` and `/register`
-- Matcher excludes: `/api`, `/_next/static`, `/_next/image`, `/favicon.ico`
-
-## Conventions
-
-### File Naming
-
-- **Action files**: `kebab-case.actions.ts`
-- **Service files**: `kebab-case.server.ts`
-- **Repository files**: `kebab-case.repository.ts`
-- **Hooks**: `use-{name}.tsx` → function `use{Name}`
-- **Components**: `PascalCase.tsx` or `kebab-case.tsx`
-- **Types/Interfaces**: `PascalCase`
-- **Functions**: `camelCase`
-- **Path alias**: `@/*` → repo root
-
-### Code Style
-
-- No semicolons, single quotes, 2-space indent, trailing commas (enforced by Prettier)
-- Prefer `interface` over `type` for object shapes
-- ESLint + Prettier run on pre-commit via lint-staged
-
-### Prisma
-
-- Singleton in `lib/prisma.ts` (stored on `globalThis` to avoid hot-reload duplicates)
-- Query logging in non-production
-- UUID primary keys (`@default(uuid())`)
-- Timestamps via `@default(now())` / `@updatedAt`
-- 6 models: Category, User, Project, Certificate, RefreshToken, Experience
-
-### Auth & Middleware
-
-- **NextAuth v5** with Credentials provider + JWT strategy
-- JWT session: encrypted cookie (`next-auth.session-token`), auto-managed by NextAuth
-- Access token expires: 15 minutes (custom JWT claim)
-- Refresh token: stored in DB (`RefreshToken` model), expires 7 days, auto-rotated
-- **Login flow**: Client calls `signIn('credentials', { email, password })` → NextAuth authorize → validates via `auth.server` → creates refresh token → returns JWT
-- **Register flow**: Server Action creates user → client calls `signIn` for auto-login
-- **Logout flow**: `logoutAction` revokes refresh tokens in DB → `signOut({ callbackUrl: '/login' })`
-- Axios interceptor: no longer reads legacy `token` cookie (NextAuth handles auth)
-- `proxy.ts` uses NextAuth `auth()` middleware to check session
-- Middleware protects `/dashboard/*`, redirects auth users from `/login` and `/register`
-- Prisma models: `User` + `RefreshToken` (one-to-many)
-
-### Environment Variables
+## Environment Variables
 
 ```
-AUTH_SECRET=    # Required by NextAuth (generate via: npx auth secret)
-AUTH_URL=       # http://localhost:3000 (dev)
-```
-
-### Caching
-
-- `unstable_cache` with keys `['{resource}', 'page', '{page}', 'limit', '{limit}']`
-- Revalidation: `revalidate: 120` (seconds) + tag-based: `revalidateTag('{resource}')` after mutations
-- Cache tags used: `projects`, `certificates`, `experiences`
-
-### TanStack Query Defaults (in `app/providers/query-provider.tsx`)
-
-- `staleTime: 60000` (1 minute)
-- `gcTime: 300000` (5 minutes)
-- `refetchOnWindowFocus: false`
-
-### Zod Validation
-
-- Shared schemas for categories, projects, certificates, and experiences in `lib/validation.ts`
-- Auth form schemas in `app/(auth)/component/form/schema/`
-  - `login-scheme.tsx`: `{ email, password }`
-  - `register-scheme.ts`: `{ name, email, password, confirmPassword }` (with `.refine` for password match)
-
-## Deployment / CI
-
-- GitHub Actions workflow in `.github/workflows/production.yaml`
-- Triggers: push/PR to `develop` or `production` branches
-- Steps: `npm ci` → `npx prisma generate` → `npm run lint` → `npm run build`
-- Node 20 required (enforced by CI)
-- Branch protection expected on `production` and `develop`
-
-## .env Template
-
-```
-DATABASE_URL=
+DATABASE_URL=              # Postgres (sslmode=require → adapter pakai uselibpqcompat=true otomatis)
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
-JWT_SECRET=
-JWT_EXPIRED=
-AUTH_SECRET=
-AUTH_URL=http://localhost:3000
+PAYLOAD_SECRET=            # npx auth secret / openssl rand -hex 24
+NEXT_PUBLIC_SERVER_URL=http://localhost:3000
 ```
 
-## Known Issues / Inconsistencies (TODO)
+## Deployment / CI
 
-- **Typo in validation.ts**: `certficateSchema` (missing 'i') on line 69 — use as-is or fix
-- **Mixed API response patterns**: some routes use `successResponse`/`errorResponse` helpers from `lib/api-response.ts`, others use raw `NextResponse.json()`
-- **Mixed type vs interface**: `Project` model uses `type`, all others use `interface`
-- **Naming inconsistency**: `decodetoken` → should be `decodeToken` (in `lib/jwt.ts`)
+- Workflow `.github/workflows/production.yaml`: push/PR ke `develop`/`production`
+- Steps: `npm ci` → `payload generate:types` + `generate:importmap` → lint → build (Node 22)
+- **Build butuh DATABASE_URL + PAYLOAD_SECRET valid** (koleksi di-query saat prerender via unstable_cache)
+- Production: set `push: false` di payload.config (ganti ke `payload migrate`) jika schema sudah stabil
 
-## Testing
+## Auth Flow
 
-No test framework configured.
+- Login admin: `/admin` (login screen Payload, first-run menampilkan Create First User)
+- Tidak ada login/register custom, tidak ada middleware proxy — Payload melindungi `/admin` & REST-nya sendiri
+- Koleksi non-media default access: hanya authenticated (Local API server-side pakai overrideAccess)
 
-## Agent skills
+## Known Notes
 
-### Issue tracker
-
-Issues live as GitHub issues in this repo. See `docs/agents/issue-tracker.md`.
-
-### Triage labels
-
-Five canonical roles, each label string equal to its name: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-Single-context — one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+- Tabel lama Prisma sudah di-drop dari schema public (migrasi Payload selesai, data di schema `payload`)
+- `app/(payload)/*` adalah file generated — jangan dimodifikasi manual
+- Tidak ada test framework; verifikasi via lint + build + smoke test endpoint
