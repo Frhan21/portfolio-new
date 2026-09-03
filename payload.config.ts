@@ -37,6 +37,7 @@ export default buildConfig({
     }),
   ],
   secret: process.env.PAYLOAD_SECRET || 'dev-payload-secret',
+  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
   telemetry: false,
   typescript: { outputFile: 'payload-types.ts' },
 });
