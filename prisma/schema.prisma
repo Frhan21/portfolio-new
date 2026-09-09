@@ -68,6 +68,9 @@ model RefreshToken {
 model Project {
   id         String   @id @default(uuid())
   title      String
+  slug       String?  @unique
+  summary    String?
+  content    Json?
   tags       String[]
   image      String
   publicId   String
