@@ -28,6 +28,8 @@ export const categorySchema = z.object({
 
 export const projectSchema = z.object({
   title: z.string().min(1, 'Judul proyek tidak boleh kosong'),
+  summary: z.string().max(300, 'Ringkasan maksimal 300 karakter').optional(),
+  content: z.unknown().optional(),
   image: z
     .instanceof(File)
     .refine((file) => file.type.startsWith('image/'))
@@ -53,6 +55,8 @@ export const projectSchema = z.object({
 
 export const projectUpdateSchema = z.object({
   title: z.string().min(1, 'Judul proyek tidak boleh kosong'),
+  summary: z.string().max(300, 'Ringkasan maksimal 300 karakter').optional(),
+  content: z.unknown().optional(),
   image: z
     .instanceof(File)
     .refine((file) => file.type.startsWith('image/'))

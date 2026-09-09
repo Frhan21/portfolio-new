@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client';
+
 import prisma from '@/lib/prisma';
 import { CreateProjectInput } from '@/model/project';
 
@@ -21,6 +23,12 @@ export const findById = (id: string) =>
     include: { category: true },
   });
 
+export const findBySlug = (slug: string) =>
+  prisma.project.findUnique({
+    where: { slug },
+    include: { category: true },
+  });
+
 export const findPaginated = (limit: number, skip: number) =>
   prisma.project.findMany({
     take: limit,
@@ -35,6 +43,12 @@ export const create = (data: CreateProjectInput) =>
   prisma.project.create({
     data: {
       title: data.title,
+      slug: data.slug,
+      summary: data.summary ?? null,
+      content:
+        data.content == null
+          ? Prisma.DbNull
+          : (data.content as Prisma.InputJsonValue),
       image: data.image,
       publicId: data.publicId,
       demo: data.demo,

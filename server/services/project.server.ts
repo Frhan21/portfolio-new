@@ -41,8 +41,31 @@ export const getPaginatedProjects = (limit: number, page: number) =>
 
 export const getProjectById = (id: string) => ProjectRepository.findById(id);
 
-export const createProject = (data: CreateProjectInput) =>
-  ProjectRepository.create(data);
+export const getProjectBySlug = (slug: string) =>
+  ProjectRepository.findBySlug(slug);
+
+const slugify = (title: string) =>
+  title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
+const uniqueSlug = async (base: string) => {
+  let candidate = base;
+  let counter = 1;
+  for (;;) {
+    const existing = await ProjectRepository.findBySlug(candidate);
+    if (!existing) return candidate;
+    counter += 1;
+    candidate = `${base}-${counter}`;
+  }
+};
+
+export const createProject = async (data: CreateProjectInput) => {
+  const slug = data.slug || (await uniqueSlug(slugify(data.title)));
+  return ProjectRepository.create({ ...data, slug });
+};
 
 export const updateProject = (id: string, data: Record<string, unknown>) =>
   ProjectRepository.update(id, data);

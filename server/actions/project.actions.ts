@@ -23,6 +23,22 @@ type ActionResult<T> =
 
 const isAuthorized = async () => Boolean((await auth())?.user?.id);
 
+const parseContent = (formData: FormData): unknown => {
+  const raw = formData.get('content');
+  if (typeof raw !== 'string' || !raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+};
+
+const parseSummary = (formData: FormData): string | undefined => {
+  const raw = formData.get('summary');
+  const summary = typeof raw === 'string' ? raw.trim() : '';
+  return summary || undefined;
+};
+
 // ─── GET ────────────────────────────────────────────────────────────────────
 
 export async function getProjects(
@@ -48,6 +64,8 @@ export async function addProject(
   // 1. Validasi dengan Zod
   const rawData = {
     title: formData.get('title'),
+    summary: parseSummary(formData),
+    content: parseContent(formData),
     categoryId: formData.get('categoryId'),
     tags: String(formData.get('tags') ?? '')
       .split(',')
@@ -69,6 +87,8 @@ export async function addProject(
   // 3. Simpan ke DB via service
   const project = await ProjectService.createProject({
     title: validated.data.title,
+    summary: validated.data.summary ?? null,
+    content: validated.data.content ?? null,
     image: imageUrl,
     publicId,
     demo: validated.data.demo ?? null,
@@ -92,6 +112,8 @@ export async function updateProject(
   // 1. Validasi
   const rawData = {
     title: formData.get('title'),
+    summary: parseSummary(formData),
+    content: parseContent(formData),
     categoryId: formData.get('categoryId'),
     tags: String(formData.get('tags') ?? '')
       .split(',')
@@ -120,6 +142,8 @@ export async function updateProject(
   // 3. Update via service
   const project = await ProjectService.updateProject(id, {
     title: validated.data.title,
+    summary: validated.data.summary ?? null,
+    content: validated.data.content ?? null,
     demo: validated.data.demo ?? null,
     github: validated.data.github ?? null,
     tags: validated.data.tags,

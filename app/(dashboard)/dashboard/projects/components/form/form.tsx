@@ -43,6 +43,8 @@ import {
 import { TagsInput } from './tags-input';
 import { Category } from '@/model/category';
 import { Project } from '@/model/project';
+import { RichTextEditor } from '@/components/lexical/rich-text-editor';
+import { AlignLeft, FileText } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { deleteProject } from '@/server/actions/project.actions';
 import { useQueryClient } from '@tanstack/react-query';
@@ -60,6 +62,8 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
       categoryId: initialData?.categoryId || '',
       demo: initialData?.demo || '',
       github: initialData?.github || '',
+      summary: initialData?.summary || '',
+      content: initialData?.content || undefined,
     },
   });
 
@@ -121,6 +125,10 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
 
     if (data.demo) formData.append('demo', data.demo);
     if (data.github) formData.append('github', data.github);
+    if (data.summary) formData.append('summary', data.summary);
+    if (data.content != null) {
+      formData.append('content', JSON.stringify(data.content));
+    }
 
     mutate(formData, {
       onSuccess: () => {
@@ -257,6 +265,55 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
             </Field>
           )}
         />
+      </FormSection>
+
+      {/* Summary & Content */}
+      <FormSection
+        icon={<FileText className="h-3.5 w-3.5" />}
+        title="Ringkasan & Konten Detail"
+      >
+        <div className="space-y-4">
+          <Controller
+            control={form.control}
+            name="summary"
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel>
+                  <AlignLeft className="inline h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                  Ringkasan Singkat
+                </FieldLabel>
+                <textarea
+                  {...field}
+                  value={field.value ?? ''}
+                  placeholder="Ringkasan 1-2 kalimat untuk kartu projek..."
+                  maxLength={300}
+                  className={`${dashboardControlClassName} min-h-[80px] resize-y`}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+
+          <Controller
+            control={form.control}
+            name="content"
+            render={({ field }) => (
+              <Field>
+                <FieldLabel>
+                  <FileText className="inline h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                  Konten Detail (muncul di halaman projek)
+                </FieldLabel>
+                <RichTextEditor
+                  key={initialData?.id ?? 'create'}
+                  value={field.value ?? undefined}
+                  onChange={field.onChange}
+                />
+              </Field>
+            )}
+          />
+        </div>
       </FormSection>
 
       {/* Links */}
