@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.6](https://github.com/Frhan21/portfolio-new/compare/v0.1.5...v0.1.6) (2026-09-09)
+
+### Features
+
+- add slug, summary, content columns to projects ([89e9fbf](https://github.com/Frhan21/portfolio-new/commit/89e9fbf05fb4bfc2172036a6512c3517dd4a20b8))
+- fix landing page UI/UX and add CV viewer on landing page ([755693e](https://github.com/Frhan21/portfolio-new/commit/755693e4dcb1d50c0d7aa16e396e4d64af4cadc7))
+- install Payload CMS embedded with collections and Cloudinary storage adapter ([47210d3](https://github.com/Frhan21/portfolio-new/commit/47210d3a6ff0df004d6a4b6f4eea0cccd02c9940))
+- lexical rich text editor for project detail content ([a64a804](https://github.com/Frhan21/portfolio-new/commit/a64a804a918d4884723119b3fa7146edc238e3a5))
+- migrate legacy prisma data into payload collections ([b02eb5c](https://github.com/Frhan21/portfolio-new/commit/b02eb5c5c07038f7ea828929df05046126fc4a8c))
+- project detail page and final cleanup ([2b6d7b0](https://github.com/Frhan21/portfolio-new/commit/2b6d7b010d5f748d9046d8237fd41b5f7f5db5f1))
+- project detail page by slug on prisma stack ([94c5f5c](https://github.com/Frhan21/portfolio-new/commit/94c5f5cb8649733b002d15f83735e5dddbf63859))
+- swap auth to payload admin, refactor pages to local api ([3f59b9e](https://github.com/Frhan21/portfolio-new/commit/3f59b9ecfdc408d2e7cd2522138afd471431d504))
+
+### Bug Fixes
+
+- register lexical nodes (list, heading, quote, link) on editor ([a9c9617](https://github.com/Frhan21/portfolio-new/commit/a9c9617d28857410123327083e0077d6fd161f30))
+- set payload serverURL so media url stores cloudinary link ([b8f52fb](https://github.com/Frhan21/portfolio-new/commit/b8f52fb6fe3034516a3f72642c930288238c6427))
+
 ### [0.1.5](https://github.com/Frhan21/portfolio-new/compare/v0.1.4...v0.1.5) (2026-08-06)
 
 ### Bug Fixes
