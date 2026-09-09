@@ -51,7 +51,7 @@ export default function CardComponent({
               </h3>
 
               <p className="text-slate-400 text-xs sm:text-sm line-clamp-2 mb-4">
-                Project description is not available yet.
+                {project.summary || 'Project description is not available yet.'}
               </p>
 
               {!!project.tags?.length && (
@@ -72,6 +72,17 @@ export default function CardComponent({
 
               {/* Action Buttons */}
               <div className="relative z-30 flex items-center gap-2.5 sm:gap-3 mt-auto">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="rounded-full border-slate-600 bg-slate-800/60 text-white hover:bg-slate-700 hover:text-white px-3.5 sm:px-4 py-2 h-auto text-xs flex items-center gap-1 transition-colors"
+                >
+                  <Link href={`/projects/${project.slug}`}>
+                    <LuArrowRight size={14} />
+                    Detail
+                  </Link>
+                </Button>
+
                 {project.demo && (
                   <Button
                     asChild
