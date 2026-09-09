@@ -1,6 +1,6 @@
 'use client';
 
-import type { Certificate } from '@/payload-types';
+import type { Certificate } from '@/model/certificate';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useRef } from 'react';

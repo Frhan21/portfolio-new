@@ -12,7 +12,7 @@ import {
   HiOutlineServer,
 } from 'react-icons/hi';
 import { fadeDown, fadeIn, fadeRight, fadeUp } from '../motions';
-import type { PortfolioProfile } from '@/payload-types';
+import { PortfolioProfile } from '@/model/profile';
 
 const ServiceCard = ({
   icon,

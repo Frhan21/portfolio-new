@@ -1,7 +1,7 @@
 'use client';
 
 import { Card3D } from '@/components/ui/card-3d';
-import type { Certificate } from '@/payload-types';
+import type { Certificate } from '@/model/certificate';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { FaGraduationCap } from 'react-icons/fa';
@@ -30,9 +30,9 @@ export default function CertificateItem({
       >
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
-          {typeof cert.image === 'object' && cert.image?.url ? (
+          {cert.image ? (
             <Image
-              src={cert.image.url}
+              src={cert.image}
               alt={cert.title}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -55,9 +55,7 @@ export default function CertificateItem({
             {/* Default State Pill */}
             <div className="bg-white/90 backdrop-blur-xs rounded-full px-4 py-1.5 shadow-sm">
               <span className="text-slate-900 text-xs font-extrabold tracking-wide">
-                {typeof cert.category === 'object'
-                  ? cert.category?.title || 'Certificate'
-                  : 'Certificate'}
+                {cert.category?.title || 'Certificate'}
               </span>
             </div>
           </div>
@@ -92,8 +90,8 @@ export default function CertificateItem({
                     Issued at
                   </span>
                   <span className="text-xs text-white font-bold">
-                    {cert.issueDate
-                      ? new Date(cert.issueDate).toLocaleDateString('id-ID', {
+                    {cert.issuer_date
+                      ? new Date(cert.issuer_date).toLocaleDateString('id-ID', {
                           month: 'short',
                           year: 'numeric',
                         })

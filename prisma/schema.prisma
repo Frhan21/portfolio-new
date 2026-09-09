@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id           String        @id @default(uuid())
+  title        String
+  timestamp    DateTime      @default(now())
+  projects     Project[]
+  certificates Certificate[]
+
+  @@map("categories")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  password      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model PortfolioProfile {
+  id           Int      @id @default(1)
+  displayName  String
+  headline     String
+  bio          String
+  email        String
+  cvUrl        String?
+  githubUrl    String?
+  linkedinUrl  String?
+  instagramUrl String?
+  twitterUrl   String?
+  updatedAt    DateTime @updatedAt
+
+  @@map("portfolio_profile")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revoked   Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+
+  @@map("refresh_tokens")
+}
+
+model Project {
+  id         String   @id @default(uuid())
+  title      String
+  tags       String[]
+  image      String
+  publicId   String
+  demo       String?
+  github     String?
+  categoryId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@map("projects")
+}
+
+model Certificate {
+  id          String   @id @default(uuid())
+  title       String
+  image       String
+  publicId    String
+  categoryId  String
+  issuer      String
+  issuer_date DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  category    Category @relation(fields: [categoryId], references: [id])
+
+  @@map("certificates")
+}
+
+model Experience {
+  id          String   @id @default(uuid())
+  company     String
+  position    String
+  startDate   DateTime
+  endDate     DateTime?
+  description String
+  badges      String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  @@map("experiences")
+}

@@ -2,10 +2,10 @@
 
 import { Card3D } from '@/components/ui/card-3d';
 import { formatDate } from '@/lib/date';
-import type { Experience } from '@/payload-types';
 import { Briefcase } from 'lucide-react';
 import { motion } from 'motion/react';
 import { fadeIn, fadeUp } from '../motions';
+import { useQueryExperience } from './hooks/use-query-experience';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -17,7 +17,9 @@ const containerVariants = {
   },
 };
 
-const Experience = ({ experiences }: { experiences: Experience[] }) => {
+const Experience = () => {
+  const { data: experiences } = useQueryExperience();
+
   return (
     <section
       className="flex flex-col items-center justify-center w-full h-fit mt-16 sm:mt-20 md:px-12 px-4 mx-auto py-16 sm:py-24"
@@ -90,7 +92,7 @@ const Experience = ({ experiences }: { experiences: Experience[] }) => {
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
           >
-            {experiences.slice(0, 3).map((exp, index, arr) => (
+            {experiences?.items.slice(0, 3).map((exp, index, arr) => (
               <motion.div
                 key={exp.id || index}
                 className="relative flex flex-col md:flex-row gap-6 md:gap-8 items-start group"
@@ -147,7 +149,7 @@ const Experience = ({ experiences }: { experiences: Experience[] }) => {
                         </p>
 
                         <div className="flex flex-wrap gap-2">
-                          {(exp.badges ?? []).map((badge, idx) => (
+                          {exp.badges.map((badge, idx) => (
                             <span
                               key={idx}
                               className="bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 px-3 py-1 text-xs font-medium rounded-full group-hover:bg-orange-50 dark:group-hover:bg-orange-500/10 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors duration-300"
