@@ -3,118 +3,111 @@
 ## Stack
 
 - **Framework**: Next.js 16 (App Router, Turbopack), React 19, TypeScript 6, Tailwind CSS v4
-- **CMS**: Payload 3 (embedded di app Next.js yang sama) — koleksi + admin panel `/admin`
-- **Database**: PostgreSQL via `@payloadcms/db-postgres` (Drizzle internal, schema PG `payload`)
-- **Auth**: Payload auth built-in (HTTP-only cookie, first user dibuat di `/admin`)
-- **Media**: Cloudinary via custom storage adapter (`payload/adapters/cloudinary.ts` + `@payloadcms/plugin-cloud-storage`)
-- **UI**: shadcn/ui (New York style), Motion, lucide-react, react-icons
+- **Database/ORM**: PostgreSQL + Prisma (`prisma/schema.prisma`, `db push` di dev)
+- **Auth**: NextAuth v5 beta (Credentials + JWT access + refresh token di DB, cookie HTTP-only)
+- **CRUD Admin**: Dashboard custom `/dashboard` (NextAuth-protected, api/v1 + server actions)
+- **Media**: Cloudinary via `server/services/upload.server.ts` (image URL + publicId tersimpan di tabel)
+- **Rich text**: Lexical (`lexical` + `@lexical/react`) di form dashboard, JSON disimpan di kolom `projects.content`
+- **UI**: shadcn/ui (New York style), Motion, lucide-react, react-icons, TanStack Query (client fetching)
 - **Theming**: next-themes (light / dark / system)
-- **Notifications**: sonner (Toaster)
+- **Notifications**: sonner (Toaster) + sweetalert2 (dialog dashboard)
 - **DevOps**: Husky (pre-commit → lint-staged, commit-msg → commitlint, pre-push → build), Commitizen, standard-version, CI (push/PR ke develop/production)
 
 ## Commands
 
-| Command                      | Description                            |
-| ---------------------------- | -------------------------------------- |
-| `npm run dev`                | Dev server at localhost:3000           |
-| `npm run build`              | Production build (pre-push hook)       |
-| `npm run start`              | Start production server                |
-| `npm run lint`               | ESLint                                 |
-| `npm run generate:types`     | Payload types → `payload-types.ts`     |
-| `npm run generate:importmap` | Payload admin import map (prebuild CI) |
-| `npm run commit`             | Commitizen interactive commit          |
-| `npm run release`            | standard-version (changelog + git tag) |
+| Command               | Description                            |
+| --------------------- | -------------------------------------- |
+| `npm run dev`         | Dev server at localhost:3000           |
+| `npm run build`       | Production build (pre-push hook)       |
+| `npm run start`       | Start production server                |
+| `npm run lint`        | ESLint                                 |
+| `npx prisma generate` | Regenerate Prisma Client               |
+| `npx prisma db push`  | Apply schema ke DB (dev)               |
+| `npm run commit`      | Commitizen interactive commit          |
+| `npm run release`     | standard-version (changelog + git tag) |
 
 ## Project Structure
 
 ```
-├── payload.config.ts                 # buildConfig: postgres adapter (schema: payload), lexical, cloudinary plugin
-├── payload-types.ts                  # Generated types (jangan edit manual)
-├── payload/
-│   ├── adapters/cloudinary.ts        # Custom storage adapter (upload/delete Cloudinary)
-│   ├── revalidate.ts                 # revalidateTag helper untuk collection hooks
-│   ├── collections/                  # Categories, Media, Projects, Certificates, Experiences, Users
-│   └── globals/PortfolioProfile.ts   # Global profile (bukan collection)
+├── prisma/schema.prisma            # Category, User, PortfolioProfile, RefreshToken, Project, Certificate, Experience
 ├── app/
-│   ├── (payload)/                    # Admin panel + REST API bawaan Payload (jangan diubah)
-│   │   ├── layout.tsx                # RootLayout @payloadcms/next + server functions
-│   │   ├── admin/[[...segments]]/    # Admin catch-all views
-│   │   ├── admin/importMap.js        # Generated
-│   │   └── api/[...slug]/route.ts    # REST catch-all (dipakai admin UI)
-│   ├── (frontend)/                   # Route group root layout publik
-│   │   ├── layout.tsx                # ThemeProvider + Toaster (TANPA QueryProvider)
-│   │   ├── not-found.tsx
-│   │   ├── (main)/page.tsx           # Homepage (server component, fetch via server/queries)
-│   │   ├── (portfolio)/projects/     # List + [slug] detail page (rich text)
-│   │   ├── (portfolio)/certificate/  # List paginated
-│   │   └── (portfolio)/experience/   # List paginated
-│   ├── components/                   # Section components homepage (server + client split)
-│   ├── globals.css                   # Tailwind v4 + @tailwindcss/typography
-│   └── providers/theme-provider.tsx  # next-themes
+│   ├── layout.tsx                  # Root layout (ThemeProvider + QueryProvider + AuthProvider + Toaster)
+│   ├── not-found.tsx
+│   ├── (auth)/                     # Login + register (NextAuth)
+│   ├── (dashboard)/                # Dashboard custom (CRUD via api/v1 + axios)
+│   │   └── dashboard/projects/components/form/  # form projek + RichTextEditor (Lexical)
+│   ├── (main)/                     # Homepage (server component, fetch via server/services)
+│   ├── (portfolio)/                # projects (+ [slug] detail), certificate, experience
+│   ├── api/auth/[...nextauth]/     # NextAuth route handler
+│   ├── api/v1/                     # REST CRUD (auth-protected)
+│   ├── components/                 # Section components homepage + card + hooks TanStack
+│   └── providers/                  # theme, query, auth providers
 ├── server/
-│   └── queries.ts                    # SATU-SATUNYA data layer: Local API + unstable_cache + tags
-├── components/ui/                    # shadcn/ui components
-├── lib/                              # date.ts (formatDate), utils.ts (cn)
-└── .github/workflows/production.yaml # CI: npm ci → payload generate → lint → build
+│   ├── actions/                    # Server actions: validasi zod + upload Cloudinary + service
+│   ├── services/                   # Business logic (project.server punya getProjectBySlug + slug gen)
+│   └── repositories/               # Prisma queries
+├── components/
+│   ├── ui/                         # shadcn/ui components
+│   └── lexical/                    # rich-text-editor.tsx (form) + renderer.tsx (publik)
+├── lib/                            # auth, prisma, axios, jwt, validation, date, utils
+└── .github/workflows/production.yaml # CI: npm ci → prisma generate → lint → build (Node 22)
 ```
 
 ## Architecture Patterns
 
-### Data Flow (Payload Local API)
-
 ```
-Server Components → server/queries.ts (unstable_cache, tags: projects/certificates/experiences/categories/profile)
-                  → payload.find/findGlobal (Local API, depth 1)
-                  → Drizzle (internal @payloadcms/db-postgres) → PostgreSQL schema "payload"
+Dashboard (client) → TanStack/axios → /api/v1 (NextAuth cookie) → server/actions (zod + upload Cloudinary)
+                   → server/services → server/repositories → Prisma → PostgreSQL (schema public)
 
-Mutasi: hanya lewat /admin (Payload) → afterChange/afterDelete hooks → revalidateTag(tag, 'max')
+Halaman publik → server components → server/services (Prisma langsung)
+Detail projek → /projects/[slug] → getProjectBySlug → LexicalRenderer (projects.content JSON)
 ```
 
 ### Aturan Penting
 
-- **Tidak ada REST client/axios/TanStack Query** untuk halaman publik — semua server components + Local API
-- **ID relasi Payload = number** (postgres adapter). Jangan stringify
-- **Media**: upload koleksi `media` (relationTo) — field `image` berbentuk object `{ url, alt, publicId }` setelah depth populate; akses via `typeof x.image === 'object' && x.image.url`
-- **Cloudinary URL** tersimpan di field `url` dokumen media; `publicId` dipakai adapter untuk destroy
-- **Project.slug**: auto-generate dari title via field hook (boleh diisi manual, harus unik)
-- **Detail page projek**: `app/(frontend)/(portfolio)/projects/[slug]/page.tsx` — render richText via `RichText` dari `@payloadcms/richtext-lexical/react`
-- **Caching**: `unstable_cache` (revalidate 120s + tag). Invalidate otomatis via collection hooks
-- **Turbopack**: `next dev`/`next build` default; font google OK di dev & build versi Next 16.3.x ini
-- **`"type": "module"`** di package.json wajib (payload config loader ESM; Lexical pakai top-level await)
+- **Lexical**: editor di `components/lexical/rich-text-editor.tsx` ('use client', toolbar + react-hook-form `Controller`); value = `editorState.toJSON()` → kolom `content` (Json). Render publik via `components/lexical/renderer.tsx` (pure JSON → React, aman server component). Jangan pakai format HTML
+- **Project.slug**: di-generate otomatis dari title di `createProject` (service), unique — update form tidak mengubah slug
+- **Image**: field `image` = URL string Cloudinary + `publicId` untuk delete; upload via `uploadImage()` (formidable → Cloudinary)
+- **Tags/badges** lama tersimpan berantakan (JSON-in-array) — bersihkan saat render dengan `.replace(/[\[\]"]/g, '').trim()`
+- **Auth**: NextAuth session JWT + refresh token DB; proxy.ts melindungi /dashboard, /login & /register redirect
+- **ID**: semua ID Prisma = string (uuid)
+- **"type": "module"** di package.json — commitlint config harus `.cjs`
+- **DB push drift**: `prisma db push` bisa error "constraint already exists" (drift lama) — kalau menambah kolom terblokir, ALTER manual via script SQL
 
 ### Konvensi
 
 - File: `kebab-case` untuk action/query, `PascalCase` komponen; path alias `@/*`
 - Code style: no semicolons (legacy file ada yang semicolon — biarkan), single quotes, 2-space, trailing commas
-- Types data dari `@/payload-types` (generated) — buat type manual hanya untuk bentuk view
-- `unstable_cache` key: `['{resource}', ...]` + args otomatis masuk cache key
+- Types data dari `model/*` (hand-written mirror Prisma models)
 
 ## Environment Variables
 
 ```
-DATABASE_URL=              # Postgres (sslmode=require → adapter pakai uselibpqcompat=true otomatis)
+DATABASE_URL=              # Postgres (Aiven; sslmode=require — tambah uselibpqcompat=true untuk raw pg)
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
-PAYLOAD_SECRET=            # npx auth secret / openssl rand -hex 24
+JWT_SECRET=                # NextAuth token signing
+JWT_EXPIRED=1h
+AUTH_SECRET=               # NextAuth v5
+AUTH_URL=http://localhost:3000
 NEXT_PUBLIC_SERVER_URL=http://localhost:3000
 ```
 
 ## Deployment / CI
 
 - Workflow `.github/workflows/production.yaml`: push/PR ke `develop`/`production`
-- Steps: `npm ci` → `payload generate:types` + `generate:importmap` → lint → build (Node 22)
-- **Build butuh DATABASE_URL + PAYLOAD_SECRET valid** (koleksi di-query saat prerender via unstable_cache)
-- Production: set `push: false` di payload.config (ganti ke `payload migrate`) jika schema sudah stabil
+- Steps: `npm ci` → `prisma generate` → lint → build (Node 22)
+- Build butuh DATABASE_URL + secrets valid
+- `prisma db push` atau `prisma migrate deploy` untuk schema di production
 
 ## Auth Flow
 
-- Login admin: `/admin` (login screen Payload, first-run menampilkan Create First User)
-- Tidak ada login/register custom, tidak ada middleware proxy — Payload melindungi `/admin` & REST-nya sendiri
-- Koleksi non-media default access: hanya authenticated (Local API server-side pakai overrideAccess)
+- Login/register: `/login`, `/register` → NextAuth Credentials → JWT access (1h) + refresh token (DB, 7d)
+- Dashboard protected oleh proxy.ts middleware + server-side session check
 
 ## Known Notes
 
-- Tabel lama Prisma sudah di-drop dari schema public (migrasi Payload selesai, data di schema `payload`)
-- `app/(payload)/*` adalah file generated — jangan dimodifikasi manual
+- Riwayat eksperimen Payload CMS ada di history git (commit sebelum `revert:`) — tidak dipakai; schema PG `payload` masih ada di DB (bisa di-drop manual kalau mau)
+- Detail page projek: konten kosong → fallback "coming soon"
 - Tidak ada test framework; verifikasi via lint + build + smoke test endpoint
