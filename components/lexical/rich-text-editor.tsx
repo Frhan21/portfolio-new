@@ -5,13 +5,17 @@ import {
   $createQuoteNode,
   $isHeadingNode,
   $isQuoteNode,
+  HeadingNode,
+  QuoteNode,
 } from '@lexical/rich-text';
 import {
   $isListNode,
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
+  ListItemNode,
+  ListNode,
 } from '@lexical/list';
-import { TOGGLE_LINK_COMMAND } from '@lexical/link';
+import { LinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
 import { $setBlocksType } from '@lexical/selection';
 import {
   $createParagraphNode,
@@ -265,6 +269,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   const initialConfig = {
     namespace: 'ProjectContent',
     theme,
+    nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode],
     onError: (error: Error) => {
       console.error(error);
     },
