@@ -7,6 +7,7 @@ import {
   PortfolioProfile,
   PortfolioProfileActionResult,
 } from '@/model/profile';
+import { uploadPdf } from '@/server/services/upload.server';
 import * as ProfileService from '@/server/services/profile.server';
 
 export async function updatePortfolioProfile(
@@ -23,7 +24,14 @@ export async function updatePortfolioProfile(
   }
 
   try {
-    const profile = await ProfileService.updatePortfolioProfile(validated.data);
+    const { cvFile, ...data } = validated.data;
+
+    if (cvFile && cvFile.size > 0) {
+      const { fileUrl } = await uploadPdf(cvFile);
+      data.cvUrl = fileUrl;
+    }
+
+    const profile = await ProfileService.updatePortfolioProfile(data);
     updateTag('portfolio-profile');
     return { success: true, data: profile };
   } catch {

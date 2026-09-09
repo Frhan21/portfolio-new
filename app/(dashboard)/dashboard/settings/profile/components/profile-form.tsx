@@ -1,8 +1,15 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ExternalLink, FileText, Save, Share2, UserRound } from 'lucide-react';
-import { useTransition } from 'react';
+import {
+  ExternalLink,
+  FileText,
+  FileUp,
+  Save,
+  Share2,
+  UserRound,
+} from 'lucide-react';
+import { useState, useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -39,6 +46,9 @@ const socialFields = [
 
 export function ProfileForm({ initialProfile }: ProfileFormProps) {
   const [isPending, startTransition] = useTransition();
+  const [cvFile, setCvFile] = useState<File>();
+  const [cvFileName, setCvFileName] = useState<string>();
+  const [cvFileKey, setCvFileKey] = useState(0);
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(portfolioProfileSchema),
     defaultValues: {
@@ -56,7 +66,10 @@ export function ProfileForm({ initialProfile }: ProfileFormProps) {
 
   const submit = (values: ProfileFormValues) => {
     startTransition(async () => {
-      const result = await updatePortfolioProfile(values);
+      const result = await updatePortfolioProfile({
+        ...values,
+        cvFile,
+      });
       if (!result.success) {
         toast.error(result.error);
         return;
@@ -69,6 +82,9 @@ export function ProfileForm({ initialProfile }: ProfileFormProps) {
         instagramUrl: result.data.instagramUrl ?? '',
         twitterUrl: result.data.twitterUrl ?? '',
       });
+      setCvFile(undefined);
+      setCvFileName(undefined);
+      setCvFileKey((k) => k + 1);
       toast.success('Pengaturan portfolio disimpan');
     });
   };
@@ -162,28 +178,48 @@ export function ProfileForm({ initialProfile }: ProfileFormProps) {
       <FormSection
         icon={<FileText className="h-3.5 w-3.5" />}
         title="CV"
-        description="Use a public HTTPS URL. The landing page hides the CV button when this is empty."
+        description="Upload a PDF (max 5MB) to Cloudinary. The landing page hides the CV button when empty."
       >
-        <div>
+        <FieldGroup className="grid gap-4">
+          <Field>
+            <FieldLabel htmlFor="cvFile">Upload PDF file</FieldLabel>
+            <label
+              htmlFor="cvFile"
+              className="flex items-center gap-3 rounded-md border border-dashed border-slate-300 dark:border-slate-700 px-4 py-3 cursor-pointer hover:border-primary transition-colors"
+            >
+              <FileUp className="size-4 shrink-0 text-slate-500" />
+              <span className="text-sm text-slate-500 dark:text-slate-400 truncate">
+                {cvFileName ?? 'Choose a PDF file to replace the current CV'}
+              </span>
+            </label>
+            <input
+              key={cvFileKey}
+              id="cvFile"
+              type="file"
+              accept="application/pdf"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                setCvFile(file);
+                setCvFileName(file?.name);
+              }}
+            />
+          </Field>
           <Controller
             name="cvUrl"
             control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>CV URL</FieldLabel>
+            render={({ field }) => (
+              <Field>
+                <FieldLabel>Current CV (read-only)</FieldLabel>
                 <Input
                   {...field}
-                  placeholder="https://example.com/cv.pdf"
-                  aria-invalid={fieldState.invalid}
-                  className={dashboardControlClassName}
+                  disabled
+                  className={`${dashboardControlClassName} opacity-70`}
                 />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
               </Field>
             )}
           />
-        </div>
+        </FieldGroup>
       </FormSection>
 
       <FormSection

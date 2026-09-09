@@ -16,6 +16,14 @@ export const portfolioProfileSchema = z.object({
   bio: z.string().trim().min(20, 'Bio minimal 20 karakter').max(1000),
   email: z.string().trim().email('Email tidak valid'),
   cvUrl: optionalHttpUrl,
+  cvFile: z
+    .instanceof(File)
+    .refine(
+      (file) => file.size === 0 || file.type === 'application/pdf',
+      'CV harus berupa file PDF'
+    )
+    .refine((file) => file.size <= 5 * 1024 * 1024, 'Ukuran CV maksimal 5MB')
+    .optional(),
   githubUrl: optionalHttpUrl,
   linkedinUrl: optionalHttpUrl,
   instagramUrl: optionalHttpUrl,

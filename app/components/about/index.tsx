@@ -161,7 +161,7 @@ const About = ({ profile }: AboutProps) => {
                 ease: 'easeOut',
               }}
               viewport={{ once: true }}
-              className="absolute bottom-8 sm:bottom-12 left-0 md:-left-8 lg:left-5 z-20 bg-[#0f172a] rounded-lg border border-slate-700/50 shadow-2xl overflow-hidden w-40 sm:w-48 md:w-56 hidden sm:block"
+              className="absolute bottom-8 sm:bottom-12 left-0 md:-left-8 lg:left-5 z-20 bg-[#0f172a] rounded-lg border border-slate-700/50 shadow-2xl overflow-hidden w-40 sm:w-48 md:w-56"
             >
               <div className="flex items-center px-3 py-2 bg-[#1e293b] border-b border-slate-700/50">
                 <div className="flex space-x-1.5">
@@ -170,7 +170,7 @@ const About = ({ profile }: AboutProps) => {
                   <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
                 </div>
               </div>
-              <div className="p-3 font-mono text-[10px] md:text-xs text-slate-300 leading-relaxed">
+              <div className="p-2 sm:p-3 font-mono text-[9px] sm:text-[10px] md:text-xs text-slate-300 leading-relaxed">
                 <span className="text-pink-400">const</span>{' '}
                 <span className="text-blue-400">coder</span>{' '}
                 <span className="text-white">=</span> {'{'}
@@ -186,11 +186,11 @@ const About = ({ profile }: AboutProps) => {
               </div>
             </motion.div>
 
-            {/* Floating Icons - hidden on mobile to avoid overlap */}
+            {/* Floating Icons - compact on mobile, full size on desktop */}
             <motion.div
               animate={{ y: [-10, 10, -10] }}
               transition={{ repeat: Infinity, duration: 4 }}
-              className="absolute top-[10%] left-[20%] z-10 bg-white p-3 rounded-2xl shadow-lg border border-slate-100 hidden md:flex"
+              className="absolute top-[6%] left-[6%] md:left-[20%] md:top-[10%] z-10 bg-white p-2 md:p-3 rounded-xl md:rounded-2xl shadow-lg border border-slate-100 flex"
             >
               <Image
                 src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg"
@@ -198,13 +198,13 @@ const About = ({ profile }: AboutProps) => {
                 width={32}
                 height={32}
                 unoptimized
-                className="w-8 h-8"
+                className="w-6 h-6 md:w-8 md:h-8"
               />
             </motion.div>
             <motion.div
               animate={{ y: [10, -10, 10] }}
               transition={{ repeat: Infinity, duration: 5 }}
-              className="absolute top-[20%] right-[10%] z-10 bg-white p-3 rounded-2xl shadow-lg border border-slate-100 hidden md:flex"
+              className="absolute top-[6%] right-[6%] md:top-[20%] md:right-[10%] z-10 bg-white p-2 md:p-3 rounded-xl md:rounded-2xl shadow-lg border border-slate-100 flex"
             >
               <Image
                 src="https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg"
@@ -212,13 +212,13 @@ const About = ({ profile }: AboutProps) => {
                 width={32}
                 height={32}
                 unoptimized
-                className="w-8 h-8"
+                className="w-6 h-6 md:w-8 md:h-8"
               />
             </motion.div>
             <motion.div
               animate={{ y: [-15, 15, -15] }}
               transition={{ repeat: Infinity, duration: 6 }}
-              className="absolute bottom-[20%] right-[0%] z-10 bg-white p-3 rounded-2xl shadow-lg border border-slate-100 hidden md:flex"
+              className="absolute bottom-[8%] md:bottom-[20%] right-[2%] md:right-[0%] z-10 bg-white p-2 md:p-3 rounded-xl md:rounded-2xl shadow-lg border border-slate-100 flex"
             >
               <Image
                 src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg"
@@ -226,15 +226,15 @@ const About = ({ profile }: AboutProps) => {
                 width={32}
                 height={32}
                 unoptimized
-                className="w-8 h-8"
+                className="w-6 h-6 md:w-8 md:h-8"
               />
             </motion.div>
             <motion.div
               animate={{ y: [15, -15, 15] }}
               transition={{ repeat: Infinity, duration: 7 }}
-              className="absolute top-1/2 right-[-5%] z-10 bg-white p-3 rounded-2xl shadow-lg border border-slate-100 hidden md:flex"
+              className="absolute top-1/2 left-[3%] md:left-auto md:right-[-5%] z-10 bg-white p-2 md:p-3 rounded-xl md:rounded-2xl shadow-lg border border-slate-100 flex"
             >
-              <FaGithub size={32} className="text-black" />
+              <FaGithub className="w-6 h-6 md:w-8 md:h-8 text-black" />
             </motion.div>
           </div>
         </motion.div>

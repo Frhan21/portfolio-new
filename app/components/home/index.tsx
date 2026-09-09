@@ -2,7 +2,7 @@
 
 import { Card3D } from '@/components/ui/card-3d';
 import { Button } from '@/components/ui/button';
-import { Briefcase, DownloadIcon } from 'lucide-react';
+import { Briefcase } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -15,6 +15,7 @@ import {
 } from 'react-icons/si';
 import { fadeIn, fadeUp } from '../motions';
 import { PortfolioProfile } from '@/model/profile';
+import CvModal from './cv-modal';
 
 interface HomeProps {
   profile: PortfolioProfile;
@@ -49,19 +50,19 @@ const Home = ({ profile }: HomeProps) => {
       variants={fadeIn}
     >
       {/* Floating Icons (Desktop mostly) - Optimized without infinite JS animations */}
-      <div className="absolute inset-0 pointer-events-none hidden md:block">
+      <div className="absolute inset-0 pointer-events-none">
         <motion.div
           animate={{ y: [-10, 10, -10] }}
           transition={{ repeat: Infinity, duration: 5 }}
-          className="absolute top-[20%] left-[10%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300"
+          className="absolute top-[16%] left-[3%] md:left-[10%] md:top-[20%] bg-white dark:bg-card p-2.5 md:p-4 rounded-2xl md:rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300"
         >
-          <SiReact className="text-cyan-400 text-4xl" />
+          <SiReact className="text-cyan-400 text-2xl md:text-4xl" />
         </motion.div>
 
         <motion.div
           animate={{ y: [-10, 10, -10] }}
           transition={{ repeat: Infinity, duration: 6 }}
-          className="absolute top-[15%] right-[15%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300"
+          className="absolute hidden md:block top-[15%] right-[15%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300"
         >
           <SiLaravel className="text-red-500 text-3xl" />
         </motion.div>
@@ -69,24 +70,24 @@ const Home = ({ profile }: HomeProps) => {
         <motion.div
           animate={{ y: [-10, 10, -10] }}
           transition={{ repeat: Infinity, duration: 10 }}
-          className="absolute top-[45%] left-[5%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300"
+          className="absolute top-[10%] right-[3%] md:top-[45%] md:right-auto md:left-[5%] bg-white dark:bg-card p-2.5 md:p-4 rounded-2xl md:rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300"
         >
-          <SiNodedotjs className="text-green-600 text-3xl" />
+          <SiNodedotjs className="text-green-600 text-2xl md:text-3xl" />
         </motion.div>
 
         <motion.div
           animate={{ y: [-10, 10, -10] }}
           transition={{ repeat: Infinity, duration: 8 }}
-          className="absolute bottom-[20%] left-[10%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300"
+          className="absolute hidden md:block bottom-[20%] left-[10%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300"
         >
           <SiNextdotjs className="text-black dark:text-white text-3xl" />
         </motion.div>
 
-        <motion.div className="absolute bottom-[35%] right-[10%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300">
+        <motion.div className="absolute hidden md:block bottom-[35%] right-[10%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300">
           <SiTypescript className="text-blue-600 text-3xl" />
         </motion.div>
 
-        <motion.div className="absolute top-[40%] right-[5%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300">
+        <motion.div className="absolute hidden md:block top-[40%] right-[5%] bg-white dark:bg-card p-4 rounded-3xl shadow-xl shadow-orange-500/10 border border-slate-100 dark:border-slate-800 hover:-translate-y-2 transition-transform duration-300">
           <SiGo className="text-cyan-500 text-3xl" />
         </motion.div>
 
@@ -143,16 +144,7 @@ const Home = ({ profile }: HomeProps) => {
             </a>
           </Button>
           {profile.cvUrl && (
-            <Button
-              variant="outline"
-              className="w-full sm:w-[300px] flex items-center justify-center gap-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-card px-8 sm:px-10 py-5 sm:py-6 text-sm sm:text-base font-bold text-slate-900 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-[0.98]"
-              asChild
-            >
-              <a href={profile.cvUrl} target="_blank" rel="noopener noreferrer">
-                Download CV
-                <DownloadIcon />
-              </a>
-            </Button>
+            <CvModal cvUrl={profile.cvUrl} name={profile.displayName} />
           )}
         </motion.div>
       </motion.div>
