@@ -19,7 +19,9 @@ import { LinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
 import { $setBlocksType } from '@lexical/selection';
 import {
   $createParagraphNode,
+  $getRoot,
   $getSelection,
+  $insertNodes,
   $isRangeSelection,
   type ElementNode,
   FORMAT_TEXT_COMMAND,
@@ -38,13 +40,27 @@ import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { cn } from '@/lib/utils';
-import { useEffect, useState, type ReactNode } from 'react';
+import {
+  $createDocumentationImageNode,
+  $createPdfAttachmentNode,
+  DocumentationImageNode,
+  PdfAttachmentNode,
+} from './media-nodes';
+import { FileUp, ImagePlus } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import type { PendingMediaKind } from '@/lib/pending-media';
 
 type EditorValue = unknown;
 
 interface RichTextEditorProps {
   value?: EditorValue;
   onChange?: (value: EditorValue) => void;
+  onAddPendingFile?: (
+    pendingId: string,
+    file: File,
+    kind: PendingMediaKind
+  ) => void;
 }
 
 type ActiveState = {
@@ -53,6 +69,7 @@ type ActiveState = {
   underline: boolean;
   strike: boolean;
   code: boolean;
+  h1: boolean;
   h2: boolean;
   h3: boolean;
   quote: boolean;
@@ -66,6 +83,7 @@ const INACTIVE: ActiveState = {
   underline: false,
   strike: false,
   code: false,
+  h1: false,
   h2: false,
   h3: false,
   quote: false,
@@ -75,10 +93,21 @@ const INACTIVE: ActiveState = {
 
 const toolbarBtn =
   'h-8 min-w-8 px-2 text-xs font-semibold gap-0 rounded-lg border-none bg-transparent text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800';
+const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
-function Toolbar() {
+function Toolbar({
+  onAddPendingFile,
+}: {
+  onAddPendingFile?: (
+    pendingId: string,
+    file: File,
+    kind: PendingMediaKind
+  ) => void;
+}) {
   const [editor] = useLexicalComposerContext();
   const [active, setActive] = useState<ActiveState>(INACTIVE);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     return editor.registerUpdateListener(({ editorState }) => {
@@ -97,6 +126,7 @@ function Toolbar() {
           while (node) {
             if ($isHeadingNode(node)) {
               const tag = node.getTag();
+              if (tag === 'h1') state.h1 = true;
               if (tag === 'h2') state.h2 = true;
               if (tag === 'h3') state.h3 = true;
             }
@@ -120,6 +150,82 @@ function Toolbar() {
         $setBlocksType(selection, factory);
       }
     });
+  };
+
+  const insertMedia = (
+    create: () => DocumentationImageNode | PdfAttachmentNode
+  ) => {
+    editor.update(() => {
+      const node = create();
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        $insertNodes([node]);
+      } else {
+        $getRoot().append(node);
+      }
+      const paragraph = $createParagraphNode();
+      node.insertAfter(paragraph);
+      paragraph.select();
+    });
+  };
+
+  const handleImage = (file?: File) => {
+    if (!file) return;
+    if (!IMAGE_TYPES.includes(file.type) || file.size > 5 * 1024 * 1024) {
+      toast.error('Gunakan gambar JPEG, PNG, atau WebP maksimal 5MB');
+      return;
+    }
+    const alt = window.prompt('Teks alternatif gambar (wajib):')?.trim();
+    if (!alt) {
+      toast.error('Teks alternatif gambar wajib diisi');
+      return;
+    }
+    const caption = window.prompt('Caption gambar (opsional):')?.trim();
+    const pendingId = crypto.randomUUID();
+    const previewUrl = URL.createObjectURL(file);
+    try {
+      insertMedia(() =>
+        $createDocumentationImageNode({
+          src: previewUrl,
+          publicId: '',
+          alt,
+          caption: caption || undefined,
+          width: 0,
+          height: 0,
+          pendingId,
+          previewUrl,
+        })
+      );
+      onAddPendingFile?.(pendingId, file, 'image');
+      toast.success('Gambar ditambahkan — diunggah saat project disimpan');
+    } catch {
+      URL.revokeObjectURL(previewUrl);
+      toast.error('Gagal menambahkan gambar');
+    }
+  };
+
+  const handlePdf = (file?: File) => {
+    if (!file) return;
+    if (file.type !== 'application/pdf' || file.size > 10 * 1024 * 1024) {
+      toast.error('Gunakan dokumen PDF maksimal 10MB');
+      return;
+    }
+    const pendingId = crypto.randomUUID();
+    try {
+      insertMedia(() =>
+        $createPdfAttachmentNode({
+          url: '',
+          publicId: '',
+          fileName: file.name,
+          size: file.size,
+          pendingId,
+        })
+      );
+      onAddPendingFile?.(pendingId, file, 'pdf');
+      toast.success('PDF ditambahkan — diunggah saat project disimpan');
+    } catch {
+      toast.error('Gagal menambahkan PDF');
+    }
   };
 
   const btn = (
@@ -192,6 +298,12 @@ function Toolbar() {
       )}
       <span className="mx-1 h-5 w-px bg-slate-300 dark:bg-slate-600" />
       {btn(
+        'H1',
+        active.h1,
+        () => setBlock(() => $createHeadingNode('h1')),
+        'Heading 1'
+      )}
+      {btn(
         'H2',
         active.h2,
         () => setBlock(() => $createHeadingNode('h2')),
@@ -240,12 +352,59 @@ function Toolbar() {
         'Link'
       )}
       {btn('¶', false, () => setBlock($createParagraphNode), 'Paragraph')}
+      <button
+        type="button"
+        title="Tambah gambar"
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => imageInputRef.current?.click()}
+        className={cn(
+          toolbarBtn,
+          'inline-flex size-8 items-center justify-center'
+        )}
+      >
+        <ImagePlus className="size-4" />
+        <span className="sr-only">Tambah gambar</span>
+      </button>
+      <button
+        type="button"
+        title="Tambah PDF"
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => pdfInputRef.current?.click()}
+        className={cn(
+          toolbarBtn,
+          'inline-flex size-8 items-center justify-center'
+        )}
+      >
+        <FileUp className="size-4" />
+        <span className="sr-only">Tambah PDF</span>
+      </button>
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={(event) => {
+          handleImage(event.target.files?.[0]);
+          event.target.value = '';
+        }}
+      />
+      <input
+        ref={pdfInputRef}
+        type="file"
+        accept="application/pdf"
+        className="hidden"
+        onChange={(event) => {
+          handlePdf(event.target.files?.[0]);
+          event.target.value = '';
+        }}
+      />
     </div>
   );
 }
 
 const theme = {
   heading: {
+    h1: 'text-3xl font-bold my-4',
     h2: 'text-2xl font-bold my-3',
     h3: 'text-xl font-semibold my-2',
   },
@@ -265,11 +424,23 @@ const theme = {
   paragraph: 'my-2',
 };
 
-export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
+export function RichTextEditor({
+  value,
+  onChange,
+  onAddPendingFile,
+}: RichTextEditorProps) {
   const initialConfig = {
     namespace: 'ProjectContent',
     theme,
-    nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode],
+    nodes: [
+      HeadingNode,
+      QuoteNode,
+      ListNode,
+      ListItemNode,
+      LinkNode,
+      DocumentationImageNode,
+      PdfAttachmentNode,
+    ],
     onError: (error: Error) => {
       console.error(error);
     },
@@ -279,7 +450,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <div className="rounded-xl border border-slate-200 dark:border-slate-700">
-        <Toolbar />
+        <Toolbar onAddPendingFile={onAddPendingFile} />
         <RichTextPlugin
           contentEditable={
             <ContentEditable className="min-h-[220px] rounded-b-xl bg-white px-4 py-3 text-sm outline-none dark:bg-slate-900" />

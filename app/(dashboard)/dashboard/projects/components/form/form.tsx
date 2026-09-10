@@ -14,6 +14,16 @@ import {
   Trash,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
+import {
+  collectPendingIds,
+  replacePendingMedia,
+  rollbackUploadedMedia,
+  uploadPendingMedia,
+  type PendingMediaItem,
+  type UploadedMedia,
+  type UploadedMediaRef,
+} from '@/lib/pending-media';
 
 import { TProjectSchema, projectSchema, projectUpdateSchema } from './schema';
 import {
@@ -51,6 +61,10 @@ import { useQueryClient } from '@tanstack/react-query';
 
 export function ProjectForm({ initialData }: { initialData?: Project | null }) {
   const isEdit = !!initialData;
+  const [pendingMedia, setPendingMedia] = useState<
+    Map<string, PendingMediaItem>
+  >(new Map());
+  const [isFinalizing, setIsFinalizing] = useState(false);
   const form = useForm<TProjectSchema>({
     resolver: zodResolver(
       isEdit ? projectUpdateSchema : projectSchema
@@ -68,7 +82,7 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
   });
 
   const { data: categories, isLoading: categoriesLoading } = useQueryCategory();
-  const { mutate, isPending } = useProjectMutation({
+  const { mutateAsync, isPending } = useProjectMutation({
     isEdit,
     projectId: initialData?.id,
   });
@@ -109,7 +123,43 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
     }
   };
 
-  const onSubmit = (data: TProjectSchema) => {
+  const onSubmit = async (data: TProjectSchema) => {
+    let content = data.content;
+    let uploads: Map<string, UploadedMedia> | null = null;
+    let uploadedRefs: UploadedMediaRef[] = [];
+
+    // 1. Unggah media draft (preview lokal) hanya saat project disimpan
+    const pendingIds = collectPendingIds(content);
+    if (pendingIds.size > 0) {
+      const items = new Map<string, PendingMediaItem>();
+      for (const id of pendingIds) {
+        const item = pendingMedia.get(id);
+        if (!item) {
+          toast.error(
+            'Ada media draft yang sudah tidak valid. Hapus lalu tambahkan ulang media tersebut.'
+          );
+          return;
+        }
+        items.set(id, item);
+      }
+
+      setIsFinalizing(true);
+      try {
+        const result = await uploadPendingMedia(items);
+        uploads = result.uploads;
+        uploadedRefs = result.refs;
+        content = replacePendingMedia(content, uploads);
+      } catch (error) {
+        await rollbackUploadedMedia(uploadedRefs);
+        setIsFinalizing(false);
+        toast.error(
+          error instanceof Error ? error.message : 'Gagal mengunggah media'
+        );
+        return;
+      }
+      setIsFinalizing(false);
+    }
+
     const formData = new FormData();
     formData.append('title', data.title);
 
@@ -126,24 +176,28 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
     if (data.demo) formData.append('demo', data.demo);
     if (data.github) formData.append('github', data.github);
     if (data.summary) formData.append('summary', data.summary);
-    if (data.content != null) {
-      formData.append('content', JSON.stringify(data.content));
+    if (content != null) {
+      formData.append('content', JSON.stringify(content));
     }
 
-    mutate(formData, {
-      onSuccess: () => {
-        toast.success(
-          `Project berhasil ${isEdit ? 'diperbarui' : 'disimpan'}!`
-        );
-        router.push('/dashboard/projects');
-      },
-      onError: (error: Error) => {
-        toast.error(
-          error?.message ||
-            `Gagal ${isEdit ? 'memperbarui' : 'menyimpan'} project.`
-        );
-      },
+    try {
+      await mutateAsync(formData);
+    } catch (error) {
+      await rollbackUploadedMedia(uploadedRefs);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : `Gagal ${isEdit ? 'memperbarui' : 'menyimpan'} project.`
+      );
+      return;
+    }
+
+    uploads?.forEach((upload) => {
+      if (upload.src?.startsWith('blob:')) URL.revokeObjectURL(upload.src);
     });
+    setPendingMedia(new Map());
+    toast.success(`Project berhasil ${isEdit ? 'diperbarui' : 'disimpan'}!`);
+    router.push('/dashboard/projects');
   };
 
   return (
@@ -309,6 +363,14 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
                   key={initialData?.id ?? 'create'}
                   value={field.value ?? undefined}
                   onChange={field.onChange}
+                  onAddPendingFile={(pendingId, file, kind) => {
+                    setPendingMedia((prev) =>
+                      new Map(prev).set(pendingId, {
+                        file,
+                        kind,
+                      })
+                    );
+                  }}
                 />
               </Field>
             )}
@@ -391,12 +453,14 @@ export function ProjectForm({ initialData }: { initialData?: Project | null }) {
           </>
         }
         primaryAction={
-          <Button type="submit" disabled={isPending}>
-            {isPending
-              ? 'Menyimpan...'
-              : isEdit
-                ? 'Update Project'
-                : 'Simpan Project'}
+          <Button type="submit" disabled={isPending || isFinalizing}>
+            {isFinalizing
+              ? 'Mengunggah media...'
+              : isPending
+                ? 'Menyimpan...'
+                : isEdit
+                  ? 'Update Project'
+                  : 'Simpan Project'}
           </Button>
         }
       />

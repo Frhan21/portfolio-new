@@ -2,7 +2,11 @@
 
 import { projectSchema } from '@/lib/validation';
 import * as ProjectService from '@/server/services/project.server';
-import { uploadImage } from '@/server/services/upload.server';
+import {
+  deleteProjectContentMedia,
+  uploadImage,
+  type ProjectContentMedia,
+} from '@/server/services/upload.server';
 import { CreateProjectInput, Project } from '@/model/project';
 import { auth } from '@/lib/auth';
 
@@ -37,6 +41,38 @@ const parseSummary = (formData: FormData): string | undefined => {
   const raw = formData.get('summary');
   const summary = typeof raw === 'string' ? raw.trim() : '';
   return summary || undefined;
+};
+
+const collectContentMedia = (content: unknown): ProjectContentMedia[] => {
+  const media: ProjectContentMedia[] = [];
+
+  const visit = (node: unknown) => {
+    if (!node || typeof node !== 'object' || Array.isArray(node)) return;
+    const value = node as Record<string, unknown>;
+
+    if (
+      value.type === 'documentation-image' &&
+      typeof value.publicId === 'string' &&
+      value.publicId.startsWith('project-content/images/')
+    ) {
+      media.push({ publicId: value.publicId, resourceType: 'image' });
+    }
+    if (
+      value.type === 'pdf-attachment' &&
+      typeof value.publicId === 'string' &&
+      value.publicId.startsWith('project-content/documents/')
+    ) {
+      media.push({ publicId: value.publicId, resourceType: 'raw' });
+    }
+    if (Array.isArray(value.children)) value.children.forEach(visit);
+  };
+
+  const root =
+    content && typeof content === 'object' && !Array.isArray(content)
+      ? (content as Record<string, unknown>).root
+      : null;
+  visit(root);
+  return media;
 };
 
 // ─── GET ────────────────────────────────────────────────────────────────────
@@ -109,6 +145,9 @@ export async function updateProject(
   if (!(await isAuthorized())) return { success: false, error: 'Unauthorized' };
   if (!id) return { success: false, error: 'Project ID is required' };
 
+  const existingProject = await ProjectService.getProjectById(id);
+  if (!existingProject) return { success: false, error: 'Project not found' };
+
   // 1. Validasi
   const rawData = {
     title: formData.get('title'),
@@ -149,6 +188,21 @@ export async function updateProject(
     tags: validated.data.tags,
     categoryId: validated.data.categoryId,
     ...imageData,
+  });
+
+  const newMediaIds = new Set(
+    collectContentMedia(validated.data.content).map((item) => item.publicId)
+  );
+  const removedMedia = collectContentMedia(existingProject.content).filter(
+    (item) => !newMediaIds.has(item.publicId)
+  );
+  const cleanup = await Promise.allSettled(
+    removedMedia.map(deleteProjectContentMedia)
+  );
+  cleanup.forEach((result) => {
+    if (result.status === 'rejected') {
+      console.error('Failed to delete removed project media:', result.reason);
+    }
   });
 
   return { success: true, data: project as Project };
