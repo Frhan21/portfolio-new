@@ -49,7 +49,7 @@ async function defaultStore(): Promise<RateLimitStore> {
     consume: (input) =>
       prisma.$transaction(async (tx) => {
         await tx.$executeRaw`SELECT pg_advisory_xact_lock(7392041)`;
-        await tx.$executeRaw`DELETE FROM chat_rate_limits WHERE created_at < ${input.dayStart}`;
+        await tx.$executeRaw`DELETE FROM chat_rate_limits WHERE created_at < LEAST(${input.dayStart}::timestamptz, ${input.windowStart}::timestamptz)`;
         const rows = await tx.$queryRaw<
           Array<{ allowed: boolean; retry_after: number }>
         >`
@@ -70,9 +70,9 @@ async function defaultStore(): Promise<RateLimitStore> {
             EXISTS(SELECT 1 FROM inserted) AS allowed,
             CASE
               WHEN (SELECT global_count FROM counts) >= ${input.globalLimit}
-                THEN CEIL(EXTRACT(EPOCH FROM (${input.dayEnd} - ${input.now})))::int
+                THEN CEIL(EXTRACT(EPOCH FROM (${input.dayEnd}::timestamptz - ${input.now}::timestamptz)))::int
               WHEN (SELECT client_count FROM counts) >= ${input.clientLimit}
-                THEN GREATEST(1, CEIL(EXTRACT(EPOCH FROM ((SELECT oldest_client FROM counts) + INTERVAL '10 minutes' - ${input.now}))))::int
+                THEN GREATEST(1, CEIL(EXTRACT(EPOCH FROM ((SELECT oldest_client FROM counts) + INTERVAL '10 minutes' - ${input.now}::timestamptz))))::int
               ELSE 0
             END AS retry_after
         `;
