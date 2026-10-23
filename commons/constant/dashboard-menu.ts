@@ -3,6 +3,7 @@ import {
   FileBadge,
   FolderGit2,
   Home,
+  Brain,
   Tag,
   User,
 } from 'lucide-react';
@@ -32,6 +33,11 @@ export const APPLICATION_MENUS = [
     title: 'Experiences',
     url: '/dashboard/experiences',
     icon: Briefcase,
+  },
+  {
+    title: 'AI Knowledge',
+    url: '/dashboard/knowledge',
+    icon: Brain,
   },
 ];
 

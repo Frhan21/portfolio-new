@@ -20,6 +20,9 @@
 # production
 /build
 
+# generated Prisma client
+/generated/prisma
+
 # misc
 .DS_Store
 *.pem
@@ -39,3 +42,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# windows junk (alternate data stream / metadata, tidak bisa di-checkout di Windows)
+*:Zone.Identifier
+Thumbs.db
+desktop.ini
+
+
+# Taste skill results 
+.taste-skill
+.playwright-cli
