@@ -16,10 +16,16 @@ export const defaultPortfolioProfile: PortfolioProfile = {
   updatedAt: new Date(0),
 };
 
+export const getPortfolioProfile = async () =>
+  (await ProfileRepository.find()) ?? defaultPortfolioProfile;
+
 const getCachedProfile = unstable_cache(
-  async () => (await ProfileRepository.find()) ?? defaultPortfolioProfile,
+  getPortfolioProfile,
   ['portfolio-profile'],
-  { tags: ['portfolio-profile'], revalidate: 300 }
+  {
+    tags: ['portfolio-profile'],
+    revalidate: 300,
+  }
 );
 
 export const getPublicPortfolioProfile = () => getCachedProfile();

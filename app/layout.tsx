@@ -5,6 +5,7 @@ import QueryProvider from './providers/query-provider';
 import AuthProvider from './providers/auth-provider';
 import { ThemeProvider } from './providers/theme-provider';
 import { poppins } from './fonts';
+import FloatingChat from './components/floating-chat';
 
 export const metadata: Metadata = {
   title: 'M Farhan Ramadhan | Portfolio',
@@ -28,7 +29,10 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Toaster position="top-right" duration={3000} />
           <AuthProvider>
-            <QueryProvider>{children}</QueryProvider>
+            <QueryProvider>
+              {children}
+              <FloatingChat />
+            </QueryProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

@@ -20,6 +20,9 @@
 # production
 /build
 
+# generated Prisma client
+/generated/prisma
+
 # misc
 .DS_Store
 *.pem
@@ -44,3 +47,8 @@ next-env.d.ts
 *:Zone.Identifier
 Thumbs.db
 desktop.ini
+
+
+# Taste skill results 
+.taste-skill
+.playwright-cli

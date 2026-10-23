@@ -5,12 +5,12 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Category {
@@ -111,4 +111,13 @@ model Experience {
   updatedAt   DateTime @default(now()) @updatedAt
 
   @@map("experiences")
+}
+
+model KnowledgeSource {
+  hash      String   @id
+  status    String   @default("processing")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("knowledge_sources")
 }
