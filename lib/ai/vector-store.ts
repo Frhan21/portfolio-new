@@ -1,5 +1,5 @@
 import { PGVectorStore } from '@langchain/pgvector';
-import embeddings from './embeddings';
+import { getEmbeddings } from './embeddings';
 
 let storePromise: ReturnType<typeof PGVectorStore.initialize> | undefined;
 
@@ -33,7 +33,7 @@ export const vectorStore = async () => {
     },
   };
 
-  storePromise = PGVectorStore.initialize(embeddings, config);
+  storePromise = PGVectorStore.initialize(getEmbeddings(), config);
   try {
     return await storePromise;
   } catch (error) {
