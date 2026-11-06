@@ -47,11 +47,9 @@ export function lexicalToText(content: unknown): string {
     : '';
 }
 
-export async function loadPdfDocuments(
-  directory = path.join(process.cwd(), 'data', 'pdf')
-): Promise<Document[]> {
+export async function loadPdfDocuments(): Promise<Document[]> {
   const files = await fs
-    .readdir(directory)
+    .readdir(path.join(process.cwd(), 'data', 'pdf'))
     .catch((error: NodeJS.ErrnoException) => {
       if (error.code === 'ENOENT') return [];
       throw error;
@@ -59,7 +57,7 @@ export async function loadPdfDocuments(
   const pdfFiles = files.filter((file) => file.toLowerCase().endsWith('.pdf'));
   const documents = await Promise.all(
     pdfFiles.map(async (file) => {
-      const filePath = path.join(directory, file);
+      const filePath = path.join(process.cwd(), 'data', 'pdf', file);
       const pages = await new PDFLoader(filePath).load();
       return pages.map(
         (page) =>

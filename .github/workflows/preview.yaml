@@ -1,0 +1,85 @@
+name: Develop CI & Vercel Preview
+
+# Trigger HANYA push ke develop.
+# Production tidak punya trigger/deployment otomatis.
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  quality-check:
+    name: CI (Prisma, Lint, Test, Build)
+    runs-on: ubuntu-latest
+
+    # Env wajib agar prisma generate & build tidak error.
+    # Pastikan DATABASE_CA_CERT ada di GitHub Secrets
+    # (lib/prisma.ts melempar error bila kosong).
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_CA_CERT: ${{ secrets.DATABASE_CA_CERT }}
+      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRED: ${{ secrets.JWT_EXPIRED }}
+
+    steps:
+      # 1. Ambil kodingan terbaru
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Siapkan Node.js 22 (LTS) + cache npm
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      # 3. Install dependencies (npm ci: cepat & stabil untuk CI)
+      - name: Install Dependencies
+        run: npm ci
+
+      # 4. Generate Prisma Client (butuh DATABASE_URL)
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      # 5. Cek kualitas kode (gagal jika ada error lint)
+      - name: Run ESLint
+        run: npm run lint
+
+      # 6. Test (Vitest)
+      - name: Run Tests
+        run: npm run test
+
+      # 7. Test build: pastikan project bisa di-build sebelum deploy
+      - name: Test Build
+        run: npm run build
+
+  deploy-preview:
+    name: Deploy Vercel Preview
+    runs-on: ubuntu-latest
+    needs: quality-check
+    if: github.ref == 'refs/heads/develop'
+
+    # Deploy LANGSUNG (remote build di Vercel), tanpa prebuilt:
+    # - Build memakai Environment Variables yang sudah ada di Vercel Project,
+    #   jadi kredensial sensitif tidak perlu ada di GitHub.
+    # - Tanpa --prod, jadi ini tier Preview (bukan production).
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      # Node hanya untuk menjalankan Vercel CLI via npx
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Deploy preview: URL preview muncul di log job ini
+      - name: Deploy Preview
+        run: npx vercel@latest deploy --yes --token="${{ secrets.VERCEL_TOKEN }}"
