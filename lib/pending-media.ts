@@ -20,17 +20,46 @@ export type UploadedMediaRef = {
   resourceType: 'image' | 'raw';
 };
 
+type LexicalNodeRecord = Record<string, unknown>;
+
+// editorState.toJSON() membungkus node di { root: {...} }; traversal harus mulai dari root-nya.
+const lexicalRoot = (content: unknown): LexicalNodeRecord | null => {
+  if (!content || typeof content !== 'object' || Array.isArray(content)) {
+    return null;
+  }
+  const value = content as LexicalNodeRecord;
+  const root = value.root;
+  return root && typeof root === 'object' && !Array.isArray(root)
+    ? (root as LexicalNodeRecord)
+    : value;
+};
+
+const walkLexicalTree = (
+  node: unknown,
+  visit: (value: LexicalNodeRecord) => void
+) => {
+  if (!node || typeof node !== 'object') return;
+  if (Array.isArray(node)) {
+    node.forEach((child) => walkLexicalTree(child, visit));
+    return;
+  }
+  const value = node as LexicalNodeRecord;
+  visit(value);
+  if (Array.isArray(value.children)) {
+    value.children.forEach((child) => walkLexicalTree(child, visit));
+  }
+};
+
 export const collectPendingIds = (content: unknown): Set<string> => {
   const ids = new Set<string>();
+  const root = lexicalRoot(content);
+  if (!root) return ids;
 
-  const visit = (node: unknown) => {
-    if (!node || typeof node !== 'object' || Array.isArray(node)) return;
-    const value = node as Record<string, unknown>;
-    if (typeof value.pendingId === 'string') ids.add(value.pendingId);
-    if (Array.isArray(value.children)) value.children.forEach(visit);
-  };
-
-  visit(content);
+  walkLexicalTree(root, (value) => {
+    if (typeof value.pendingId === 'string' && value.pendingId) {
+      ids.add(value.pendingId);
+    }
+  });
   return ids;
 };
 
@@ -115,12 +144,9 @@ export const replacePendingMedia = (
     return value;
   };
 
-  if (!content || typeof content !== 'object' || Array.isArray(content)) {
-    return content;
-  }
-  const root = (content as Record<string, unknown>).root;
-  if (!root || typeof root !== 'object') return content;
-  const rootValue = { ...(root as Record<string, unknown>) };
+  const root = lexicalRoot(content);
+  if (!root || root === content) return content;
+  const rootValue = { ...root };
   if (Array.isArray(rootValue.children)) {
     rootValue.children = rootValue.children
       .map(finalize)

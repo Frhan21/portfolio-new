@@ -149,6 +149,12 @@ export class DocumentationImageNode extends DecoratorNode<ReactNode> {
     return 'documentation-image';
   }
 
+  // Lexical 0.50: default DecoratorNode inline — node media harus block-level
+  // agar $insertNodes menempatkannya sebagai sibling root, bukan di dalam paragraph.
+  isInline() {
+    return false;
+  }
+
   static clone(node: DocumentationImageNode) {
     return new DocumentationImageNode(
       {
@@ -231,6 +237,10 @@ export class PdfAttachmentNode extends DecoratorNode<ReactNode> {
 
   static getType() {
     return 'pdf-attachment';
+  }
+
+  isInline() {
+    return false;
   }
 
   static clone(node: PdfAttachmentNode) {

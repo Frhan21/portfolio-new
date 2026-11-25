@@ -157,14 +157,13 @@ function Toolbar({
   ) => {
     editor.update(() => {
       const node = create();
+      const paragraph = $createParagraphNode();
       const selection = $getSelection();
       if ($isRangeSelection(selection)) {
-        $insertNodes([node]);
+        $insertNodes([node, paragraph]);
       } else {
-        $getRoot().append(node);
+        $getRoot().append(node, paragraph);
       }
-      const paragraph = $createParagraphNode();
-      node.insertAfter(paragraph);
       paragraph.select();
     });
   };
