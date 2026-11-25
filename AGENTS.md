@@ -203,3 +203,13 @@ NEXT_PUBLIC_SERVER_URL=http://localhost:3000
 - Riwayat eksperimen Payload CMS ada di history git (commit sebelum `revert:`) — tidak dipakai; schema PG `payload` masih ada di DB (bisa di-drop manual kalau mau)
 - Detail page projek: konten kosong → fallback "coming soon"
 - Tidak ada test framework; verifikasi via lint + build + smoke test endpoint
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
